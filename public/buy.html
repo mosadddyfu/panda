@@ -208,47 +208,67 @@
 
     /* ——— الدالة submitOrder كما فى النسخة المعدَّلة سابقًا ——— */
     async function submitOrder() {
-      const username = document.getElementById("username").value.trim().replace(/^@/, '');
-      const stars = parseInt(document.getElementById("stars").value);
+    const username = document.getElementById("username").value.trim().replace(/^@/, '');
+    const stars = parseInt(document.getElementById("stars").value);
 
-      if (!username || stars < 50) { alert("يرجى إدخال اسم مستخدم صحيح وعدد لا يقل عن 50 نجمة"); return; }
+    if (!username || stars < 50) {
+      alert("يرجى إدخال اسم مستخدم صحيح وعدد لا يقل عن 50 نجمة");
+      return;
+    }
 
-      const amountUSD = stars * PRICE_PER_STAR_USD;
+    const amountUSD = stars * PRICE_PER_STAR_USD;
 
-      /* لو لم نستطع جلب سعر TON وقتها نعيد المحاولة بسرعة */
-      let tonUsd = currentTonUsd;
-      if (!tonUsd) {
-        try {
-          const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
-          tonUsd = r.data["the-open-network"].usd;
-        } catch (e) { alert("تعذّر جلب سعر TON، حاول لاحقًا"); return; }
-      }
-
-      const tonAmount = amountUSD / tonUsd;
-      const tonAmountN = BigInt(Math.ceil(tonAmount * 1e9));
-
-      const tx = {
-        validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [{
-          address: "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN",
-          amount: tonAmountN.toString()
-        }]
-      };
-
+    // نحاول نجيب السعر لو مش موجود
+    let tonUsd = currentTonUsd;
+    if (!tonUsd) {
       try {
-        await tonConnectUI.sendTransaction(tx);
-        alert(`جارى إرسال${stars} نجمة ($${amountUSD.toFixed(2)} ≈ ${tonAmount.toFixed(5)} TON) إلى @${username}`);
-        await axios.post("https://pandastores.onrender.com/order", {
-          username,
-          stars,
-          amountTon: tonAmount.toFixed(5),
-          amountUsd: amountUSD.toFixed(2)
-        });
-      } catch (error) {
-        alert("تم الغاء المعامله تحقق من ربط المحفظه واعد المحاوله اذا لم تكن متصله");
+        const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+        tonUsd = r.data["the-open-network"].usd;
+      } catch (e) {
+        alert("تعذّر جلب سعر TON، حاول لاحقًا");
+        return;
       }
     }
 
+    const tonAmount = amountUSD / tonUsd;
+    const tonAmountN = BigInt(Math.ceil(tonAmount * 1e9)); // نحوله لـ nanoTON
+
+    const tx = {
+      validUntil: Math.floor(Date.now() / 1000) + 300,
+      messages: [{
+        address: "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN",
+        amount: tonAmountN.toString()
+      }]
+    };
+
+    try {
+      const connectedWallet = tonConnectUI.wallet;
+      if (!connectedWallet) {
+        alert("يرجى ربط المحفظة أولاً");
+        return;
+      }
+
+      const result = await tonConnectUI.sendTransaction(tx);
+
+      setTimeout(async () => {
+        try {
+          await axios.post("https://pandastores.onrender.com/order", {
+            username,
+            stars,
+            amountTon: tonAmount.toFixed(5),
+            amountUsd: amountUSD.toFixed(2)
+          });
+
+          alert(`✅ تم شراء ${stars} نجمة بنجاح لـ @${username}`);
+        } catch (err) {
+          alert("❌ فشل في حفظ الطلب بعد الإرسال، حاول لاحقًا.");
+        }
+      }, 2000);
+
+    } catch (error) {
+      alert("❌ تم إلغاء المعاملة أو فشلت. تأكد من ربط المحفظة وحاول مرة أخرى.");
+    }
+  }
   </script>
 </body>
 

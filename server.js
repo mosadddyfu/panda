@@ -10,11 +10,12 @@ const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_ID = process.env.ADMIN_ID;
 
-// ✅ تعديل الاتصال بقاعدة البيانات بدون الخيارات القديمة
+// ✅ الاتصال بقاعدة البيانات
 mongoose.connect(mongoURI)
   .then(() => console.log("تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
   .catch((error) => console.error("فشل الاتصال بقاعدة البيانات:", error));
 
+// ✅ موديل الطلبات
 const orderSchema = new mongoose.Schema({
   username: String,
   stars: Number,
@@ -25,9 +26,12 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
+// ✅ ميدلويرز
+app.use(express.json());              // <-- مهم علشان req.body
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+// ✅ الراوت الخاص بالطلب
 app.post('/order', async (req, res) => {
   try {
     const { username, stars, amountTon, amountUsd } = req.body;
@@ -48,6 +52,7 @@ app.post('/order', async (req, res) => {
   }
 });
 
+// ✅ صفحة الإدارة
 app.get('/admin', async (req, res) => {
   try {
     const orders = await Order.find();
@@ -58,12 +63,12 @@ app.get('/admin', async (req, res) => {
   }
 });
 
-// ✅ هذا هو الراوت الجديد لحل مشكلة "Can't GET /"
+// ✅ صفحة البداية
 app.get("/", (req, res) => {
   res.send("✅ Panda Store backend is running!");
 });
 
-// تشغيل السيرفر
+// ✅ تشغيل السيرفر
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
