@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Panda Store - خدمات تيليجرام</title>
+  <link rel="icon" type="image/png" href="/assets/panda.jpg">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-image: url('/assets/panda.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      background-color: #f9f9f9;
+      text-align: center;
+      z-index: -1; 
+    }
+
+    .header {
+      background-color: #222;
+      
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+
+
+      align-items: center;
+    }
+
+    .nav {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      background:rgb(183, 126, 20);
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px
+    }
+
+    .nav a:hover {
+      background-color: #444;
+    }
+
+    .intro {
+      margin: 40px auto;
+      max-width: 600px;
+      font-size: 20px;
+      color: #000000;
+      background-color: rgba(180, 164, 148, 0.8);
+      line-height: 1.8;
+    }
+
+    .lookup {
+      margin: 30px auto;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #302d2d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .user-info {
+      margin-top: 20px;
+    }
+
+    .user-info img {
+      width: 100px;
+      border-radius: 50%;
+    }
+
+    .footer {
+      margin-top: 100px;
+      padding: 10px; ;
+      /* background-color: #000000; */
+      color: rgb(0, 0, 0);
+    }
+
+    .footer a {
+      display: inline-block;
+      margin: 10px;
+    }
+
+    .footer img {
+      width: 40px;
+      height: 40px;
+      transition: transform 0.2s;
+    }
+
+    .footer img:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="nav">
+      <a href="/index.html">الرئيسية</a>
+      <a href="/buy.html">نجوم</a>
+      <a href="/premium.html">بريميوم</a>
+    </div>
+    <span>🐼Panda Store</span>
+  </div>
+
+  <div class="intro">
+    <p>مرحبًا بك في <strong>Panda Store</strong>، أول موقع عربي متخصص في تقديم خدمات تيليجرام ⭐</p>
+    <p>نحن نوفر لك شراء النجوم والاشتراكات المميزة بأسعار منافسة وخدمة سريعة وآمنة بدون الحاجة لأي توثيق أو خطوات معقدة.
+    </p>
+    <p>جربنا وعيش تجربة التيليجرام بشكل جديد ومميز 😉</p>
+  </div>
+
+  <!-- <div class="lookup">
+    <input type="text" id="username" placeholder="أدخل @username التيليجرام">
+    <button onclick="getUserInfo()">عرض البيانات</button>
+    <div class="user-info" id="userInfo"></div>
+  </div> -->
+<br><br><br><br>
+  <div class="footer">
+    <p>تواصل معنا من خلال:</p>
+    <a href="https://wa.me/qr/J6BDWBGNYGEKI1" target="_blank"><img
+        src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"></a>
+    <a href="https://www.facebook.com/share/1DEzb2Fq4T/" target="_blank"><img
+        src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook"></a>
+    <a href="https://www.instagram.com/omar_shehata_1?igsh=MXdrbzY2enE3YmVhYw==" target="_blank"><img
+        src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"></a>
+    <a href="http://t.me/OMAR_M_SHEHATA" target="_blank"><img
+        src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram"></a>
+    <a href="https://www.tiktok.com/@omar_m.shehata?_t=ZS-8uUfGvZvsUk&_r=1" target="_blank"><img
+        src="https://cdn-icons-png.flaticon.com/512/3046/3046126.png" alt="TikTok"></a>
+  </div>
+
+  <script>
+    // async function getUserInfo() {
+    //   const username = document.getElementById("username").value.trim();
+    //   const userInfoDiv = document.getElementById("userInfo");
+
+    //   if (!username.startsWith("@")) {
+    //     userInfoDiv.innerHTML = "<p style='color:red;'>برجاء إدخال اسم مستخدم صحيح يبدأ بـ @</p>";
+    //     return;
+    //   }
+
+    //   userInfoDiv.innerHTML = "<p>جاري البحث...</p>";
+    //   // API وهمي للتجربة - استبدله بـ API حقيقي أو سكربت باك إند
+    //   setTimeout(() => {
+    //     userInfoDiv.innerHTML = `
+    //       <h3>اسم المستخدم: ${username}</h3>
+    //       <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" alt="صورة" />
+    //     `;
+    //   }, 1000);
+    // }
+  </script>
+</body>
+
+</html>

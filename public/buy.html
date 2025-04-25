@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>شراء النجوم - Panda Store</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <link rel="icon" type="image/png" href="/assets/panda.jpg">
+  <style>
+    /* ——— نفس الـCSS بلا تغيير ——— */
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: url('/assets/panda.jpg') center/cover fixed;
+      margin: 0;
+      padding: 0;
+      text-align: center
+    }
+
+    .header {
+      background-color: #222;
+      color: #ffffff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .nav {
+      display: flex;
+      gap: 15px
+    }
+
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      background:rgb(183, 126, 20);
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px
+    }
+
+    .nav a:hover {
+      background: #444
+    }
+
+    .wallet-btn {
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+      color: #000
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #333
+    }
+
+    .section-sub {
+      margin-bottom: 30px
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold
+    }
+
+    input {
+      width: 93%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px
+    }
+
+    .star-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px
+    }
+
+    .star-option {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      background: rgba(180, 164, 148, .8);
+      cursor: pointer;
+      text-align: center
+    }
+
+    .star-option:hover {
+      background: #7cc8e4
+    }
+
+    .buy-btn {
+      background: #222;
+      color: #fff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="nav">
+      <a href="/index.html">الرئيسية</a>
+      <a href="/buy.html">نجوم</a>
+      <a href="/premium.html">بريميوم</a>
+    </div>
+    <div id="ton-connect-btn" class="wallet-btn"></div>
+    <!-- <button class="wallet-btn" id="ton-connect-btn">🔗 ربط محفظة TON</button> -->
+  </div>
+  <div id="ton-connect" class="wallet-section"></div>
+  </div>
+  <h1 class="section-title">اشترِ نجوم تيليجرام</h1>
+  <p class="section-sub">اشحن لنفسك أو لأصدقائك من 50 إلى 1,000,000 نجمة</p>
+
+  <div class="container">
+
+    <label>اسم المستخدم على تيليجرام</label>
+    <input type="text" placeholder="@username" id="username" required />
+
+    <label>عدد النجوم</label>
+    <div style="position:relative;">
+      <input type="number" placeholder="أدخل عدد النجوم من 50 فما فوق" id="stars" min="50" oninput="updatePreview()"
+        required />
+      <br>
+      <!-- سطر السعر الفوري -->
+      <small id="preview"
+        style="position:absolute;left:0;bottom:-10px;color:#000000;background-color:  rgb(153, 255, 1);  font-size:large;"></small>
+    </div>
+    <br>
+    <label>أو اختر باقة:</label>
+    <div class="star-options">
+      <!-- الأسعار ثابتة بالدولار بناءً على 0.017 USD لكل نجمة -->
+      <div class="star-option" onclick="selectStars(50)">50 نجمة ~ <span id="price50">$0.85</span></div>
+      <div class="star-option" onclick="selectStars(100)">100 نجمة ~ <span id="price100">$1.70</span></div>
+      <div class="star-option" onclick="selectStars(250)">250 نجمة ~ <span id="price250">$4.25</span></div>
+      <div class="star-option" onclick="selectStars(500)">500 نجمة ~ <span id="price500">$8.50</span></div>
+      <div class="star-option" onclick="selectStars(1000)">1,000 نجمة ~ <span id="price1000">$17.00</span></div>
+      <div class="star-option" onclick="selectStars(1500)">1,500 نجمة ~ <span id="price1500">$25.50</span></div>
+      <div class="star-option" onclick="selectStars(2000)">2,000 نجمة ~ <span id="price2000">$34.00</span></div>
+      <div class="star-option" onclick="selectStars(2500)">2,500 نجمة ~ <span id="price2500">$42.50</span></div>
+      <div class="star-option" onclick="selectStars(3000)">3,000 نجمة ~ <span id="price3000">$51.00</span></div>
+    </div>
+
+    <br />
+    <button class="buy-btn" onclick="submitOrder()">شراء الآن</button>
+  </div>
+
+  <script>
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect-btn'
+    });
+
+    const PRICE_PER_STAR_USD = 0.017;
+    let currentTonUsd = null;                  // يُملأ عند التحميل
+
+    /* جلب سعر TON مرّة واحدة */
+    (async () => {
+      try {
+        const res = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd"
+        );
+        currentTonUsd = res.data["the-open-network"].usd;
+        updatePreview();                         // حساب أولى إن وُجد عدد مُعبَّأ
+      } catch (e) { console.warn("فشل في جلب سعر TON للمعاينة"); }
+    })();
+
+    function selectStars(value) {
+      document.getElementById("stars").value = value;
+      updatePreview();
+    }
+
+    /* ——— تحديث السطر الصغير ——— */
+    function updatePreview() {
+      const stars = parseInt(document.getElementById("stars").value);
+      const box = document.getElementById("preview");
+
+      if (!stars || stars < 50) { box.textContent = ""; return; }
+
+      const usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+      if (currentTonUsd) {
+        const ton = (usd / currentTonUsd).toFixed(5);
+        box.textContent = `السعر: $${usd} ≈ ${ton} TON`;
+      } else {
+        box.textContent = `السعر: $${usd}`;
+      }
+    }
+
+    /* ——— الدالة submitOrder كما فى النسخة المعدَّلة سابقًا ——— */
+    async function submitOrder() {
+      const username = document.getElementById("username").value.trim().replace(/^@/, '');
+      const stars = parseInt(document.getElementById("stars").value);
+
+      if (!username || stars < 50) { alert("يرجى إدخال اسم مستخدم صحيح وعدد لا يقل عن 50 نجمة"); return; }
+
+      const amountUSD = stars * PRICE_PER_STAR_USD;
+
+      /* لو لم نستطع جلب سعر TON وقتها نعيد المحاولة بسرعة */
+      let tonUsd = currentTonUsd;
+      if (!tonUsd) {
+        try {
+          const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+          tonUsd = r.data["the-open-network"].usd;
+        } catch (e) { alert("تعذّر جلب سعر TON، حاول لاحقًا"); return; }
+      }
+
+      const tonAmount = amountUSD / tonUsd;
+      const tonAmountN = BigInt(Math.ceil(tonAmount * 1e9));
+
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 300,
+        messages: [{
+          address: "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN",
+          amount: tonAmountN.toString()
+        }]
+      };
+
+      try {
+        await tonConnectUI.sendTransaction(tx);
+        alert(`جارى إرسال${stars} نجمة ($${amountUSD.toFixed(2)} ≈ ${tonAmount.toFixed(5)} TON) إلى @${username}`);
+        await axios.post("https://pandastores.onrender.com/order", {
+          username,
+          stars,
+          amountTon: tonAmount.toFixed(5),
+          amountUsd: amountUSD.toFixed(2)
+        });
+      } catch (error) {
+        alert("تم الغاء المعامله تحقق من ربط المحفظه واعد المحاوله اذا لم تكن متصله");
+      }
+    }
+
+  </script>
+</body>
+
+</html>
