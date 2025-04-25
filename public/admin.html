@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>لوحة الأدمن - Panda Store</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: url('/assets/panda.jpg') center/cover fixed;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #000;
+    }
+
+    .header {
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      background: rgba(0, 0, 0, .8);
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #7cc8e4;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 20px;
+      width: 70%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="nav">
+      <a href="/index.html">الرئيسية</a>
+      <a href="/buy.html">نجوم</a>
+      <a href="/premium.html">بريميوم</a>
+    </div>
+  </div>
+
+  <div class="container" id="adminContainer">
+    <h1>لوحة التحكم</h1>
+    <div id="passwordSection">
+      <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" />
+      <br />
+      <button class="btn" onclick="checkPassword()">دخول</button>
+    </div>
+    <div id="ordersSection" style="display:none;">
+      <table>
+        <thead>
+          <tr>
+            <th>اسم المستخدم</th>
+            <th>عدد النجوم</th>
+            <th>تاريخ الطلب</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const PASSWORD = "OmarShehata@123";
+
+    function checkPassword() {
+      const entered = document.getElementById("adminPassword").value;
+      if (entered === PASSWORD) {
+        document.getElementById("passwordSection").style.display = "none";
+        document.getElementById("ordersSection").style.display = "block";
+        fetchOrders();
+      } else {
+        alert("كلمة المرور غير صحيحة");
+      }
+    }
+
+    async function fetchOrders() {
+      try {
+        const res = await axios.get("https://pandastores.onrender.com/admin");
+        const orders = res.data;
+        const tbody = document.getElementById("ordersTableBody");
+        orders.reverse().forEach(order => {
+          const row = `
+  <tr>
+    <td>${order.username}</td>
+    <td>${order.stars}</td>
+    <td>${new Date(order.createdAt).toLocaleString("ar-EG")}</td>
+  </tr>
+`;
+tbody.innerHTML += row;
+
+        });
+      } catch (err) {
+        alert("فشل تحميل الطلبات");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
