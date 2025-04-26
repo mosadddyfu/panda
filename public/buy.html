@@ -248,26 +248,21 @@
         return;
       }
 
-      const result = await tonConnectUI.sendTransaction(tx);
+const result = await tonConnectUI.sendTransaction(tx);
 
-      setTimeout(async () => {
-        try {
-          await axios.post("https://pandastores.onrender.com/order", {
-            username,
-            stars,
-            amountTon: tonAmount.toFixed(5),
-            amountUsd: amountUSD.toFixed(2)
-          });
+// بدل setTimeout هنا، اعمل كده مباشرة
+try {
+  await axios.post("https://pandastores.onrender.com/order", {
+    username,
+    stars,
+    amountTon: tonAmount.toFixed(5),
+    amountUsd: amountUSD.toFixed(2)
+  });
+  alert(`✅ تم شراء ${stars} نجمة بنجاح لـ @${username}`);
+} catch (err) {
+  alert("❌ فشل في حفظ الطلب بعد الإرسال، حاول لاحقًا.");
+}
 
-          alert(`✅ تم شراء ${stars} نجمة بنجاح لـ @${username}`);
-        } catch (err) {
-          alert("❌ فشل في حفظ الطلب بعد الإرسال، حاول لاحقًا.");
-        }
-      }, 2000);
-
-    } catch (error) {
-      alert("❌ تم إلغاء المعاملة أو فشلت. تأكد من ربط المحفظة وحاول مرة أخرى.");
-    }
   }
   </script>
 </body>
