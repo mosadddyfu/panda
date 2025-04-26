@@ -39,7 +39,7 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 30px auto;
       background: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
@@ -109,6 +109,8 @@
           <tr>
             <th>اسم المستخدم</th>
             <th>عدد النجوم</th>
+            <th>دولار</th>
+            <th>TON</th>
             <th>تاريخ الطلب</th>
           </tr>
         </thead>
@@ -118,7 +120,7 @@
   </div>
 
   <script>
-    const PASSWORD = "OmarShehata@123";
+  
 
     function checkPassword() {
       const entered = document.getElementById("adminPassword").value;
@@ -138,14 +140,15 @@
         const tbody = document.getElementById("ordersTableBody");
         orders.reverse().forEach(order => {
           const row = `
-  <tr>
-    <td>${order.username}</td>
-    <td>${order.stars}</td>
-    <td>${new Date(order.createdAt).toLocaleString("ar-EG")}</td>
-  </tr>
-`;
-tbody.innerHTML += row;
-
+            <tr>
+              <td>@${order.username}</td>
+              <td>${order.stars}</td>
+              <td>$${order.amountUsd}</td>
+              <td>${order.amountTon} TON</td>
+              <td>${new Date(order.createdAt).toLocaleString("ar-EG")}</td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
         });
       } catch (err) {
         alert("فشل تحميل الطلبات");
