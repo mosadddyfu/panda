@@ -119,42 +119,48 @@
     </div>
   </div>
 
-  <script>
-  
+<script>
+  const PASSWORD = "OmarShehata@123";
 
-    function checkPassword() {
-      const entered = document.getElementById("adminPassword").value;
-      if (entered === PASSWORD) {
-        document.getElementById("passwordSection").style.display = "none";
-        document.getElementById("ordersSection").style.display = "block";
-        fetchOrders();
-      } else {
-        alert("كلمة المرور غير صحيحة");
-      }
+  function checkPassword() {
+    const entered = document.getElementById("adminPassword").value;
+    if (entered === PASSWORD) {
+      document.getElementById("passwordSection").style.display = "none";
+      document.getElementById("ordersSection").style.display = "block";
+      fetchOrders();
+    } else {
+      alert("كلمة المرور غير صحيحة");
     }
+  }
 
-    async function fetchOrders() {
-      try {
-        const res = await axios.get("https://pandastores.onrender.com/admin");
-        const orders = res.data;
-        const tbody = document.getElementById("ordersTableBody");
-        orders.reverse().forEach(order => {
-          const row = `
-            <tr>
-              <td>@${order.username}</td>
-              <td>${order.stars}</td>
-              <td>$${order.amountUsd}</td>
-              <td>${order.amountTon} TON</td>
-              <td>${new Date(order.createdAt).toLocaleString("ar-EG")}</td>
-            </tr>
-          `;
-          tbody.innerHTML += row;
-        });
-      } catch (err) {
-        alert("فشل تحميل الطلبات");
-        console.error(err);
-      }
+  async function fetchOrders() {
+    try {
+      const res = await axios.get("https://pandastores.onrender.com/admin");
+      const orders = res.data;
+      const tbody = document.getElementById("ordersTableBody");
+      tbody.innerHTML = "";  // نفرغ الأول لو فيه داتا قديمة
+      orders.reverse().forEach(order => {
+        const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
+        const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
+        const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
+
+        const row = `
+          <tr>
+            <td>@${order.username}</td>
+            <td>${order.stars}</td>
+            <td>${amountUsd}</td>
+            <td>${amountTon}</td>
+            <td>${createdAt}</td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    } catch (err) {
+      alert("فشل تحميل الطلبات");
+      console.error(err);
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
