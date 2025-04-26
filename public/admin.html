@@ -7,85 +7,89 @@
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <style>
-    body {
-      font-family: 'Cairo', sans-serif;
-      background: url('/assets/panda.jpg') center/cover fixed;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      color: #000;
-    }
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: url('/assets/panda.jpg') center/cover fixed;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    color: #000;
+  }
 
-    .header {
-      color: #fff;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  .header {
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .nav {
-      display: flex;
-      gap: 15px;
-    }
+  .nav {
+    display: flex;
+    gap: 15px;
+  }
 
-    .nav a {
-      color: #fff;
-      text-decoration: none;
-      background: rgba(0, 0, 0, .8);
-      font-size: 16px;
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
+  .nav a {
+    color: #fff;
+    text-decoration: none;
+    background: rgba(0, 0, 0, .8);
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
 
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
-    }
+  .container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+    overflow-x: auto; /* 👈 هنا السر لتظبيط الجدول مع الموبايل */
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+  table {
+    width: 100%;
+    min-width: 600px; /* 👈 إضافة حد أدنى لعرض الجدول */
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-    }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap; /* 👈 تخلي النص ما يكسرش */
+  }
 
-    th {
-      background-color: #7cc8e4;
-    }
+  th {
+    background-color: #7cc8e4;
+  }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
 
-    input[type="password"] {
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 20px;
-      width: 70%;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+  input[type="password"] {
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 20px;
+    width: 70%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
 
-    .btn {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background-color: #222;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+  .btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #222;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
 
-  </style>
 </head>
 <body>
   <div class="header">
