@@ -35,12 +35,18 @@ app.use(express.static('public'));
 // ✅ راوت الطلب
 app.post('/order', async (req, res) => {
   try {
-    const { username, stars, amountTon, amountUsd , createdAt} = req.body;
-    const newOrder = new Order({ username, stars, amountTon, amountUsd , createdAt});
+    const { username, stars, amountTon, amountUsd, createdAt } = req.body;
+
+    // إذا لم يكن createdAt موجودًا، نضيف التاريخ الحالي
+    const orderCreatedAt = createdAt || new Date().toISOString();
+
+    const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
 
     await newOrder.save();
 
-    const message = `طلب جديد🛒\n👤 اسم المستخدم: @${username}\n⭐️ عدد النجوم: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 تاريخ الطلب: ${createdAt}\n\n🔗 [تنفيذ الطلب](https://fragment.com/stars)`;    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    const message = `طلب جديد🛒\n👤 اسم المستخدم: @${username}\n⭐️ عدد النجوم: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 تاريخ الطلب: ${orderCreatedAt}\n\n🔗 [تنفيذ الطلب](https://fragment.com/stars)`;
+
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: ADMIN_ID,
       text: message,
     });
