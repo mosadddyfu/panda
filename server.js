@@ -8,7 +8,7 @@ const app = express();
 
 const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const ADMIN_ID = process.env.ADMIN_ID;
+const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID]; // معرفات متعددة
 
 // ✅ الاتصال بقاعدة البيانات
 mongoose.connect(mongoURI)
@@ -55,12 +55,15 @@ app.post('/order', async (req, res) => {
 
     await newOrder.save();
 
-    const message = `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}\n\n🔗Execute Order:https://fragment.com/stars`;
+    const message = `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}\n\n🔗 [Execute Order](https://fragment.com/stars)`;
 
-    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      chat_id: ADMIN_ID,
-      text: message,
-    });
+    // إرسال الرسالة إلى جميع المعرفات
+    for (let adminId of ADMIN_IDS) {
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: adminId,
+        text: message,
+      });
+    }
 
     res.status(200).send('Your order has been successfully received!');
   } catch (error) {
