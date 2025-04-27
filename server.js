@@ -22,16 +22,17 @@ const orderSchema = new mongoose.Schema({
   amountTon: String,
   amountUsd: String,
   createdAt: { type: Date, default: Date.now },
+  completed: { type: Boolean, default: false }, // ➡️ الحقل الجديد
 });
 
 const Order = mongoose.model('Order', orderSchema);
 
 // ✅ ميدلويرز
-app.use(express.json());              // <-- مهم علشان req.body
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// ✅ الراوت الخاص بالطلب
+// ✅ راوت الطلب
 app.post('/order', async (req, res) => {
   try {
     const { username, stars, amountTon, amountUsd } = req.body;
@@ -52,7 +53,7 @@ app.post('/order', async (req, res) => {
   }
 });
 
-// ✅ صفحة الإدارة
+// ✅ راوت عرض الطلبات للإدارة
 app.get('/admin', async (req, res) => {
   try {
     const orders = await Order.find();
@@ -60,6 +61,18 @@ app.get('/admin', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('حدث خطأ في جلب البيانات');
+  }
+});
+
+// ✅ راوت تحديث حالة الطلب إلى مكتمل
+app.post('/complete-order/:id', async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    await Order.findByIdAndUpdate(orderId, { completed: true });
+    res.status(200).send('تم تحديث حالة الطلب إلى مكتمل');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('حدث خطأ أثناء تحديث الطلب');
   }
 });
 
