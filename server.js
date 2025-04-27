@@ -41,15 +41,16 @@ app.post('/order', async (req, res) => {
     const orderCreatedAt = createdAt || new Date().toISOString();
 
     // تنسيق التاريخ ليظهر بالشكل المطلوب باللغة الإنجليزية (يوم/شهر/سنة الساعة:الدقيقة:الثانية)
-    const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true, // لضبط تنسيق الـ AM/PM
-    });
+const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: true, // لضبط تنسيق الـ AM/PM
+  timeZone: 'Africa/Cairo', // تحديد المنطقة الزمنية لمصر
+});
 
     const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
 
