@@ -164,12 +164,12 @@
     }
   }
 
-  let ordersList = []; // نخزن الطلبات هنا
+  let ordersList = [];
 
   async function fetchOrders() {
     try {
       const res = await axios.get("https://pandastores.onrender.com/admin");
-      ordersList = res.data.reverse(); // نخزنهم ونبدأ بالعرض
+      ordersList = res.data.reverse();
       renderOrders();
     } catch (err) {
       alert("فشل تحميل الطلبات");
@@ -213,9 +213,16 @@
     });
   }
 
-  function markAsCompleted(index) {
-    ordersList[index].completed = true;
-    renderOrders();
+  async function markAsCompleted(index) {
+    const orderId = ordersList[index]._id;
+    try {
+      await axios.post(`https://pandastores.onrender.com/complete-order/${orderId}`);
+      ordersList[index].completed = true;
+      renderOrders();
+    } catch (err) {
+      alert("فشل تحديث حالة الطلب");
+      console.error(err);
+    }
   }
 </script>
 
