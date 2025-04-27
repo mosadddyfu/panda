@@ -56,7 +56,7 @@ const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
 
     await newOrder.save();
 
-    const message = `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}\n\n🔗Execute Order: https://fragment.com/stars`;
+    const message = `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}\n\n🔗Execute Order: https://fragment.com/stars \nاعمل تم التنفيذ فى قاعده البيانات ✅ : https://pandastores.onrender.com/admin.html`;
 
     // إرسال الرسالة إلى جميع المعرفات
     for (let adminId of ADMIN_IDS) {
