@@ -45,12 +45,12 @@
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
-    overflow-x: auto; /* 👈 هنا السر لتظبيط الجدول مع الموبايل */
+    overflow-x: auto;
   }
 
   table {
     width: 100%;
-    min-width: 600px; /* 👈 إضافة حد أدنى لعرض الجدول */
+    min-width: 600px;
     border-collapse: collapse;
     margin-top: 20px;
   }
@@ -59,7 +59,7 @@
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
-    white-space: nowrap; /* 👈 تخلي النص ما يكسرش */
+    white-space: nowrap;
   }
 
   th {
@@ -88,6 +88,16 @@
     border-radius: 5px;
     cursor: pointer;
   }
+
+  .action-btn {
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
 </style>
 
 </head>
@@ -101,13 +111,30 @@
   </div>
 
   <div class="container" id="adminContainer">
-    <h1>لوحة التحكم</h1>
+    <h1>قائمه الطلبات</h1>
     <div id="passwordSection">
       <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" />
       <br />
       <button class="btn" onclick="checkPassword()">دخول</button>
     </div>
+
     <div id="ordersSection" style="display:none;">
+      <h2>طلبات لم تنفذ بعد</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>اسم المستخدم</th>
+            <th>عدد النجوم</th>
+            <th>دولار</th>
+            <th>TON</th>
+            <th>تاريخ الطلب</th>
+            <th>تم تنفيذ هذا الطلب✅️</th>
+          </tr>
+        </thead>
+        <tbody id="pendingOrdersTableBody"></tbody>
+      </table>
+
+      <h2 style="margin-top:50px;">طلبات تم تنفيذها</h2>
       <table>
         <thead>
           <tr>
@@ -118,7 +145,7 @@
             <th>تاريخ الطلب</th>
           </tr>
         </thead>
-        <tbody id="ordersTableBody"></tbody>
+        <tbody id="completedOrdersTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -137,32 +164,58 @@
     }
   }
 
+  let ordersList = []; // نخزن الطلبات هنا
+
   async function fetchOrders() {
     try {
       const res = await axios.get("https://pandastores.onrender.com/admin");
-      const orders = res.data;
-      const tbody = document.getElementById("ordersTableBody");
-      tbody.innerHTML = "";  // نفرغ الأول لو فيه داتا قديمة
-      orders.reverse().forEach(order => {
-        const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
-        const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
-        const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
-
-        const row = `
-          <tr>
-            <td>@${order.username}</td>
-            <td>${order.stars}</td>
-            <td>${amountUsd}</td>
-            <td>${amountTon}</td>
-            <td>${createdAt}</td>
-          </tr>
-        `;
-        tbody.innerHTML += row;
-      });
+      ordersList = res.data.reverse(); // نخزنهم ونبدأ بالعرض
+      renderOrders();
     } catch (err) {
       alert("فشل تحميل الطلبات");
       console.error(err);
     }
+  }
+
+  function renderOrders() {
+    const pendingBody = document.getElementById("pendingOrdersTableBody");
+    const completedBody = document.getElementById("completedOrdersTableBody");
+    pendingBody.innerHTML = "";
+    completedBody.innerHTML = "";
+
+    ordersList.forEach((order, index) => {
+      const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
+      const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
+      const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
+
+      if (!order.completed) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>@${order.username}</td>
+          <td>${order.stars}</td>
+          <td>${amountUsd}</td>
+          <td>${amountTon}</td>
+          <td>${createdAt}</td>
+          <td><button class="action-btn" onclick="markAsCompleted(${index})">تم التنفيذ</button></td>
+        `;
+        pendingBody.appendChild(row);
+      } else {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>@${order.username}</td>
+          <td>${order.stars}</td>
+          <td>${amountUsd}</td>
+          <td>${amountTon}</td>
+          <td>${createdAt}</td>
+        `;
+        completedBody.appendChild(row);
+      }
+    });
+  }
+
+  function markAsCompleted(index) {
+    ordersList[index].completed = true;
+    renderOrders();
   }
 </script>
 
