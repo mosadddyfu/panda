@@ -173,3 +173,20 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastores.onrender.com/telegramWebhook`;
+
+const activateWebhook = async () => {
+  try {
+    const { data } = await axios.get(botUrl);
+    console.log("✅ Webhook set successfully:", data);
+  } catch (error) {
+    console.error("❌ Failed to set webhook:", error.response ? error.response.data : error.message);
+  }
+};
+
+// بعد تشغيل السيرفر، فعل الويب هوك
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  activateWebhook(); // 🔥 هنا استدعاء التفعيل تلقائي
+});
+
