@@ -8,7 +8,7 @@ const app = express();
 
 const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID]; // معرفات متعددة
+const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID];
 
 // ✅ الاتصال بقاعدة البيانات
 mongoose.connect(mongoURI)
@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema({
   amountTon: String,
   amountUsd: String,
   createdAt: { type: Date, default: Date.now },
-  completed: { type: Boolean, default: false }, // ➡️ الحقل الجديد
+  completed: { type: Boolean, default: false },
 });
 
 const Order = mongoose.model('Order', orderSchema);
@@ -32,70 +32,45 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// ✅ راوت الطلب
+// ✅ راوت طلب أوردر جديد
 app.post('/order', async (req, res) => {
   try {
     const { username, stars, amountTon, amountUsd, createdAt } = req.body;
-
-    // إذا لم يكن createdAt موجودًا، نضيف التاريخ الحالي
     const orderCreatedAt = createdAt || new Date().toISOString();
 
-    // تنسيق التاريخ ليظهر بالشكل المطلوب باللغة الإنجليزية (يوم/شهر/سنة الساعة:الدقيقة:الثانية)
-const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-  hour12: true, // لضبط تنسيق الـ AM/PM
-  timeZone: 'Africa/Cairo', // تحديد المنطقة الزمنية لمصر
-});
+    const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: true, timeZone: 'Africa/Cairo',
+    });
 
-const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
+    const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
+    await newOrder.save();
 
-await newOrder.save();
+    const fragmentLink = "https://fragment.com/stars";
 
-const message = `New Order 🛒
-👤 Username: @${username}
-⭐️ Stars: ${stars}
-💰 TON: ${amountTon} TON
-💵 USDT: ${amountUsd} USDT
-📅 Order Date: ${formattedDate}`;
-
-// الروابط الخاصة بالزرارين
-const fragmentLink = "https://fragment.com/stars";
-const adminPanelLink = "https://pandastores.onrender.com/admin.html";
-
-// إرسال الرسالة إلى جميع المعرفات
-for (let adminId of ADMIN_IDS) {
-  await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-    chat_id: adminId,
-    text: message,
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "🔗 تنفيذ الطلب",
-            web_app: { url: fragmentLink }
-          }
-        ],
-        [
-          {
-            text: "✅ تم التنفيذ في قاعدة البيانات",
-            web_app: { url: adminPanelLink }
-          }
-        ]
-      ]
+    for (let adminId of ADMIN_IDS) {
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: adminId,
+        text: `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "🔗 تنفيذ الطلب", web_app: { url: fragmentLink } }
+            ],
+            [
+              { text: "✅ تم التنفيذ في قاعدة البيانات", callback_data: `complete_${newOrder._id}` }
+            ]
+          ]
+        }
+      });
     }
-  });
-}
 
-res.status(200).send('Your order has been successfully received!');
-} catch (error) {
-  console.error(error);
-  res.status(500).send('An error occurred while processing the order');
-}
+    res.status(200).send('Your order has been successfully received!');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred while processing the order');
+  }
 });
 
 // ✅ راوت عرض الطلبات للإدارة
@@ -109,7 +84,7 @@ app.get('/admin', async (req, res) => {
   }
 });
 
-// ✅ راوت تحديث حالة الطلب إلى مكتمل
+// ✅ راوت إنهاء الطلب
 app.post('/complete-order/:id', async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -119,6 +94,73 @@ app.post('/complete-order/:id', async (req, res) => {
     console.error(error);
     res.status(500).send('An error occurred while updating the order');
   }
+});
+
+// ✅ التعامل مع ضغط زر من البوت (Webhook)
+app.post('/telegramWebhook', async (req, res) => {
+  const body = req.body;
+
+  if (body.callback_query) {
+    const callbackQuery = body.callback_query;
+    const chatId = callbackQuery.message.chat.id;
+    const messageId = callbackQuery.message.message_id;
+    const data = callbackQuery.data;
+
+    if (data.startsWith('complete_')) {
+      const orderId = data.split('_')[1];
+
+      // ❓ نرسل سؤال تأكيدي
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: "❓ هل أنت متأكد أنك تريد تنفيذ هذا الطلب؟",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "نعم ✅", callback_data: `confirmComplete_${orderId}_${messageId}` },
+              { text: "لا ❌", callback_data: "cancel" }
+            ]
+          ]
+        }
+      });
+    }
+
+    if (data.startsWith('confirmComplete_')) {
+      const [_, orderId, originalMessageId] = data.split('_');
+
+      try {
+        await Order.findByIdAndUpdate(orderId, { completed: true });
+
+        // ✏️ تعديل الرسالة الأصلية والزر
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
+          chat_id: chatId,
+          message_id: originalMessageId,
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "✅ تم التنفيذ", callback_data: "done" }
+              ]
+            ]
+          }
+        });
+
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: "🎉 تم تحديث حالة الطلب بنجاح."
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    if (data === "cancel") {
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: "❌ تم إلغاء تنفيذ الطلب."
+      });
+    }
+  }
+
+  res.sendStatus(200);
 });
 
 // ✅ صفحة البداية
