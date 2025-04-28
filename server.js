@@ -6,14 +6,15 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
 
+// المتغيرات
 const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID];
 
 // ✅ الاتصال بقاعدة البيانات
 mongoose.connect(mongoURI)
-  .then(() => console.log("تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
-  .catch((error) => console.error("فشل الاتصال بقاعدة البيانات:", error));
+  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
+  .catch((error) => console.error("❌ فشل الاتصال بقاعدة البيانات:", error));
 
 // ✅ موديل الطلبات
 const orderSchema = new mongoose.Schema({
@@ -24,7 +25,6 @@ const orderSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   completed: { type: Boolean, default: false },
 });
-
 const Order = mongoose.model('Order', orderSchema);
 
 // ✅ ميدلويرز
@@ -56,7 +56,7 @@ app.post('/order', async (req, res) => {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: "🔗 تنفيذ الطلب", web_app: { url: fragmentLink } }
+              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentLink } }
             ],
             [
               { text: "✅ تم التنفيذ في قاعدة البيانات", callback_data: `complete_${newOrder._id}` }
@@ -66,37 +66,37 @@ app.post('/order', async (req, res) => {
       });
     }
 
-    res.status(200).send('Your order has been successfully received!');
+    res.status(200).send('✅ تم استلام طلبك بنجاح!');
   } catch (error) {
     console.error(error);
-    res.status(500).send('An error occurred while processing the order');
+    res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
   }
 });
 
-// ✅ راوت عرض الطلبات للإدارة
+// ✅ راوت عرض جميع الطلبات
 app.get('/admin', async (req, res) => {
   try {
     const orders = await Order.find();
     res.json(orders);
   } catch (error) {
     console.error(error);
-    res.status(500).send('An error occurred while fetching data');
+    res.status(500).send('❌ حدث خطأ أثناء جلب البيانات');
   }
 });
 
-// ✅ راوت إنهاء الطلب
+// ✅ راوت إنهاء الطلب يدويًا
 app.post('/complete-order/:id', async (req, res) => {
   try {
     const orderId = req.params.id;
     await Order.findByIdAndUpdate(orderId, { completed: true });
-    res.status(200).send('Order status updated to completed');
+    res.status(200).send('✅ تم تحديث حالة الطلب');
   } catch (error) {
     console.error(error);
-    res.status(500).send('An error occurred while updating the order');
+    res.status(500).send('❌ حدث خطأ أثناء تحديث الطلب');
   }
 });
 
-// ✅ التعامل مع ضغط زر من البوت (Webhook)
+// ✅ راوت الويب هوك الخاص بالبوت
 app.post('/telegramWebhook', async (req, res) => {
   const body = req.body;
 
@@ -106,77 +106,77 @@ app.post('/telegramWebhook', async (req, res) => {
     const messageId = callbackQuery.message.message_id;
     const data = callbackQuery.data;
 
-    if (data.startsWith('complete_')) {
-      const orderId = data.split('_')[1];
+    try {
+      if (data.startsWith('complete_')) {
+        const orderId = data.split('_')[1];
 
-      // ❓ نرسل سؤال تأكيدي
-      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-        chat_id: chatId,
-        text: "❓ هل أنت متأكد أنك تريد تنفيذ هذا الطلب؟",
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: "نعم ✅", callback_data: `confirmComplete_${orderId}_${messageId}` },
-              { text: "لا ❌", callback_data: "cancel" }
+        // إرسال سؤال تأكيدي
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: "هل أنت متأكد أن هذا الطلب تم تنفيذه❓",
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "نعم ✅", callback_data: `confirmComplete_${orderId}_${messageId}` },
+                { text: "لا ❌", callback_data: "cancel" }
+              ]
             ]
-          ]
-        }
-      });
-    }
+          }
+        });
+      }
 
-    if (data.startsWith('confirmComplete_')) {
-      const [_, orderId, originalMessageId] = data.split('_');
+      else if (data.startsWith('confirmComplete_')) {
+        const [_, orderId, originalMessageId] = data.split('_');
 
-      try {
         await Order.findByIdAndUpdate(orderId, { completed: true });
 
-        // ✏️ تعديل الرسالة الأصلية والزر
+        // تعديل الرسالة الأصلية
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
           chat_id: chatId,
           message_id: originalMessageId,
           reply_markup: {
             inline_keyboard: [
-              [
-                { text: "✅ تم التنفيذ", callback_data: "done" }
-              ]
+              [{ text: "✅ تم التنفيذ", callback_data: "done" }]
             ]
           }
         });
 
+        // حذف رسالة السؤال
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
+          chat_id: chatId,
+          message_id: messageId
+        });
+
+        // إرسال إشعار نجاح
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: "🎉 تم تحديث حالة الطلب بنجاح."
         });
-      } catch (error) {
-        console.error(error);
       }
-    }
 
-    if (data === "cancel") {
-      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-        chat_id: chatId,
-        text: "❌ تم إلغاء تنفيذ الطلب."
-      });
+      else if (data === "cancel") {
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: "❌ تم إلغاء تنفيذ الطلب."
+        });
+      }
+    } catch (error) {
+      console.error("❌ خطأ أثناء معالجة زر البوت:", error.response ? error.response.data : error.message);
     }
   }
 
   res.sendStatus(200);
 });
 
-// ✅ صفحة البداية
+// ✅ الصفحة الرئيسية
 app.get("/", (req, res) => {
   res.send("✅ Panda Store backend is running!");
 });
 
-// ✅ تشغيل السيرفر
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastores.onrender.com/telegramWebhook`;
-
+// ✅ إعداد الويب هوك تلقائيًا عند تشغيل السيرفر
 const activateWebhook = async () => {
   try {
+    const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastores.onrender.com/telegramWebhook`;
     const { data } = await axios.get(botUrl);
     console.log("✅ Webhook set successfully:", data);
   } catch (error) {
@@ -184,9 +184,9 @@ const activateWebhook = async () => {
   }
 };
 
-// بعد تشغيل السيرفر، فعل الويب هوك
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  activateWebhook(); // 🔥 هنا استدعاء التفعيل تلقائي
+// ✅ تشغيل السيرفر
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, async () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  await activateWebhook();
 });
-
