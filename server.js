@@ -52,25 +52,50 @@ const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
   timeZone: 'Africa/Cairo', // تحديد المنطقة الزمنية لمصر
 });
 
-    const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
+const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
 
-    await newOrder.save();
+await newOrder.save();
 
-    const message = `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}\n\n🔗نفذ الطلب للمستخدم :\n https://fragment.com/stars \nاعمل تم التنفيذ فى قاعده البيانات ✅ :\n https://pandastores.onrender.com/admin.html`;
+const message = `New Order 🛒
+👤 Username: @${username}
+⭐️ Stars: ${stars}
+💰 TON: ${amountTon} TON
+💵 USDT: ${amountUsd} USDT
+📅 Order Date: ${formattedDate}`;
 
-    // إرسال الرسالة إلى جميع المعرفات
-    for (let adminId of ADMIN_IDS) {
-      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-        chat_id: adminId,
-        text: message,
-      });
+// الروابط الخاصة بالزرارين
+const fragmentLink = "https://fragment.com/stars";
+const adminPanelLink = "https://pandastores.onrender.com/admin.html";
+
+// إرسال الرسالة إلى جميع المعرفات
+for (let adminId of ADMIN_IDS) {
+  await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    chat_id: adminId,
+    text: message,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "🔗 تنفيذ الطلب",
+            web_app: { url: fragmentLink }
+          }
+        ],
+        [
+          {
+            text: "✅ تم التنفيذ في قاعدة البيانات",
+            web_app: { url: adminPanelLink }
+          }
+        ]
+      ]
     }
+  });
+}
 
-    res.status(200).send('Your order has been successfully received!');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('An error occurred while processing the order');
-  }
+res.status(200).send('Your order has been successfully received!');
+} catch (error) {
+  console.error(error);
+  res.status(500).send('An error occurred while processing the order');
+}
 });
 
 // ✅ راوت عرض الطلبات للإدارة
