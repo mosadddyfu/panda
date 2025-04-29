@@ -105,11 +105,12 @@ app.post('/telegramWebhook', async (req, res) => {
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "افتح Panda Store🚀", url: "https://pandastores.onrender.com" }]
+        [{ text: "افتح Panda Store🚀", url: "https://pandastores.onrender.com" }],
+        [{ text: "تواصل مع مدير الموقع", callback_data: "contact_admin" }]  // زر دائم للتواصل مع المدير
       ]
     };
 
-    // إرسال رسالة ترحيب مع الزر
+    // إرسال رسالة ترحيب مع الزر الدائم
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: chatId,
       text: welcomeMessage,
@@ -124,6 +125,23 @@ app.post('/telegramWebhook', async (req, res) => {
     const data = callbackQuery.data;
 
     try {
+      if (data === "contact_admin") {
+        // إرسال رسالة تحتوي على رابط للتواصل مع المدير
+        const adminMessage = "يمكنك التواصل مع مدير الموقع من هنا:";
+        const replyMarkup = {
+          inline_keyboard: [
+            [{ text: "@OMAR_M_SHEHATA", url: "https://t.me/OMAR_M_SHEHATA" }]  // رابط للـ Telegram username
+          ]
+        };
+
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: adminMessage,
+          reply_markup: replyMarkup
+        });
+      }
+
+      // التعامل مع باقي الزرار
       if (data.startsWith('complete_')) {
         const orderId = data.split('_')[1];
 
@@ -139,42 +157,6 @@ app.post('/telegramWebhook', async (req, res) => {
               ]
             ]
           }
-        });
-      }
-
-      else if (data.startsWith('confirmComplete_')) {
-        const [_, orderId, originalMessageId] = data.split('_');
-
-        await Order.findByIdAndUpdate(orderId, { completed: true });
-
-        // تعديل الرسالة الأصلية
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
-          chat_id: chatId,
-          message_id: originalMessageId,
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: "✅ تم التنفيذ", callback_data: "done" }]
-            ]
-          }
-        });
-
-        // حذف رسالة السؤال
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
-          chat_id: chatId,
-          message_id: messageId
-        });
-
-        // إرسال إشعار نجاح
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          chat_id: chatId,
-          text: "🎉 تم تحديث حالة الطلب بنجاح."
-        });
-      }
-
-      else if (data === "cancel") {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          chat_id: chatId,
-          text: "❌ تم إلغاء تنفيذ الطلب."
         });
       }
     } catch (error) {
