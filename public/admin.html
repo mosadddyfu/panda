@@ -6,99 +6,100 @@
   <title>لوحة الأدمن - Panda Store</title>
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-  body {
-    font-family: 'Cairo', sans-serif;
-    background: url('/assets/panda.jpg') center/cover fixed;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    color: #000;
-  }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: url('/assets/panda.jpg') center/cover fixed;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #000;
+    }
 
-  .header {
-    color: #fff;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    .header {
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-  .nav {
-    display: flex;
-    gap: 15px;
-  }
+    .nav {
+      display: flex;
+      gap: 15px;
+    }
 
-  .nav a {
-    color: #fff;
-    text-decoration: none;
-    background: rgba(0, 0, 0, .8);
-    font-size: 16px;
-    padding: 5px 10px;
-    border-radius: 5px;
-  }
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      background: rgba(0, 0, 0, .8);
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
 
-  .container {
-    max-width: 900px;
-    margin: 30px auto;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
-    overflow-x: auto;
-  }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+      overflow-x: auto;
+    }
 
-  table {
-    width: 100%;
-    min-width: 600px;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
+    table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
 
-  th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
-    white-space: nowrap;
-  }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
 
-  th {
-    background-color: #7cc8e4;
-  }
+    th {
+      background-color: #7cc8e4;
+    }
 
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
 
-  input[type="password"] {
-    padding: 10px;
-    font-size: 16px;
-    margin-top: 20px;
-    width: 70%;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 20px;
+      width: 70%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
 
-  .btn {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #222;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+    .btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-  .action-btn {
-    padding: 5px 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-</style>
+    .action-btn {
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
 
 </head>
 <body>
@@ -160,7 +161,16 @@
       document.getElementById("ordersSection").style.display = "block";
       fetchOrders();
     } else {
-      alert("كلمة المرور غير صحيحة");
+      // رساله تنبيه عند إدخال كلمة المرور غير الصحيحة
+      Swal.fire({
+        icon: 'error',
+        title: 'حاجه متخصكش يصاحبى😎',
+        text: 'متحاولش علشان مش هتعرف🫣',
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#f8d7da',
+        color: '#721c24'
+      });
     }
   }
 
@@ -172,7 +182,16 @@
       ordersList = res.data.reverse();
       renderOrders();
     } catch (err) {
-      alert("فشل تحميل الطلبات");
+      // رساله تنبيه عند فشل تحميل الطلبات
+      Swal.fire({
+        icon: 'error',
+        title: 'فشل تحميل الطلبات',
+        text: 'حدث خطأ أثناء تحميل الطلبات، حاول لاحقًا!',
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#f8d7da',
+        color: '#721c24'
+      });
       console.error(err);
     }
   }
@@ -220,7 +239,16 @@
       ordersList[index].completed = true;
       renderOrders();
     } catch (err) {
-      alert("فشل تحديث حالة الطلب");
+      // رساله تنبيه عند فشل تحديث حالة الطلب
+      Swal.fire({
+        icon: 'error',
+        title: 'فشل تحديث حالة الطلب',
+        text: 'حدث خطأ أثناء تحديث حالة الطلب، حاول لاحقًا!',
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#f8d7da',
+        color: '#721c24'
+      });
       console.error(err);
     }
   }
