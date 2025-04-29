@@ -100,6 +100,23 @@ app.post('/complete-order/:id', async (req, res) => {
 app.post('/telegramWebhook', async (req, res) => {
   const body = req.body;
 
+  if (body.message && body.message.text === "/start") {
+    const chatId = body.message.chat.id;
+    const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀";
+    const replyMarkup = {
+      inline_keyboard: [
+        [{ text: "افتح Panda Store🚀", url: "https://pandastores.onrender.com" }]
+      ]
+    };
+
+    // إرسال رسالة ترحيب مع الزر
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      chat_id: chatId,
+      text: welcomeMessage,
+      reply_markup: replyMarkup
+    });
+  }
+
   if (body.callback_query) {
     const callbackQuery = body.callback_query;
     const chatId = callbackQuery.message.chat.id;
@@ -189,26 +206,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   await activateWebhook();
-});
-app.post('/telegramWebhook', async (req, res) => {
-  const body = req.body;
-
-  if (body.message && body.message.text === "/start") {
-    const chatId = body.message.chat.id;
-    const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀";
-    const replyMarkup = {
-      inline_keyboard: [
-        [{ text: "افتح Panda Store🚀", url: "https://pandastores.onrender.com" }]
-      ]
-    };
-
-    // إرسال رسالة ترحيب مع الزر
-    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      chat_id: chatId,
-      text: welcomeMessage,
-      reply_markup: replyMarkup
-    });
-  }
-
-  res.sendStatus(200);
 });
