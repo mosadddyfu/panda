@@ -105,12 +105,12 @@ app.post('/telegramWebhook', async (req, res) => {
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "افتح Panda Store🚀", url: "https://pandastores.onrender.com" }],
-        [{ text: "تواصل مع مدير الموقع", callback_data: "contact_admin" }]  // زر دائم للتواصل مع المدير
+        [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
+        [{ text: "للشراء والطلب اضغط هنا 🚀", url: "https://pandastores.onrender.com" }],
+        [{ text: "هل تحتاج المساعده", callback_data: "contact_admin" }]
       ]
     };
 
-    // إرسال رسالة ترحيب مع الزر الدائم
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: chatId,
       text: welcomeMessage,
@@ -126,11 +126,10 @@ app.post('/telegramWebhook', async (req, res) => {
 
     try {
       if (data === "contact_admin") {
-        // إرسال رسالة تحتوي على رابط للتواصل مع المدير
         const adminMessage = "يمكنك التواصل مع مدير الموقع من هنا:";
         const replyMarkup = {
           inline_keyboard: [
-            [{ text: "@OMAR_M_SHEHATA", url: "https://t.me/OMAR_M_SHEHATA" }]  // رابط للـ Telegram username
+            [{ text: "اتفضل يامحترم 🥰", url: "https://t.me/OMAR_M_SHEHATA" }]
           ]
         };
 
@@ -141,11 +140,21 @@ app.post('/telegramWebhook', async (req, res) => {
         });
       }
 
-      // التعامل مع باقي الزرار
+      if (data === "watch_warning") {
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: "⚠️ إذا قمت بالشراء من هنا لن يصلني طلبك ⚠️",
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "🚀 الاستمرار للمشاهدة", url: "https://pandastores.netlify.app" }]
+            ]
+          }
+        });
+      }
+
       if (data.startsWith('complete_')) {
         const orderId = data.split('_')[1];
 
-        // إرسال سؤال تأكيدي
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: "هل أنت متأكد أن هذا الطلب تم تنفيذه❓",
@@ -162,12 +171,15 @@ app.post('/telegramWebhook', async (req, res) => {
       if (data.startsWith('confirmComplete_')) {
         const [_, orderId, messageId] = data.split('_');
 
-        // تحديث حالة الطلب في قاعدة البيانات
         await Order.findByIdAndUpdate(orderId, { completed: true });
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          text: "✅ تم تحديث حالة الطلب بنجاح",
-          reply_markup: { remove_keyboard: true }
+          text: "🎉 تم تحديث حالة الطلب في قاعدة البيانات",
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "تم التنفيذ ✅", callback_data: "completed" }]
+            ]
+          }
         });
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
           chat_id: chatId,
