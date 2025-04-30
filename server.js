@@ -10,12 +10,10 @@ const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID];
 
-// ✅ الاتصال بقاعدة البيانات
 mongoose.connect(mongoURI)
   .then(() => console.log("✅ تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
   .catch((error) => console.error("❌ فشل الاتصال بقاعدة البيانات:", error));
 
-// ✅ موديل الطلبات
 const orderSchema = new mongoose.Schema({
   username: String,
   stars: Number,
@@ -26,12 +24,10 @@ const orderSchema = new mongoose.Schema({
 });
 const Order = mongoose.model('Order', orderSchema);
 
-// ✅ ميدلويرز
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// ✅ راوت طلب أوردر جديد
 app.post('/order', async (req, res) => {
   try {
     const { username, stars, amountTon, amountUsd, createdAt } = req.body;
@@ -72,7 +68,6 @@ app.post('/order', async (req, res) => {
   }
 });
 
-// ✅ راوت عرض جميع الطلبات
 app.get('/admin', async (req, res) => {
   try {
     const orders = await Order.find();
@@ -83,7 +78,6 @@ app.get('/admin', async (req, res) => {
   }
 });
 
-// ✅ راوت إنهاء الطلب يدويًا
 app.post('/complete-order/:id', async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -95,7 +89,6 @@ app.post('/complete-order/:id', async (req, res) => {
   }
 });
 
-// ✅ راوت الويب هوك الخاص بالبوت
 app.post('/telegramWebhook', async (req, res) => {
   const body = req.body;
 
@@ -173,7 +166,13 @@ app.post('/telegramWebhook', async (req, res) => {
 
         await Order.findByIdAndUpdate(orderId, { completed: true });
 
-        // ✅ تحديث زر الرسالة الأصلية ليظهر "تم تنفيذ هذا الطلب بالفعل"
+        // ✅ حذف رسالة التأكيد
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
+          chat_id: chatId,
+          message_id: messageId
+        });
+
+        // ✅ تحديث الرسالة الأصلية
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
           chat_id: chatId,
           message_id: messageIdToUpdate,
@@ -184,7 +183,6 @@ app.post('/telegramWebhook', async (req, res) => {
           }
         });
 
-        // ✅ إرسال إشعار للمسؤول
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: "🎉تم تحديث حالة الطلب بنجاح🎉"
@@ -207,12 +205,10 @@ app.post('/telegramWebhook', async (req, res) => {
   res.sendStatus(200);
 });
 
-// ✅ الصفحة الرئيسية
 app.get("/", (req, res) => {
   res.send("✅ Panda Store backend is running!");
 });
 
-// ✅ إعداد الويب هوك تلقائيًا
 const activateWebhook = async () => {
   try {
     const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastores.onrender.com/telegramWebhook`;
@@ -223,7 +219,6 @@ const activateWebhook = async () => {
   }
 };
 
-// ✅ تشغيل السيرفر
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`🚀 Server is running on port ${PORT}`);
