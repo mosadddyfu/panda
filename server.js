@@ -106,7 +106,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const replyMarkup = {
       inline_keyboard: [
         [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
-        [{ text: "للشراء والطلب اضغط هنا🚀", url: "https://pandastores.onrender.com" }],
+        [{ text: "للشراء والطلب اضغط هنا 🚀", url: "https://pandastores.onrender.com" }],
         [{ text: "هل تحتاج المساعده", callback_data: "contact_admin" }]
       ]
     };
@@ -129,7 +129,7 @@ app.post('/telegramWebhook', async (req, res) => {
         const adminMessage = "يمكنك التواصل مع مدير الموقع من هنا:";
         const replyMarkup = {
           inline_keyboard: [
-            [{ text: "اتفضل يامحترم🥰", url: "https://t.me/OMAR_M_SHEHATA" }]
+            [{ text: "اتفضل يامحترم 🥰", url: "https://t.me/OMAR_M_SHEHATA" }]
           ]
         };
 
@@ -143,7 +143,7 @@ app.post('/telegramWebhook', async (req, res) => {
       if (data === "watch_warning") {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          text: "⚠️ إذا قمت بالشراء من هنا لن يصلني طلبك.",
+          text: "⚠️ إذا قمت بالشراء من هنا لن يصلني طلبك ⚠️",
           reply_markup: {
             inline_keyboard: [
               [{ text: "🚀 الاستمرار للمشاهدة", url: "https://pandastores.netlify.app" }]
