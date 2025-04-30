@@ -6,7 +6,6 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
 
-// المتغيرات
 const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID];
@@ -59,7 +58,7 @@ app.post('/order', async (req, res) => {
               { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentLink } }
             ],
             [
-              { text: "✅ تم التنفيذ في قاعدة البيانات", callback_data: `complete_${newOrder._id}` }
+              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${newOrder._id}` }
             ]
           ]
         }
@@ -168,24 +167,30 @@ app.post('/telegramWebhook', async (req, res) => {
           }
         });
       }
+
       if (data.startsWith('confirmComplete_')) {
-        const [_, orderId, messageId] = data.split('_');
+        const [_, orderId, messageIdToUpdate] = data.split('_');
 
         await Order.findByIdAndUpdate(orderId, { completed: true });
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+
+        // ✅ تحديث زر الرسالة الأصلية ليظهر "تم تنفيذ هذا الطلب بالفعل"
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
           chat_id: chatId,
-          text: "🎉 تم تحديث حالة الطلب في قاعدة البيانات",
+          message_id: messageIdToUpdate,
           reply_markup: {
             inline_keyboard: [
-              [{ text: "تم التنفيذ ✅", callback_data: "completed" }]
+              [{ text: "✅ تم تنفيذ هذا الطلب بالفعل", callback_data: "already_completed" }]
             ]
           }
         });
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
+
+        // ✅ إرسال إشعار للمسؤول
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          message_id: messageId
+          text: "🎉تم تحديث حالة الطلب بنجاح🎉"
         });
       }
+
       if (data === "cancel") {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
@@ -193,6 +198,7 @@ app.post('/telegramWebhook', async (req, res) => {
           reply_markup: { remove_keyboard: true }
         });
       }
+
     } catch (error) {
       console.error("❌ خطأ أثناء معالجة زر البوت:", error.response ? error.response.data : error.message);
     }
@@ -206,7 +212,7 @@ app.get("/", (req, res) => {
   res.send("✅ Panda Store backend is running!");
 });
 
-// ✅ إعداد الويب هوك تلقائيًا عند تشغيل السيرفر
+// ✅ إعداد الويب هوك تلقائيًا
 const activateWebhook = async () => {
   try {
     const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastores.onrender.com/telegramWebhook`;
