@@ -20,9 +20,6 @@ pgClient.connect()
 
 // اتصال MongoDB للأوامر (الأصلي)
 const mongoURI = process.env.MONGO_URI;
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID];
-const CHANNEL_ID= process.env.CHANNEL_ID;
 mongoose.connect(mongoURI)
   .then(() => console.log("✅ تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
   .catch((error) => console.error("❌ فشل الاتصال بقاعدة البيانات:", error));
@@ -84,7 +81,7 @@ async function isUserSubscribed(chatId) {
   try {
     const response = await axios.get(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getChatMember`, {
       params: {
-        chat_id: process.env.CHANNEL_ID,
+        chat_id: `@${process.env.CHANNEL_ID}`,
         user_id: chatId
       }
     });
