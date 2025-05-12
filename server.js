@@ -457,9 +457,9 @@ app.post('/telegramWebhook', async (req, res) => {
       text: `🛒 متجر النجوم\n\n⭐ النجوم المتاحة: ${userStars}\n\nاختر عدد النجوم التي ترغب في شرائها (الحد الأدنى 50 نجمة):`,
       reply_markup: {
         inline_keyboard: [
+          [{ text: "15 نجمة", callback_data: "buy_15" }],
+          [{ text: "25 نجمة", callback_data: "buy_25" }],
           [{ text: "50 نجمة", callback_data: "buy_50" }],
-          [{ text: "75 نجمة", callback_data: "buy_75" }],
-          [{ text: "100 نجمة", callback_data: "buy_100" }],
           [{ text: "إدخال عدد مخصص", callback_data: "custom_amount" }]
         ]
       }
@@ -478,7 +478,9 @@ app.post('/telegramWebhook', async (req, res) => {
         chat_id: userId,
         text: "📝 يرجى إدخال عدد النجوم التي ترغب في شرائها (الحد الأدنى 50 نجمة):",
         reply_markup: { force_reply: true }
+
       });
+
       return res.sendStatus(200);
     }
     
