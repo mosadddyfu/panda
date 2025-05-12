@@ -125,6 +125,22 @@ app.post('/telegramWebhook', async (req, res) => {
       reply_markup: replyMarkup
     });
   }
+      if (body.message && body.message.text === "/database") {
+    const chatId = body.message.chat.id;
+    const helpMessage = "عرض قائمة الطلبات:";
+    const replyMarkup = {
+      inline_keyboard: [
+        [{ text: "DataBase🚀", web_app:{ url: "https://pandastores.onrender.com/admin.html"} }]
+      ]
+    };
+
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      chat_id: chatId,
+      text: helpMessage,
+      reply_markup: replyMarkup
+    });
+  }
+  
 
   if (body.callback_query) {
     const callbackQuery = body.callback_query;
