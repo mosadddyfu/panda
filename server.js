@@ -154,7 +154,7 @@ app.post('/telegramWebhook', async (req, res) => {
           text: "⚠️ إذا قمت بالشراء من هنا لن يصلني طلبك ⚠️",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🚀 الاستمرار للمشاهدة", url: "https://pandastores.netlify.app" }]
+                           [{ text: "🚀 الاستمرار للمشاهدة", web_app: { url: "https://pandastores.netlify.app" } }]
             ]
           }
         });
