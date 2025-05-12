@@ -100,6 +100,7 @@ app.post('/telegramWebhook', async (req, res) => {
         [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
         [{ text: "للشراء والطلب اضغط هنا 🚀", url: "https://pandastores.onrender.com" }],
         [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/Buy_StarsTG" }]
+
       ]
     };
 
@@ -109,8 +110,7 @@ app.post('/telegramWebhook', async (req, res) => {
       reply_markup: replyMarkup
     });
   }
-
-  if (body.message && body.message.text === "/help") {
+    if (body.message && body.message.text === "/help") {
     const chatId = body.message.chat.id;
     const helpMessage = "يمكنك التواصل مع مدير الموقع من هنا:";
     const replyMarkup = {
@@ -133,13 +133,28 @@ app.post('/telegramWebhook', async (req, res) => {
     const data = callbackQuery.data;
 
     try {
+      if (data === "contact_admin") {
+        const adminMessage = "يمكنك التواصل مع مدير الموقع من هنا:";
+        const replyMarkup = {
+          inline_keyboard: [
+            [{ text: "اتفضل يامحترم 🥰", url: "https://t.me/OMAR_M_SHEHATA" }]
+          ]
+        };
+
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: adminMessage,
+          reply_markup: replyMarkup
+        });
+      }
+
       if (data === "watch_warning") {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: "⚠️ إذا قمت بالشراء من هنا لن يصلني طلبك ⚠️",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🚀 الاستمرار للمشاهدة", miniapp: { url: "https://pandastores.onrender.com" } }],
+              [{ text: "🚀 الاستمرار للمشاهدة", url: "https://pandastores.netlify.app" }]
             ]
           }
         });
@@ -205,6 +220,7 @@ app.post('/telegramWebhook', async (req, res) => {
 
   res.sendStatus(200);
 });
+
 app.get("/", (req, res) => {
   res.send("✅ Panda Store backend is running!");
 });
