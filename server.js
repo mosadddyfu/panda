@@ -5,6 +5,12 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
+function isWorkingHours() {
+  const now = new Date().toLocaleString("en-GB", { timeZone: "Africa/Cairo" });
+  const hour = new Date(now).getHours();
+  return hour >= 20 && hour < 24; // من 9 صباحًا لـ 12 بليل
+}
+
 
 const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -90,6 +96,7 @@ app.post('/complete-order/:id', async (req, res) => {
 });
 
 app.post('/telegramWebhook', async (req, res) => {
+
   const body = req.body;
 
   if (body.message && body.message.text === "/start") {
@@ -98,7 +105,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const replyMarkup = {
       inline_keyboard: [
         [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
-        [{ text: "للشراء والطلب اضغط هنا 🚀", url: "https://pandastores.onrender.com" }],
+        [{ text: "للشراء والطلب اضغط هنا 🚀", callback_data: "check_order_time" }],
         [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/Buy_StarsTG" }]
 
       ]
@@ -147,6 +154,27 @@ app.post('/telegramWebhook', async (req, res) => {
     const chatId = callbackQuery.message.chat.id;
     const messageId = callbackQuery.message.message_id;
     const data = callbackQuery.data;
+
+
+    if (data === "check_order_time") {
+  if (!isWorkingHours()) {
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      chat_id: chatId,
+      text: "❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n🕘 ساعات العمل: من 9 صباحًا حتى 12 بليل بتوقيت القاهرة.\n🔁 حاول مرة تانية خلال ساعات العمل."
+    });
+  } else {
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      chat_id: chatId,
+      text: "✅ يمكنك الآن تقديم طلبك من خلال الموقع:",
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "🚀 ابدأ الطلب الآن", web_app: { url: "https://pandastores.onrender.com" } }]
+        ]
+      }
+    });
+  }
+}
+
 
     try {
       if (data === "contact_admin") {
