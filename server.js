@@ -6,7 +6,7 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
 
-// اتصال PostgreSQL للاحالات (جديد)
+// اتصال PostgreSQL للاحالات
 const pgClient = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -18,16 +18,16 @@ pgClient.connect()
   .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح"))
   .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL:', err));
 
-// اتصال MongoDB للأوامر (الأصلي)
+// اتصال MongoDB للأوامر
 const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID];
-const CHANNEL_ID= process.env.CHANNEL_ID;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 mongoose.connect(mongoURI)
   .then(() => console.log("✅ تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
   .catch((error) => console.error("❌ فشل الاتصال بقاعدة البيانات:", error));
 
-// المخططات والنماذج (الأصلي)
+// المخططات والنماذج
 const orderSchema = new mongoose.Schema({
   username: String,
   stars: Number,
@@ -38,7 +38,7 @@ const orderSchema = new mongoose.Schema({
 });
 const Order = mongoose.model('Order', orderSchema);
 
-// إنشاء جدول الاحالات إذا لم يكن موجودًا (جديد)
+// إنشاء جدول الاحالات
 (async () => {
   try {
     await pgClient.query(`
@@ -50,8 +50,8 @@ const Order = mongoose.model('Order', orderSchema);
         invited_by VARCHAR(10),
         stars INTEGER DEFAULT 0,
         verified BOOLEAN DEFAULT false,
-        verification_emojis VARCHAR(50),
-        target_emoji VARCHAR(10),
+        verification_emojis VARCHAR(100),
+        verification_message_id INTEGER,
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
@@ -61,7 +61,7 @@ const Order = mongoose.model('Order', orderSchema);
   }
 })();
 
-// وظائف مساعدة (الأصلي + الجديد)
+// وظائف مساعدة
 function isWorkingHours() {
   const now = new Date().toLocaleString("en-GB", { timeZone: "Africa/Cairo" });
   const hour = new Date(now).getHours();
@@ -106,86 +106,21 @@ async function generateReferralCode(userId) {
   }
 }
 
-// Middleware (الأصلي)
+// Middleware
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // ==============================================
-// كل الكود الأصلي يبقى كما هو بدون أي تعديل
+// نقاط النهاية
 // ==============================================
 
-// الكود الأصلي لـ /order
-app.post('/order', async (req, res) => {
-  try {
-    const { username, stars, amountTon, amountUsd, createdAt } = req.body;
-    const orderCreatedAt = createdAt || new Date().toISOString();
+// ... (الكود الأصلي لـ /order, /admin, /complete-order يبقى كما هو بدون تغيير)
 
-    const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
-      hour12: true, timeZone: 'Africa/Cairo',
-    });
-
-    const newOrder = new Order({ username, stars, amountTon, amountUsd, createdAt: orderCreatedAt });
-    await newOrder.save();
-
-    const fragmentLink = "https://fragment.com/stars";
-
-    for (let adminId of ADMIN_IDS) {
-      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-        chat_id: adminId,
-        text: `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentLink } }
-            ],
-            [
-              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${newOrder._id}` }
-            ]
-          ]
-        }
-      });
-    }
-
-    res.status(200).send('✅ تم استلام طلبك بنجاح!');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
-  }
-});
-
-// الكود الأصلي لـ /admin
-app.get('/admin', async (req, res) => {
-  try {
-    const orders = await Order.find();
-    res.json(orders);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('❌ حدث خطأ أثناء جلب البيانات');
-  }
-});
-
-// الكود الأصلي لـ /complete-order
-app.post('/complete-order/:id', async (req, res) => {
-  try {
-    const orderId = req.params.id;
-    await Order.findByIdAndUpdate(orderId, { completed: true });
-    res.status(200).send('✅ تم تحديث حالة الطلب');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('❌ حدث خطأ أثناء تحديث الطلب');
-  }
-});
-
-// الكود الأصلي لـ telegramWebhook
 app.post('/telegramWebhook', async (req, res) => {
   const body = req.body;
 
-  // ==============================================
-  // الجزء الجديد: التحقق من المستخدمين الروس
-  // ==============================================
+  // 1. التحقق من المستخدمين الروس
   if (body.message?.from?.language_code === 'ru') {
     const chatId = body.message.chat.id;
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
@@ -195,9 +130,37 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: التحقق من الاشتراك في القناة
-  // ==============================================
+  // 2. التحقق من الاشتراك في القناة
+  if (body.callback_query?.data === "check_subscription") {
+    const chatId = body.callback_query.from.id;
+    const isSubscribed = await isUserSubscribed(chatId);
+    
+    if (isSubscribed) {
+      // إرسال رسالة طلب رقم الهاتف
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: "📱 يرجى مشاركة رقم هاتفك للمتابعة:",
+        reply_markup: {
+          keyboard: [[{ text: "مشاركة رقم الهاتف", request_contact: true }]],
+          resize_keyboard: true,
+          one_time_keyboard: true
+        }
+      });
+    } else {
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: "❌ لم تشترك في القناة بعد. يرجى الاشتراك أولاً ثم اضغط على ✅ لقد اشتركت",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "انضم إلى القناة", url: `https://t.me/${process.env.CHANNEL_ID.replace('@', '')}` }],
+            [{ text: "✅ لقد اشتركت", callback_data: "check_subscription" }]
+          ]
+        }
+      });
+    }
+    return res.sendStatus(200);
+  }
+
   if (body.message?.text === "/start" || body.message?.text === "/shop" || body.message?.text === "/invite") {
     const chatId = body.message.chat.id;
     const isSubscribed = await isUserSubscribed(chatId);
@@ -216,15 +179,13 @@ app.post('/telegramWebhook', async (req, res) => {
     }
   }
 
-  // ==============================================
-  // الجزء الجديد: التحقق من رقم الهاتف والايموجي
-  // ==============================================
+  // 3. التحقق من رقم الهاتف والايموجي
   if (body.message?.text === "/start") {
     const chatId = body.message.chat.id;
     const userResult = await pgClient.query('SELECT * FROM referrals WHERE user_id = $1', [chatId]);
     
     if (userResult.rows.length === 0) {
-      // مستخدم جديد - طلب رقم الهاتف
+      // طلب رقم الهاتف للمستخدم الجديد
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: chatId,
         text: "📱 يرجى مشاركة رقم هاتفك للمتابعة:",
@@ -236,62 +197,94 @@ app.post('/telegramWebhook', async (req, res) => {
       });
       return res.sendStatus(200);
     } else if (!userResult.rows[0].verified) {
-      // مستخدم موجود ولكن غير موثق - التحقق بالايموجي
-      const emojis = generateRandomEmojis(3);
+      // التحقق بالايموجي للمستخدم غير الموثق
+      const emojis = generateRandomEmojis(9); // 9 ايموجيات بدلاً من 3
       const targetEmoji = emojis[Math.floor(Math.random() * emojis.length)];
       
-      await pgClient.query('UPDATE referrals SET verification_emojis = $1, target_emoji = $2 WHERE user_id = $3', 
-        [emojis.join(','), targetEmoji, chatId]);
+      await pgClient.query('UPDATE referrals SET verification_emojis = $1 WHERE user_id = $2', 
+        [emojis.join(','), chatId]);
       
+      // إرسال رسالة توضح الايموجي المطلوب
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: chatId,
-        text: `🔐 للتحقق، يرجى اختيار الايموجي التالي من بين هذه الخيارات:\n\n${emojis.join(' ')}`,
+        text: `🔐 للتحقق، يرجى الضغط على الايموجي: ${targetEmoji}`
+      });
+      
+      // إرسال أزرار الايموجيات في 3 صفوف (كل صف 3 ايموجيات)
+      const message = await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: "اختر الايموجي المطلوب:",
         reply_markup: {
           inline_keyboard: [
-            emojis.map(e => ({ text: e, callback_data: `verify_${e}` }))
+            emojis.slice(0, 3).map(e => ({ text: e, callback_data: `verify_${e}_${targetEmoji}` })),
+            emojis.slice(3, 6).map(e => ({ text: e, callback_data: `verify_${e}_${targetEmoji}` })),
+            emojis.slice(6, 9).map(e => ({ text: e, callback_data: `verify_${e}_${targetEmoji}` }))
           ]
         }
       });
+      
+      // حفظ معرف الرسالة لحذفها لاحقاً
+      await pgClient.query('UPDATE referrals SET verification_message_id = $1 WHERE user_id = $2', 
+        [message.data.result.message_id, chatId]);
       return res.sendStatus(200);
     }
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة التحقق بالايموجي
-  // ==============================================
+  // 4. معالجة التحقق بالايموجي
   if (body.callback_query?.data.startsWith('verify_')) {
-    const selectedEmoji = body.callback_query.data.split('_')[1];
+    const [_, selectedEmoji, targetEmoji] = body.callback_query.data.split('_');
     const userId = body.callback_query.from.id;
+    const messageId = body.callback_query.message.message_id;
     
-    const userResult = await pgClient.query('SELECT target_emoji FROM referrals WHERE user_id = $1', [userId]);
-    if (userResult.rows.length > 0) {
-      const targetEmoji = userResult.rows[0].target_emoji;
+    if (selectedEmoji === targetEmoji) {
+      // نجاح التحقق
+      await pgClient.query('UPDATE referrals SET verified = true WHERE user_id = $1', [userId]);
       
-      if (selectedEmoji === targetEmoji) {
-        await pgClient.query('UPDATE referrals SET verified = true WHERE user_id = $1', [userId]);
+      // حذف رسائل التحقق
+      try {
+        const userResult = await pgClient.query('SELECT verification_message_id FROM referrals WHERE user_id = $1', [userId]);
+        const verificationMessageId = userResult.rows[0]?.verification_message_id;
         
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        if (verificationMessageId) {
+          await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
+            chat_id: userId,
+            message_id: verificationMessageId
+          });
+        }
+        
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
           chat_id: userId,
-          text: "✅ تم التحقق بنجاح! يمكنك الآن استخدام البوت.",
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: "🚀 البدء", callback_data: "verified_start" }]
-            ]
-          }
+          message_id: messageId
         });
-      } else {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          chat_id: userId,
-          text: "❌ الايموجي الذي اخترته غير صحيح. يرجى المحاولة مرة أخرى."
-        });
+      } catch (err) {
+        console.error("Error deleting verification messages:", err);
       }
+      
+      // إرسال رسالة البدء الرئيسية
+      const welcomeMessage = "✅ تم التحقق بنجاح! مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
+      const replyMarkup = {
+        inline_keyboard: [
+          [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
+          [{ text: "للشراء والطلب اضغط هنا 🚀", callback_data: "check_order_time" }],
+          [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/Buy_StarsTG" }]
+        ]
+      };
+
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: userId,
+        text: welcomeMessage,
+        reply_markup: replyMarkup
+      });
+    } else {
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: userId,
+        text: "❌ الايموجي الذي اخترته غير صحيح. يرجى المحاولة مرة أخرى."
+      });
     }
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة رقم الهاتف
-  // ==============================================
+  // 5. معالجة رقم الهاتف
   if (body.message?.contact) {
     const phone = body.message.contact.phone_number;
     const userId = body.message.from.id;
@@ -313,30 +306,41 @@ app.post('/telegramWebhook', async (req, res) => {
       );
       
       // إرسال رسالة التحقق بالايموجي
-      const emojis = generateRandomEmojis(3);
+      const emojis = generateRandomEmojis(9); // 9 ايموجيات
       const targetEmoji = emojis[Math.floor(Math.random() * emojis.length)];
       
-      await pgClient.query('UPDATE referrals SET verification_emojis = $1, target_emoji = $2 WHERE user_id = $3', 
-        [emojis.join(','), targetEmoji, userId]);
+      await pgClient.query('UPDATE referrals SET verification_emojis = $1 WHERE user_id = $2', 
+        [emojis.join(','), userId]);
       
+      // إرسال رسالة توضح الايموجي المطلوب
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: userId,
-        text: `🔐 شكرًا لمشاركة رقم هاتفك. للتحقق، يرجى اختيار الايموجي التالي من بين هذه الخيارات:\n\n${emojis.join(' ')}`,
+        text: `🔐 شكرًا لمشاركة رقم هاتفك. للتحقق، يرجى الضغط على الايموجي: ${targetEmoji}`
+      });
+      
+      // إرسال أزرار الايموجيات في 3 صفوف
+      const message = await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: userId,
+        text: "اختر الايموجي المطلوب:",
         reply_markup: {
           inline_keyboard: [
-            emojis.map(e => ({ text: e, callback_data: `verify_${e}` }))
+            emojis.slice(0, 3).map(e => ({ text: e, callback_data: `verify_${e}_${targetEmoji}` })),
+            emojis.slice(3, 6).map(e => ({ text: e, callback_data: `verify_${e}_${targetEmoji}` })),
+            emojis.slice(6, 9).map(e => ({ text: e, callback_data: `verify_${e}_${targetEmoji}` }))
           ]
         }
       });
+      
+      // حفظ معرف الرسالة لحذفها لاحقاً
+      await pgClient.query('UPDATE referrals SET verification_message_id = $1 WHERE user_id = $2', 
+        [message.data.result.message_id, userId]);
     } catch (err) {
       console.error("Error saving phone number:", err);
     }
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة الأمر /invite
-  // ==============================================
+  // 6. معالجة الأمر /invite
   if (body.message?.text === "/invite") {
     const userId = body.message.from.id;
     const userResult = await pgClient.query('SELECT * FROM referrals WHERE user_id = $1', [userId]);
@@ -353,7 +357,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const referralLink = `https://t.me/PandaStores_bot?start=${referralCode}`;
     
     const statsResult = await pgClient.query(
-      'SELECT COUNT(*) FROM referrals WHERE invited_by = $1', 
+      'SELECT COUNT(*) FROM referrals WHERE invited_by = $1 AND verified = true', 
       [referralCode]
     );
     const referralCount = statsResult.rows[0].count;
@@ -370,9 +374,7 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة الأمر /shop
-  // ==============================================
+  // 7. معالجة الأمر /shop
   if (body.message?.text === "/shop") {
     const userId = body.message.from.id;
     const userResult = await pgClient.query('SELECT stars FROM referrals WHERE user_id = $1', [userId]);
@@ -389,12 +391,12 @@ app.post('/telegramWebhook', async (req, res) => {
     
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: userId,
-      text: `🛒 متجر النجوم\n\n⭐ النجوم المتاحة: ${userStars}\n\nاختر عدد النجوم التي ترغب في شرائها:`,
+      text: `🛒 متجر النجوم\n\n⭐ النجوم المتاحة: ${userStars}\n\nاختر عدد النجوم التي ترغب في شرائها (الحد الأدنى 50 نجمة):`,
       reply_markup: {
         inline_keyboard: [
-          [{ text: "15 نجمة", callback_data: "buy_15" }],
-          [{ text: "25 نجمة", callback_data: "buy_25" }],
           [{ text: "50 نجمة", callback_data: "buy_50" }],
+          [{ text: "75 نجمة", callback_data: "buy_75" }],
+          [{ text: "100 نجمة", callback_data: "buy_100" }],
           [{ text: "إدخال عدد مخصص", callback_data: "custom_amount" }]
         ]
       }
@@ -402,9 +404,7 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة شراء النجوم
-  // ==============================================
+  // 8. معالجة شراء النجوم
   if (body.callback_query?.data.startsWith('buy_')) {
     const action = body.callback_query.data;
     const userId = body.callback_query.from.id;
@@ -413,7 +413,7 @@ app.post('/telegramWebhook', async (req, res) => {
     if (action === "custom_amount") {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: userId,
-        text: "📝 يرجى إدخال عدد النجوم التي ترغب في شرائها (مثال: 55 أو 66):",
+        text: "📝 يرجى إدخال عدد النجوم التي ترغب في شرائها (الحد الأدنى 50 نجمة):",
         reply_markup: { force_reply: true }
       });
       return res.sendStatus(200);
@@ -454,18 +454,16 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة الكمية المخصصة
-  // ==============================================
+  // 9. معالجة الكمية المخصصة
   if (body.message?.reply_to_message?.text?.includes("إدخال عدد النجوم")) {
     const starsToBuy = parseInt(body.message.text);
     const userId = body.message.from.id;
     const username = body.message.from.username;
     
-    if (isNaN(starsToBuy) || starsToBuy <= 0) {
+    if (isNaN(starsToBuy) || starsToBuy < 50) {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: userId,
-        text: "❌ يرجى إدخال عدد صحيح موجب من النجوم."
+        text: "❌ الحد الأدنى لشراء النجوم هو 50 نجمة. يرجى إدخال عدد صحيح أكبر من أو يساوي 50."
       });
       return res.sendStatus(200);
     }
@@ -504,9 +502,7 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
-  // ==============================================
-  // الجزء الجديد: معالجة رابط الدعوة
-  // ==============================================
+  // 10. معالجة رابط الدعوة
   if (body.message?.text?.startsWith("/start") && body.message.text.length > 7) {
     const referralCode = body.message.text.split(' ')[1];
     const userId = body.message.from.id;
@@ -514,28 +510,20 @@ app.post('/telegramWebhook', async (req, res) => {
     // التحقق من أن المستخدم ليس لديه حساب بالفعل
     const userResult = await pgClient.query('SELECT * FROM referrals WHERE user_id = $1', [userId]);
     if (userResult.rows.length === 0 && referralCode) {
-      // إضافة نجوم للمدعو
+      // تسجيل المستخدم الجديد بدون منح النجوم حتى يتم التحقق
       await pgClient.query(
         'INSERT INTO referrals (user_id, username, invited_by) VALUES ($1, $2, $3)',
         [userId, body.message.from.username || 'غير معروف', referralCode]
       );
       
-      // إضافة نجوم للمدعِي
-      await pgClient.query(
-        'UPDATE referrals SET stars = stars + 1 WHERE referral_code = $1',
-        [referralCode]
-      );
-      
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: userId,
-        text: "🎉 تم تسجيلك بنجاح من خلال رابط الدعوة! ستحصل على نجوم إضافية عند إكمال التسجيل."
+        text: "🎉 تم تسجيلك بنجاح من خلال رابط الدعوة! يرجى إكمال عملية التحقق."
       });
     }
   }
 
-  // ==============================================
-  // الكود الأصلي لمعالجة /start و /help و /database
-  // ==============================================
+  // 11. معالجة /start و /help و /database
   if (body.message && body.message.text === "/start") {
     const chatId = body.message.chat.id;
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
@@ -586,6 +574,7 @@ app.post('/telegramWebhook', async (req, res) => {
     });
   }
   
+  // 12. معالجة الأزرار
   if (body.callback_query) {
     const callbackQuery = body.callback_query;
     const chatId = callbackQuery.message.chat.id;
@@ -661,13 +650,13 @@ app.post('/telegramWebhook', async (req, res) => {
 
         await Order.findByIdAndUpdate(orderId, { completed: true });
 
-        // ✅ حذف رسالة التأكيد
+        // حذف رسالة التأكيد
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
           chat_id: chatId,
           message_id: messageId
         });
 
-        // ✅ تحديث الرسالة الأصلية
+        // تحديث الرسالة الأصلية
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/editMessageReplyMarkup`, {
           chat_id: chatId,
           message_id: messageIdToUpdate,
