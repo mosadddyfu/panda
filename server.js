@@ -127,6 +127,7 @@ app.post('/telegramWebhook', async (req, res) => {
   }
       if (body.message && body.message.text === "/database") {
     const chatId = body.message.chat.id;
+    const helpMessage = "عرض قائمة الطلبات:";
     const replyMarkup = {
       inline_keyboard: [
         [{ text: "DataBase🚀", web_app:{ url: "https://pandastores.onrender.com/admin.html"} }]
