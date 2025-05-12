@@ -315,10 +315,10 @@ app.post('/telegramWebhook', async (req, res) => {
       await pgClient.query('UPDATE referrals SET verified = true, verification_emojis = NULL WHERE user_id = $1', [userId]);
       
       // إضافة النجوم للمدعو
-      await pgClient.query('UPDATE referrals SET stars = stars + 50 WHERE user_id = $1', [userId]);
+      await pgClient.query('UPDATE referrals SET stars = stars + 1 WHERE user_id = $1', [userId]);
       
       // إضافة النجوم للمدعِي إذا كان موجوداً
-      await addStarsToReferrer(userId, 30);
+      await addStarsToReferrer(userId, 1);
       
       try {
         const userResult = await pgClient.query('SELECT verification_message_id FROM referrals WHERE user_id = $1', [userId]);
@@ -485,7 +485,7 @@ app.post('/telegramWebhook', async (req, res) => {
     
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: userId,
-      text: `🛒 متجر النجوم\n\n⭐ النجوم المتاحة: ${userStars}\n\nاختر عدد النجوم التي ترغب في شرائها (الحد الأدنى 50 نجمة):`,
+      text: `🛒 متجر النجوم\n\n⭐ النجوم المتاحة: ${userStars}`,
       reply_markup: {
         inline_keyboard: [
           [{ text: "15 نجمة", callback_data: "buy_15" }],
@@ -530,11 +530,6 @@ app.post('/telegramWebhook', async (req, res) => {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: adminId,
         text: `🛒 طلب شراء نجوم جديد\n👤 المستخدم: @${username}\n⭐ النجوم: ${starsToBuy}\n🆔 ID: ${userId}`,
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "✅ تأكيد التنفيذ", callback_data: `confirm_stars_${userId}_${starsToBuy}` }]
-          ]
-        }
       });
     }
     
