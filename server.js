@@ -64,9 +64,15 @@ const Order = mongoose.model('Order', orderSchema);
 
 // وظائف مساعدة
 function isWorkingHours() {
-  const now = new Date().toLocaleString("en-GB", { timeZone: "Africa/Cairo" });
-  const hour = new Date(now).getHours();
-  return hour >= 8 && hour < 24; 
+  const now = new Date();
+  // تحويل الوقت إلى توقيت القاهرة
+  const options = { 
+    timeZone: 'Africa/Cairo',
+    hour: 'numeric',
+    hour12: false
+  };
+  const hour = parseInt(new Intl.DateTimeFormat('en-GB', options).format(now));
+  return hour >= 8 && hour < 24; // من 8 صباحًا حتى 12 منتصف الليل
 }
 
 function generateRandomEmojis(count) {
@@ -664,11 +670,21 @@ app.post('/telegramWebhook', async (req, res) => {
     const messageId = callbackQuery.message.message_id;
     const data = callbackQuery.data;
 
-    if (data === "check_order_time") {
+
+if (data === "check_order_time") {
   if (!isWorkingHours()) {
+    const now = new Date();
+    const timeOptions = {
+      timeZone: 'Africa/Cairo',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true // هنا نستخدم true لنظام 12 ساعة
+    };
+    const currentTime = now.toLocaleTimeString('ar-EG', timeOptions);
+    
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: chatId,
-      text: "❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n🕘 ساعات العمل: من 8 صباحًا حتى 12 بليل بتوقيت القاهرة.\n🔁 حاول مرة تانية خلال ساعات العمل."
+      text: `❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n\n🕘 ساعات العمل: من 8 صباحًا حتى 12 منتصف الليل بتوقيت القاهرة (مصر).\n\n⏳ الوقت الحالي في مصر: ${currentTime}\n\n🔁 يرجى المحاولة مرة أخرى خلال ساعات العمل.`
     });
   } else {
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
