@@ -66,7 +66,7 @@ const Order = mongoose.model('Order', orderSchema);
 function isWorkingHours() {
   const now = new Date().toLocaleString("en-GB", { timeZone: "Africa/Cairo" });
   const hour = new Date(now).getHours();
-  return hour >= 9 && hour < 24;
+  return hour >= 8 && hour < 24;
 }
 
 function generateRandomEmojis(count) {
@@ -668,7 +668,7 @@ app.post('/telegramWebhook', async (req, res) => {
       if (!isWorkingHours()) {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          text: "❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n🕘 ساعات العمل: من 9 صباحًا حتى 12 بليل بتوقيت القاهرة.\n🔁 حاول مرة تانية خلال ساعات العمل."
+          text: "❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n🕘 ساعات العمل: من 8 صباحًا حتى 12 بليل بتوقيت القاهرة.\n🔁 حاول مرة تانية خلال ساعات العمل."
         });
       } else {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
