@@ -72,7 +72,7 @@ function isWorkingHours() {
     hour12: false
   };
   const hour = parseInt(new Intl.DateTimeFormat('en-GB', options).format(now));
-  return hour >= 8 && hour < 24; // من 8 صباحًا حتى 12 منتصف الليل
+  return hour >= 10 && hour < 24; // من 8 صباحًا حتى 12 منتصف الليل
 }
 
 function generateRandomEmojis(count) {
@@ -692,7 +692,7 @@ if (data === "check_order_time") {
       text: "✅ يمكنك الآن تقديم طلبك من خلال الموقع:",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "🚀 ابدأ الطلب الآن",url: "https://pandastores.onrender.com"  }]
+          [{ text: "🚀 ابدأ الشراء الان",url: "https://pandastores.onrender.com"  }]
         ]
       }
     });
