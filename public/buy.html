@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr" id="htmlElement">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>شراء النجوم - Panda Store</title>
+  <title>Buy Telegram Stars - Panda Store</title>
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/png" href="/public/assets/pandaemogi.jpg">
   
-
-  <!-- مكتبة Axios -->
+  <!-- Axios Library -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <!-- مكتبة TonConnect -->
+  <!-- TonConnect Library -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-  <!-- مكتبة SweetAlert2 -->
+  <!-- SweetAlert2 Library -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    /* ——— نفس الستايل بدون تغيير كبير ——— */
     body {
       font-family: 'Cairo', sans-serif;
       background: url('/assets/panda.jpg') center/cover fixed;
       margin: 0;
       padding: 0;
-      text-align: center
+      text-align: center;
+      position: relative;
     }
 
     .header {
@@ -32,12 +31,12 @@
       padding: 20px;
       display: flex;
       justify-content: space-between;
-      align-items: center
+      align-items: center;
     }
 
     .nav {
       display: flex;
-      gap: 15px
+      gap: 15px;
     }
 
     .nav a {
@@ -46,17 +45,18 @@
       background: rgb(183, 126, 20);
       font-size: 16px;
       padding: 5px 10px;
-      border-radius: 5px
+      border-radius: 5px;
     }
 
     .nav a:hover {
-      background: #444
+      background: #444;
     }
 
     .wallet-btn {
       font-size: 16px;
       padding: 5px 10px;
-      border-radius: 5px
+      border-radius: 5px;
+      margin-left: 10px;
     }
 
     .container {
@@ -65,23 +65,23 @@
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
-      color: #000
+      color: #000;
     }
 
     .section-title {
       font-size: 24px;
       margin-bottom: 10px;
-      color: #333
+      color: #333;
     }
 
     .section-sub {
-      margin-bottom: 30px
+      margin-bottom: 30px;
     }
 
     label {
       display: block;
       margin-bottom: 8px;
-      font-weight: bold
+      font-weight: bold;
     }
 
     input {
@@ -89,14 +89,14 @@
       padding: 10px;
       margin-bottom: 20px;
       border: 1px solid #ccc;
-      border-radius: 6px
+      border-radius: 6px;
     }
 
     .star-options {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      margin-top: 20px
+      margin-top: 20px;
     }
 
     .star-option {
@@ -111,41 +111,15 @@
       animation: fadeInUp 0.6s forwards;
     }
 
-    .star-option:nth-child(1) {
-      animation-delay: 0.1s;
-    }
-
-    .star-option:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .star-option:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    .star-option:nth-child(4) {
-      animation-delay: 0.4s;
-    }
-
-    .star-option:nth-child(5) {
-      animation-delay: 0.5s;
-    }
-
-    .star-option:nth-child(6) {
-      animation-delay: 0.6s;
-    }
-
-    .star-option:nth-child(7) {
-      animation-delay: 0.7s;
-    }
-
-    .star-option:nth-child(8) {
-      animation-delay: 0.8s;
-    }
-
-    .star-option:nth-child(9) {
-      animation-delay: 0.9s;
-    }
+    .star-option:nth-child(1) { animation-delay: 0.1s; }
+    .star-option:nth-child(2) { animation-delay: 0.2s; }
+    .star-option:nth-child(3) { animation-delay: 0.3s; }
+    .star-option:nth-child(4) { animation-delay: 0.4s; }
+    .star-option:nth-child(5) { animation-delay: 0.5s; }
+    .star-option:nth-child(6) { animation-delay: 0.6s; }
+    .star-option:nth-child(7) { animation-delay: 0.7s; }
+    .star-option:nth-child(8) { animation-delay: 0.8s; }
+    .star-option:nth-child(9) { animation-delay: 0.9s; }
 
     .star-option:hover {
       background: #7cc8e4;
@@ -168,53 +142,84 @@
       border: none;
       border-radius: 6px;
       font-size: 16px;
-      cursor: pointer
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .show-more-btn {
+      background: #444;
+      color: #fff;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .language-switcher {
+      position: absolute;
+      left: 7px;
+      top: 95px;
+      background: #444;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    .wallet-container {
+      display: flex;
+      align-items: center;
     }
   </style>
 </head>
 
 <body>
+  <div class="language-switcher" onclick="toggleLanguage()">اللغة العربية</div>
+
   <div class="header">
     <div class="nav">
-      <a href="/index.html">الرئيسية</a>
-      <a href="/buy.html">نجوم</a>
-      <a href="/premium.html">بريميوم</a>
+      <a href="/index.html" id="home-link">Home</a>
+      <a href="/buy.html" id="stars-link">Stars</a>
+      <a href="/premium.html" id="premium-link">Premium</a>
     </div>
-    <div id="ton-connect-btn" class="wallet-btn"></div>
+    <div class="wallet-container">
+      <div id="ton-connect-btn" class="wallet-btn"></div>
+    </div>
   </div>
 
-  <h1 class="section-title">اشترِ نجوم تيليجرام</h1>
-  <p class="section-sub">اشحن لنفسك أو لأصدقائك من 50 إلى 1,000,000 نجمة</p>
+  <h1 class="section-title" id="main-title">Buy Telegram Stars</h1>
+  <p class="section-sub" id="sub-title">Top up for yourself or friends from 50 to 1,000,000 stars</p>
 
   <div class="container">
-    <label>اسم المستخدم على تيليجرام</label>
+    <label id="username-label">Telegram username</label>
     <input type="text" placeholder="@username" id="username" required />
 
-    <label>عدد النجوم</label>
+    <label id="stars-label">Number of stars</label>
     <div style="position:relative;">
-      <input type="number" placeholder="أدخل عدد النجوم من 50 فما فوق" id="stars" min="50" oninput="updatePreview()"
-        required />
-      <small id="preview"
-        style="position:absolute;left:0;bottom:-10px;color:#000;background-color:rgb(153, 255, 1);font-size:large;"></small>
+      <input type="number" placeholder="Enter number of stars (min 50)" id="stars" min="50" oninput="updatePreview()" required />
+      <small id="preview" style="position:absolute;left:0;bottom:-10px;color:#000;background-color:rgb(153, 255, 1);font-size:large;"></small>
     </div>
     <br>
     
-
-    <label>أو اختر باقة:</label>
+    <label id="package-label">Or choose a package:</label>
     <div class="star-options">
-      <div class="star-option" onclick="selectStars(50)">50 نجمة ~ <span>$0.85</span></div>
-      <div class="star-option" onclick="selectStars(100)">100 نجمة ~ <span>$1.70</span></div>
-      <div class="star-option" onclick="selectStars(250)">250 نجمة ~ <span>$4.25</span></div>
-      <div class="star-option" onclick="selectStars(500)">500 نجمة ~ <span>$8.50</span></div>
-      <div class="star-option" onclick="selectStars(1000)">1,000 نجمة ~ <span>$17.00</span></div>
-      <div class="star-option" onclick="selectStars(1500)">1,500 نجمة ~ <span>$25.50</span></div>
-      <div class="star-option" onclick="selectStars(2000)">2,000 نجمة ~ <span>$34.00</span></div>
-      <div class="star-option" onclick="selectStars(2500)">2,500 نجمة ~ <span>$42.50</span></div>
-      <div class="star-option" onclick="selectStars(3000)">3,000 نجمة ~ <span>$51.00</span></div>
+      <div class="star-option" onclick="selectStars(50)" id="option-50">50 stars</div>
+      <div class="star-option" onclick="selectStars(100)" id="option-100">100 stars</div>
+      <div class="star-option" onclick="selectStars(250)" id="option-250">250 stars</div>
+      <div class="star-option" onclick="selectStars(500)" id="option-500">500 stars</div>
+      <div class="star-option hidden-option" onclick="selectStars(1000)" id="option-1000">1,000 stars</div>
+      <div class="star-option hidden-option" onclick="selectStars(1500)" id="option-1500">1,500 stars</div>
+      <div class="star-option hidden-option" onclick="selectStars(2000)" id="option-2000">2,000 stars</div>
+      <div class="star-option hidden-option" onclick="selectStars(2500)" id="option-2500">2,500 stars</div>
+      <div class="star-option hidden-option" onclick="selectStars(3000)" id="option-3000">3,000 stars</div>
     </div>
+    <button class="show-more-btn" id="show-more-btn">Show more</button>
 
-    <br />
-    <button class="buy-btn" onclick="submitOrder()">شراء الآن</button>
+    <button class="buy-btn" id="buy-btn">Buy Now</button>
   </div>
 
   <script>
@@ -225,6 +230,100 @@
 
     const PRICE_PER_STAR_USD = 0.017;
     let currentTonUsd = null;
+    let showAllOptions = false;
+    let isEnglish = true; // Default to English
+
+    // Complete translations
+    const translations = {
+      title: {
+        ar: "شراء نجوم تليجرام",
+        en: "Buy Telegram Stars"
+      },
+      subtitle: {
+        ar: "اشحن لنفسك أو لأصدقائك من 50 إلى 1,000,000 نجمة",
+        en: "Top up for yourself or friends from 50 to 1,000,000 stars"
+      },
+      usernameLabel: {
+        ar: "اسم المستخدم على تليجرام",
+        en: "Telegram username"
+      },
+      usernamePlaceholder: {
+        ar: "@username",
+        en: "@username"
+      },
+      starsLabel: {
+        ar: "عدد النجوم",
+        en: "Number of stars"
+      },
+      starsPlaceholder: {
+        ar: "أدخل عدد النجوم من 50 فما فوق",
+        en: "Enter number of stars (min 50)"
+      },
+      packageLabel: {
+        ar: "أو اختر باقة:",
+        en: "Or choose a package:"
+      },
+      showMore: {
+        ar: "عرض المزيد",
+        en: "Show more"
+      },
+      showLess: {
+        ar: "عرض أقل",
+        en: "Show less"
+      },
+      buyNow: {
+        ar: "شراء الآن",
+        en: "Buy Now"
+      },
+      home: {
+        ar: "الرئيسية",
+        en: "Home"
+      },
+      stars: {
+        ar: "النجوم",
+        en: "Stars"
+      },
+      premium: {
+        ar: "بريميوم",
+        en: "Premium"
+      },
+      pricePreview: {
+        ar: "السعر: $%usd% ≈ %ton% TON",
+        en: "Price: $%usd% ≈ %ton% TON"
+      },
+      pricePreviewNoTon: {
+        ar: "السعر: $%usd%",
+        en: "Price: $%usd%"
+      },
+      switchLanguage: {
+        ar: "English",
+        en: "اللغة العربية"
+      },
+      options: {
+        ar: {
+          "50": "50 نجمة",
+          "100": "100 نجمة",
+          "250": "250 نجمة",
+          "500": "500 نجمة",
+          "1000": "1,000 نجمة",
+          "1500": "1,500 نجمة",
+          "2000": "2,000 نجمة",
+          "2500": "2,500 نجمة",
+          "3000": "3,000 نجمة"
+        },
+        en: {
+          "50": "50 stars",
+          "100": "100 stars",
+          "250": "250 stars",
+          "500": "500 stars",
+          "1000": "1,000 stars",
+          "1500": "1,500 stars",
+          "2000": "2,000 stars",
+          "2500": "2,500 stars",
+          "3000": "3,000 stars"
+        }
+      }
+    };
 
     (async () => {
       try {
@@ -232,9 +331,78 @@
         currentTonUsd = res.data["the-open-network"].usd;
         updatePreview();
       } catch (e) {
-        console.warn("فشل في جلب سعر TON للمعاينة");
+        console.warn("Failed to fetch TON price for preview");
       }
+      
+      // Initialize all text elements
+      updateAllText();
     })();
+
+    function toggleMoreOptions() {
+      showAllOptions = !showAllOptions;
+      const hiddenOptions = document.querySelectorAll('.hidden-option');
+      const showMoreBtn = document.getElementById('show-more-btn');
+      
+      hiddenOptions.forEach(option => {
+        option.style.display = showAllOptions ? 'block' : 'none';
+      });
+      
+      showMoreBtn.textContent = showAllOptions ? 
+        translations.showLess[isEnglish ? 'en' : 'ar'] : 
+        translations.showMore[isEnglish ? 'en' : 'ar'];
+    }
+
+    function toggleLanguage() {
+      isEnglish = !isEnglish;
+      const htmlElement = document.getElementById('htmlElement');
+      const languageBtn = document.querySelector('.language-switcher');
+      
+      // Change page direction and language
+      htmlElement.dir = isEnglish ? 'ltr' : 'rtl';
+      htmlElement.lang = isEnglish ? 'en' : 'ar';
+      
+      // Update all text elements
+      updateAllText();
+    }
+
+    function updateAllText() {
+      // Update button text
+      document.querySelector('.language-switcher').textContent = translations.switchLanguage[isEnglish ? 'en' : 'ar'];
+      
+      // Update main titles
+      document.getElementById('main-title').textContent = translations.title[isEnglish ? 'en' : 'ar'];
+      document.getElementById('sub-title').textContent = translations.subtitle[isEnglish ? 'en' : 'ar'];
+      
+      // Update form labels
+      document.getElementById('username-label').textContent = translations.usernameLabel[isEnglish ? 'en' : 'ar'];
+      document.getElementById('username').placeholder = translations.usernamePlaceholder[isEnglish ? 'en' : 'ar'];
+      document.getElementById('stars-label').textContent = translations.starsLabel[isEnglish ? 'en' : 'ar'];
+      document.getElementById('stars').placeholder = translations.starsPlaceholder[isEnglish ? 'en' : 'ar'];
+      document.getElementById('package-label').textContent = translations.packageLabel[isEnglish ? 'en' : 'ar'];
+      
+      // Update buttons
+      document.getElementById('buy-btn').textContent = translations.buyNow[isEnglish ? 'en' : 'ar'];
+      document.getElementById('show-more-btn').textContent = showAllOptions ? 
+        translations.showLess[isEnglish ? 'en' : 'ar'] : 
+        translations.showMore[isEnglish ? 'en' : 'ar'];
+      
+      // Update navigation links
+      document.getElementById('home-link').textContent = translations.home[isEnglish ? 'en' : 'ar'];
+      document.getElementById('stars-link').textContent = translations.stars[isEnglish ? 'en' : 'ar'];
+      document.getElementById('premium-link').textContent = translations.premium[isEnglish ? 'en' : 'ar'];
+      
+      // Update star options
+      const options = translations.options[isEnglish ? 'en' : 'ar'];
+      Object.keys(options).forEach(key => {
+        const element = document.getElementById(`option-${key}`);
+        if (element) {
+          element.textContent = options[key];
+        }
+      });
+      
+      // Update preview
+      updatePreview();
+    }
 
     function selectStars(value) {
       document.getElementById("stars").value = value;
@@ -253,9 +421,11 @@
       const usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
       if (currentTonUsd) {
         const ton = (usd / currentTonUsd).toFixed(5);
-        box.textContent = `السعر: $${usd} ≈ ${ton} TON`;
+        const template = translations.pricePreview[isEnglish ? 'en' : 'ar'];
+        box.textContent = template.replace('%usd%', usd).replace('%ton%', ton);
       } else {
-        box.textContent = `السعر: $${usd}`;
+        const template = translations.pricePreviewNoTon[isEnglish ? 'en' : 'ar'];
+        box.textContent = template.replace('%usd%', usd);
       }
     }
 
@@ -268,8 +438,8 @@
           toast: true,
           position: 'top-end',
           icon: 'error',
-          title: 'تحقق من البيانات ✏️',
-          text: 'أدخل اسم مستخدم وعدد نجوم لا يقل عن 50.',
+          title: isEnglish ? 'Check your data ✏️' : 'تحقق من البيانات ✏️',
+          text: isEnglish ? 'Enter username and at least 50 stars.' : 'أدخل اسم مستخدم وعدد نجوم لا يقل عن 50.',
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
@@ -291,8 +461,8 @@
             toast: true,
             position: 'top-end',
             icon: 'error',
-            title: 'خطأ في الاتصال 🌐',
-            text: 'لم يتم جلب سعر TON، حاول لاحقًا.',
+            title: isEnglish ? 'Connection error 🌐' : 'خطأ في الاتصال 🌐',
+            text: isEnglish ? 'Failed to get TON price, try later.' : 'لم يتم جلب سعر TON، حاول لاحقًا.',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -321,7 +491,7 @@
             toast: true,
             position: 'top-end',
             icon: 'warning',
-            title: 'اربط محفظتك أولاً 🛡️',
+            title: isEnglish ? 'Connect your wallet first 🛡️' : 'اربط محفظتك أولاً 🛡️',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
@@ -337,7 +507,7 @@
           toast: true,
           position: 'top-end',
           icon: 'info',
-          title: 'جاري معالجة الطلب ⏳',
+          title: isEnglish ? 'Processing your order ⏳' : 'جاري معالجة الطلب ⏳',
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
@@ -358,8 +528,10 @@
               toast: true,
               position: 'top-end',
               icon: 'success',
-              title: `سيتم إرسال ${stars} نجمة الى @${username} فى غضون 5 : 10 دقائق ⏳`,
-              text: 'يرجى الانتظار حتى يتم معالجة الطلب.',
+              title: isEnglish ? 
+                `${stars} stars will be sent to @${username} within 5-10 minutes ⏳` : 
+                `سيتم إرسال ${stars} نجمة الى @${username} فى غضون 5 : 10 دقائق ⏳`,
+              text: isEnglish ? 'Please wait while we process your order.' : 'يرجى الانتظار حتى يتم معالجة الطلب.',
               showConfirmButton: false,
               timer: 8000,
               timerProgressBar: true,
@@ -371,8 +543,10 @@
               toast: true,
               position: 'top-end',
               icon: 'success',
-              title: `سيتم إرسال ${stars} نجمة الى @${username} فى غضون 5 : 10 دقائق ⏳`,
-              text: 'يرجى الانتظار حتى يتم معالجة الطلب.',
+              title: isEnglish ? 
+                `${stars} stars will be sent to @${username} within 5-10 minutes ⏳` : 
+                `سيتم إرسال ${stars} نجمة الى @${username} فى غضون 5 : 10 دقائق ⏳`,
+              text: isEnglish ? 'Please wait while we process your order.' : 'يرجى الانتظار حتى يتم معالجة الطلب.',
               showConfirmButton: false,
               timer: 8000,
               timerProgressBar: true,
@@ -387,8 +561,8 @@
           toast: true,
           position: 'top-end',
           icon: 'error',
-          title: 'فشلت المعاملة ❌',
-          text: 'حاول مرة أخرى.',
+          title: isEnglish ? 'Transaction failed ❌' : 'فشلت المعاملة ❌',
+          text: isEnglish ? 'Please try again.' : 'حاول مرة أخرى.',
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
@@ -398,7 +572,13 @@
       }
     }
 
+    // Hide additional options on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const hiddenOptions = document.querySelectorAll('.hidden-option');
+      hiddenOptions.forEach(option => {
+        option.style.display = 'none';
+      });
+    });
   </script>
 </body>
-
 </html>
