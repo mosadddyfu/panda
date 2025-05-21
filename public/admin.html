@@ -8,13 +8,212 @@
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    /* نفس التنسيقات السابقة */
+<style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: url('/assets/panda.jpg') center/cover fixed;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #000;
+    }
+
+    .header {
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      background: rgba(0, 0, 0, .8);
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 600px;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #7cc8e4;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 20px;
+      width: 70%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .action-btn {
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: #7cc8e4;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0 5px;
+      font-weight: bold;
+    }
+
+    .tab-btn.active {
+      background-color: #222;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
   <!-- نفس واجهة المستخدم السابقة -->
-  
+  <div class="header">
+    <div class="nav">
+      <a href="/index.html">الرئيسية</a>
+      <a href="/buy.html">نجوم</a>
+      <a href="/premium.html">بريميوم</a>
+    </div>
+  </div>
+
+  <div class="container" id="adminContainer">
+    <h1>قائمة طلبات Panda Store</h1>
+    <div id="passwordSection">
+      <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" />
+      <br />
+      <button class="btn" onclick="checkPassword()">دخول</button>
+    </div>
+
+    <div id="ordersSection" style="display:none;">
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="showTab('stars')">طلبات النجوم</button>
+        <button class="tab-btn" onclick="showTab('premium')">طلبات البريميوم</button>
+      </div>
+
+      <!-- قسم طلبات النجوم -->
+      <div id="starsTab">
+        <h2>طلبات النجوم لم تنفذ بعد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد النجوم</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+              <th>تم تنفيذ هذا الطلب✅️</th>
+            </tr>
+          </thead>
+          <tbody id="pendingStarsTableBody"></tbody>
+        </table>
+
+        <h2 style="margin-top:50px;">طلبات النجوم تم تنفيذها</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد النجوم</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+            </tr>
+          </thead>
+          <tbody id="completedStarsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- قسم طلبات البريميوم -->
+      <div id="premiumTab" style="display:none;">
+        <h2>طلبات البريميوم لم تنفذ بعد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد الأشهر</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+              <th>تم تنفيذ هذا الطلب✅️</th>
+            </tr>
+          </thead>
+          <tbody id="pendingPremiumTableBody"></tbody>
+        </table>
+
+        <h2 style="margin-top:50px;">طلبات البريميوم تم تنفيذها</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد الأشهر</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+            </tr>
+          </thead>
+          <tbody id="completedPremiumTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 <script>
   const PASSWORD = "OmarShehata@123";
   let starsOrders = [];
