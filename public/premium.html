@@ -1,210 +1,750 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr" id="htmlElement">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>شراء تيليجرام بريميوم - Panda Store</title>
-    <link rel="icon" type="image/png" href="/public/assets/pandaemogi.jpg">
+  <title>Buy Telegram Premium - Panda Store</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/png" href="/assets/pandastore.jpg">
 
-
+  <!-- Axios Library -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- TonConnect Library -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-  <link rel="icon" type="image/png" href="/assets/panda.jpg">
+  <!-- SweetAlert2 Library -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Font Awesome for gear icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background: url('/assets/panda.jpg') center/cover fixed;
+      background-color: #121212;
+      color: #e0e0e0;
+      font-size: 16px;
       margin: 0;
       padding: 0;
-      text-align: center
+      text-align: center;
+      position: relative;
     }
 
     .header {
-      background-color: #222;
-      color: #fff;
-      padding: 20px;
+      background: #1a1a1e;
+      color: #e0e0e0;
+      padding: 10px;
       display: flex;
       justify-content: space-between;
-      align-items: center
-      
+      align-items: center;
     }
 
     .nav {
       display: flex;
-      gap: 15px
+      gap: 15px;
     }
 
     .nav a {
-      color: #fff;
+      background: #2c2c2c;
+      color: #e0e0e0;
       text-decoration: none;
-      background:rgb(183, 126, 20);
       font-size: 16px;
       padding: 5px 10px;
-      border-radius: 5px
+      border-radius: 5px;
+      border: #3a3a3a 1px solid;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .nav a:hover {
-      background: #444
+      background: #007aff;
+      color: #ffffff;
     }
 
-    .wallet-section {
-      display: flex;
-      align-items: center
+    .wallet-btn {
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-left: 10px;
+      color: white;
+      border: none;
     }
 
     .container {
       max-width: 700px;
       margin: 30px auto;
-      /* background: rgba(255, 255, 255, .9); */
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .1)
+      background: #1a1a1e;
+      color: #ffffff;
+      border: 1px solid #2a2a2e;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
     }
 
     .section-title {
       font-size: 24px;
       margin-bottom: 10px;
-      color: #333
+      color: #ffffff;
     }
 
-    .user-field {
-      margin: 10px auto 25px;
-      display: flex;
-      justify-content: center;
-      gap: 10px
+    .section-sub {
+      margin-bottom: 30px;
+      color: #b0b0b0;
     }
 
-    .user-field input {
-      width: 220px;
-      padding: 8px;
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #c7c7c7;
+    }
+
+    input {
+      width: 93%;
+      padding: 10px;
+      margin-bottom: 20px;
+      background-color: #252525;
+      color: #e0e0e0;
+      border: 1px solid #383838;
       border-radius: 6px;
-      border: 1px solid #aaa;
-      text-align: center
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
-    .plans {
+    input:focus {
+      border-color: #007aff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .premium-options {
       display: flex;
       flex-direction: column;
-      gap: 20px
+      gap: 15px;
+      margin-top: 20px;
     }
 
-    .plan {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 20px;
-      background: rgba(180, 164, 148, .8)
-    }
-
-    .plan h3 {
-      margin-bottom: 10px;
-      color: #222
-    }
-
-    .plan p {
-      margin-bottom: 15px;
-      font-size: 18px
-    }
-
-    .plan button {
-      background: #222;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
+    .premium-option {
+      border: 1px solid #3a3a3a;
       border-radius: 8px;
+      padding: 15px;
+      background: #2c2c2c;
+      color: #e0e0e0;
       cursor: pointer;
-      font-size: 16px
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s forwards;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
     }
-    
+
+    .premium-option:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .premium-option:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .premium-option:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .premium-option:hover {
+      background: #2a2a2e;
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border-color: #2a6ada;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .buy-btn {
+      background: #007aff;
+      color: #fff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+
+    .buy-btn:hover {
+      background: #0056b3;
+    }
+
+    .wallet-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .settings-container {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 20px;
+      position: relative;
+    }
+
+    .settings-btn {
+      background: #2c2c2c;
+      color: #e0e0e0;
+      font-size: 16px;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .settings-btn:hover {
+      background: #3a3a3a;
+      transform: scale(1.05);
+    }
+
+    .settings-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: #1e1e1e;
+      color: #e0e0e0;
+      font-size: 16px;
+      border-radius: 8px;
+      padding: 8px 0;
+      text-align: center;
+      display: none;
+      min-width: 180px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      border: 1px solid #333333;
+    }
+
+    .settings-menu.show {
+      display: block;
+      animation: fadeInDropdown 0.3s ease;
+    }
+
+    .settings-menu-item {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .settings-menu-item:hover {
+      background: #3a3a3a;
+      color: #ffffff;
+    }
+
+    .settings-menu-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    @keyframes fadeInDropdown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #preview {
+      position: absolute;
+      left: 0;
+      bottom: -10px;
+      color: #00A3FF;
+      background-color: transparent;
+      font-size: large;
+      padding: 2px 0;
+    }
+
+    .premium-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .premium-price {
+      font-weight: bold;
+      color: #4CAF50;
+    }
+
+    @media (max-width: 600px) {
+      .settings-btn {
+        padding: 8px 12px;
+      }
+
+      .settings-btn span {
+        display: none;
+      }
+
+      .settings-menu {
+        min-width: 150px;
+      }
+
+      input {
+        width: 90%;
+      }
+    }
   </style>
 </head>
 
 <body>
-
   <div class="header">
     <div class="nav">
-      <a href="/index.html">الرئيسية</a>
-      <a href="/buy.html">نجوم</a>
-      <a href="/premium.html">بريميوم</a>
+      <a href="/index.html" id="home-link">Home</a>
+      <a href="/buy.html" id="stars-link">Stars</a>
+      <a href="/premium.html" id="premium-link">Premium</a>
     </div>
-    <div id="ton-connect" class="wallet-section"></div>
+    <div class="wallet-container">
+      <div id="ton-connect-btn" class="wallet-btn"></div>
+    </div>
   </div>
 
+  <div class="settings-container">
+    <button class="settings-btn" id="settings-btn">
+      <i class="fas fa-cog"></i>
+      <span id="settings-text">Settings</span>
+    </button>
+    <div class="settings-menu" id="settings-menu">
+      <div class="settings-menu-item" onclick="toggleLanguage()" id="language-switcher">
+        <i class="fas fa-language"></i>
+        <span>اللغة العربية</span>
+      </div>
+    </div>
+  </div>
+
+  <h1 class="section-title" id="main-title">Buy Telegram Premium</h1>
+  <p class="section-sub" id="sub-title">Subscribe for yourself or friends</p>
+
   <div class="container">
-    <h2 class="section-title">اشترِ اشتراك تيليجرام بريميوم</h2>
+    <label id="username-label">Telegram username</label>
+    <input type="text" placeholder="@username" id="username" required />
 
-    <!-- خانة إدخال اسم المستخدم -->
-    <div class="user-field">
-      <input id="tg-user" type="text" placeholder="اسم مستخدم تيليجرام (@username)" />
+    <label id="plan-label">Choose a subscription plan:</label>
+    <div class="premium-options">
+      <div class="premium-option" onclick="selectPlan(3, 13)">
+        <h3 id="plan-3-title">3 Months</h3>
+        <div class="premium-details">
+          <span id="plan-3-price" class="premium-price">$13.00</span>
+          <span id="plan-3-ton"></span>
+        </div>
+      </div>
+      <div class="premium-option" onclick="selectPlan(6, 17)">
+        <h3 id="plan-6-title">6 Months</h3>
+        <div class="premium-details">
+          <span id="plan-6-price" class="premium-price">$17.00</span>
+          <span id="plan-6-ton"></span>
+        </div>
+      </div>
+      <div class="premium-option" onclick="selectPlan(12, 30)">
+        <h3 id="plan-12-title">12 Months</h3>
+        <div class="premium-details">
+          <span id="plan-12-price" class="premium-price">$30.00</span>
+          <span id="plan-12-ton"></span>
+        </div>
+      </div>
     </div>
 
-    <div class="plans">
-      <div class="plan">
-        <h3>3 شهور</h3>
-        <p>13 دولار</p>
-        <button onclick="buyPremium(3,13)">شراء</button>
-      </div>
-      <div class="plan">
-        <h3>6 شهور</h3>
-        <p>17 دولار</p>
-        <button onclick="buyPremium(6,17)">شراء</button>
-      </div>
-      <div class="plan">
-        <h3>12 شهر</h3>
-        <p>30 دولار</p>
-        <button onclick="buyPremium(12,30)">شراء</button>
-      </div>
-    </div>
+    <button class="buy-btn" id="buy-btn" onclick="submitOrder()">Subscribe Now</button>
   </div>
 
   <script>
-    const tc = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: "https://pandastores.netlify.app/tonconnect-manifest.json",
-      buttonRootId: "ton-connect"
+    // Initialize TonConnect
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+      buttonRootId: 'ton-connect-btn'
     });
-    consttc = newTON_CONNECT_UI.TonConnectUI({ manifestUrl: "https://pandastores.netlify.app/tonconnect-manifest.json", buttonRootId: "ton-connect" });
+
     const MERCHANT_ADDRESS = "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN";
-    const PRICE_API = "https://api.coingecko.com/api/v3/simple/price?ids=ton&vs_currencies=usd";
+    let currentTonUsd = null;
+    let selectedPlan = null;
+    let selectedPrice = null;
+    let isEnglish = true; // Default to English
 
-    async function buyPremium(months, priceUSD) {
-      const username = document.getElementById("tg-user").value.trim().replace(/^@/, '');
-      if (!username) { alert("اكتب اسم المستخدم أولاً"); return; }
+    // Complete translations
+    const translations = {
+      title: {
+        ar: "اشترِ تيليجرام بريميوم",
+        en: "Buy Telegram Premium"
+      },
+      subtitle: {
+        ar: "اشترك لنفسك أو لأصدقائك",
+        en: "Subscribe for yourself or friends"
+      },
+      usernameLabel: {
+        ar: "اسم المستخدم على تليجرام",
+        en: "Telegram username"
+      },
+      usernamePlaceholder: {
+        ar: "@اسم المستخدم",
+        en: "@username"
+      },
+      planLabel: {
+        ar: "اختر خطة الاشتراك:",
+        en: "Choose a subscription plan:"
+      },
+      plans: {
+        ar: {
+          "3": "3 شهور",
+          "6": "6 شهور",
+          "12": "12 شهر"
+        },
+        en: {
+          "3": "3 Months",
+          "6": "6 Months",
+          "12": "12 Months"
+        }
+      },
+      prices: {
+        ar: {
+          "3": "13 دولار",
+          "6": "17 دولار",
+          "12": "30 دولار"
+        },
+        en: {
+          "3": "$13.00",
+          "6": "$17.00",
+          "12": "$30.00"
+        }
+      },
+      tonPrice: {
+        ar: "≈ %ton% TON",
+        en: "≈ %ton% TON"
+      },
+      subscribeNow: {
+        ar: "اشترك الآن",
+        en: "Subscribe Now"
+      },
+      home: {
+        ar: "الرئيسية",
+        en: "Home"
+      },
+      stars: {
+        ar: "النجوم",
+        en: "Stars"
+      },
+      premium: {
+        ar: "بريميوم",
+        en: "Premium"
+      },
+      switchLanguage: {
+        ar: "English",
+        en: "اللغة العربية"
+      },
+      settings: {
+        ar: "الإعدادات",
+        en: "Settings"
+      }
+    };
 
-      /* تأكد من الاتصال */
-      if (!tc.wallet) { await tc.openModal(); if (!tc.wallet) return; }
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize settings menu toggle
+      const settingsBtn = document.getElementById('settings-btn');
+      const settingsMenu = document.getElementById('settings-menu');
+
+      settingsBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        settingsMenu.classList.toggle('show');
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!settingsMenu.contains(e.target) && e.target !== settingsBtn) {
+          settingsMenu.classList.remove('show');
+        }
+      });
+
+      // Close menu when clicking on menu item
+      const menuItems = document.querySelectorAll('.settings-menu-item');
+      menuItems.forEach(item => {
+        item.addEventListener('click', function () {
+          settingsMenu.classList.remove('show');
+        });
+      });
+
+      // Fetch TON price and update plan prices
+      fetchTonPrice();
+    });
+
+    async function fetchTonPrice() {
+      try {
+        const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+        currentTonUsd = res.data["the-open-network"].usd;
+        updatePlanPrices();
+      } catch (e) {
+        console.warn("Failed to fetch TON price for preview");
+      }
+
+      // Initialize all text elements
+      updateAllText();
+    }
+
+    function updatePlanPrices() {
+      if (!currentTonUsd) return;
+
+      const plans = [3, 6, 12];
+      plans.forEach(plan => {
+        const price = getPlanPrice(plan);
+        const tonAmount = (price / currentTonUsd).toFixed(5);
+        const element = document.getElementById(`plan-${plan}-ton`);
+        if (element) {
+          element.textContent = translations.tonPrice[isEnglish ? 'en' : 'ar'].replace('%ton%', tonAmount);
+        }
+      });
+    }
+
+    function getPlanPrice(months) {
+      switch (months) {
+        case 3: return 13;
+        case 6: return 17;
+        case 12: return 30;
+        default: return 0;
+      }
+    }
+
+    function toggleLanguage() {
+      isEnglish = !isEnglish;
+      const htmlElement = document.getElementById('htmlElement');
+      const languageBtn = document.getElementById('language-switcher');
+
+      // Change page direction and language
+      htmlElement.dir = isEnglish ? 'ltr' : 'rtl';
+      htmlElement.lang = isEnglish ? 'en' : 'ar';
+
+      // Update all text elements
+      updateAllText();
+    }
+
+    function updateAllText() {
+      // Update button text
+      document.getElementById('language-switcher').querySelector('span').textContent =
+        translations.switchLanguage[isEnglish ? 'en' : 'ar'];
+      document.getElementById('settings-text').textContent = translations.settings[isEnglish ? 'en' : 'ar'];
+
+      // Update main titles
+      document.getElementById('main-title').textContent = translations.title[isEnglish ? 'en' : 'ar'];
+      document.getElementById('sub-title').textContent = translations.subtitle[isEnglish ? 'en' : 'ar'];
+
+      // Update form labels
+      document.getElementById('username-label').textContent = translations.usernameLabel[isEnglish ? 'en' : 'ar'];
+      document.getElementById('username').placeholder = translations.usernamePlaceholder[isEnglish ? 'en' : 'ar'];
+      document.getElementById('plan-label').textContent = translations.planLabel[isEnglish ? 'en' : 'ar'];
+
+      // Update buttons
+      document.getElementById('buy-btn').textContent = translations.subscribeNow[isEnglish ? 'en' : 'ar'];
+
+      // Update navigation links
+      document.getElementById('home-link').textContent = translations.home[isEnglish ? 'en' : 'ar'];
+      document.getElementById('stars-link').textContent = translations.stars[isEnglish ? 'en' : 'ar'];
+      document.getElementById('premium-link').textContent = translations.premium[isEnglish ? 'en' : 'ar'];
+
+      // Update plan titles and prices
+      const plans = [3, 6, 12];
+      plans.forEach(plan => {
+        const titleElement = document.getElementById(`plan-${plan}-title`);
+        const priceElement = document.getElementById(`plan-${plan}-price`);
+
+        if (titleElement) {
+          titleElement.textContent = translations.plans[isEnglish ? 'en' : 'ar'][plan];
+        }
+        if (priceElement) {
+          priceElement.textContent = translations.prices[isEnglish ? 'en' : 'ar'][plan];
+        }
+      });
+
+      // Update TON prices
+      updatePlanPrices();
+    }
+
+    function selectPlan(months, price) {
+      selectedPlan = months;
+      selectedPrice = price;
+
+      // Highlight selected plan
+      document.querySelectorAll('.premium-option').forEach(option => {
+        option.style.borderColor = '#3a3a3a';
+        option.style.backgroundColor = '#2c2c2c';
+      });
+
+      const selectedElement = document.querySelector(`.premium-option[onclick="selectPlan(${months}, ${price})"]`);
+      if (selectedElement) {
+        selectedElement.style.borderColor = '#2a6ada';
+        selectedElement.style.backgroundColor = '#1e3a8a';
+      }
+    }
+
+    async function submitOrder() {
+      const username = document.getElementById("username").value.trim().replace(/^@/, '');
+
+      if (!username) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: isEnglish ? 'Check your data ✏️' : 'تحقق من البيانات ✏️',
+          text: isEnglish ? 'Enter Telegram username.' : 'أدخل اسم مستخدم تليجرام.',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: '#f8d7da',
+          color: '#721c24'
+        });
+        return;
+      }
+
+      if (!selectedPlan) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: isEnglish ? 'Select a plan ✏️' : 'اختر خطة ✏️',
+          text: isEnglish ? 'Please select a subscription plan.' : 'الرجاء اختيار خطة اشتراك.',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: '#f8d7da',
+          color: '#721c24'
+        });
+        return;
+      }
+
+      const amountUSD = selectedPrice;
+
+      let tonUsd = currentTonUsd;
+      if (!tonUsd) {
+        try {
+          const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+          tonUsd = r.data["the-open-network"].usd;
+        } catch (e) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: isEnglish ? 'Connection error 🌐' : 'خطأ في الاتصال 🌐',
+            text: isEnglish ? 'Failed to get TON price, try later.' : 'لم يتم جلب سعر TON، حاول لاحقًا.',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#f8d7da',
+            color: '#721c24'
+          });
+          return;
+        }
+      }
+
+      const tonAmount = amountUSD / tonUsd;
+      const tonAmountN = BigInt(Math.ceil(tonAmount * 1e9));
+
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 300,
+        messages: [{
+          address: MERCHANT_ADDRESS,
+          amount: tonAmountN.toString()
+        }]
+      };
 
       try {
-        /* سعر TON */
-        const res = await fetch(PRICE_API);
-        if (!res.ok) throw new Error("CoinGecko");
-        const tonUsd = (await res.json()).ton.usd;
+        const connectedWallet = tonConnectUI.wallet;
+        if (!connectedWallet) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'warning',
+            title: isEnglish ? 'Connect your wallet first 🛡️' : 'اربط محفظتك أولاً 🛡️',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#fff3cd',
+            color: '#856404'
+          });
+          return;
+        }
 
-        /* حساب المبلغ */
-        const tonFloat = priceUSD / tonUsd;
-        const tonNano = BigInt(Math.ceil(tonFloat * 1e9));
+        const result = await tonConnectUI.sendTransaction(tx);
 
-        /* إنشاء المعاملة */
-        const tx = {
-          validUntil: Math.floor(Date.now() / 1000) + 300,
-          messages: [{
-            address: MERCHANT_ADDRESS,
-            amount: tonNano.toString(),
-            payload: "" // اختياري
-          }]
-        };
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'info',
+          title: isEnglish ? 'Processing your order ⏳' : 'جاري معالجة الطلب ⏳',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: '#d1ecf1',
+          color: '#0c5460'
+        });
 
-        /* إرسالها للمحفظة */
-        const result = await tc.sendTransaction(tx);
-        console.log(result);
-        alert(`تم إرسال ${tonFloat.toFixed(5)} TON لاشتراك @${username}`);
-      } catch (e) {
-        console.error(e);
-        alert("فشل إرسال المعاملة، حاول مجددًا");
+        setTimeout(async () => {
+          try {
+            await axios.post("https://pandastores.onrender.com/premium", {
+              username,
+              months: selectedPlan,
+              amountTon: tonAmount.toFixed(5),
+              amountUsd: amountUSD.toFixed(2)
+            });
+
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'success',
+              title: isEnglish ?
+                `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes ⏳` :
+                `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} فى غضون 5 : 10 دقائق ⏳`,
+              text: isEnglish ? 'Please wait while we process your order.' : 'يرجى الانتظار حتى يتم معالجة الطلب.',
+              showConfirmButton: false,
+              timer: 8000,
+              timerProgressBar: true,
+              background: '#d4edda',
+              color: '#155724'
+            });
+          } catch (err) {
+            Swal.fire({
+              toast: true,
+              position: 'top-end',
+              icon: 'success',
+              title: isEnglish ?
+                `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes ⏳` :
+                `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} فى غضون 5 : 10 دقائق ⏳`,
+              text: isEnglish ? 'Please wait while we process your order.' : 'يرجى الانتظار حتى يتم معالجة الطلب.',
+              showConfirmButton: false,
+              timer: 8000,
+              timerProgressBar: true,
+              background: '#d4edda',
+              color: '#155724'
+            });
+          }
+        }, 2000);
+
+      } catch (error) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: isEnglish ? 'Transaction failed ❌' : 'فشلت المعاملة ❌',
+          text: isEnglish ? 'Please try again.' : 'حاول مرة أخرى.',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: '#f8d7da',
+          color: '#721c24'
+        });
       }
     }
   </script>
-
-
 </body>
 
 </html>
