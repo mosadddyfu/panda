@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>لوحة الأدمن - Panda Store</title>
-    <link rel="icon" type="image/png" href="/public/assets/pandaemogi.jpg">
+  <link rel="icon" type="image/png" href="/public/assets/pandaemogi.jpg">
 
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -101,8 +101,29 @@
       cursor: pointer;
       font-size: 14px;
     }
-  </style>
 
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: #7cc8e4;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0 5px;
+      font-weight: bold;
+    }
+
+    .tab-btn.active {
+      background-color: #222;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
   <div class="header">
@@ -114,7 +135,7 @@
   </div>
 
   <div class="container" id="adminContainer">
-    <h1>قائمة الطلبات</h1>
+    <h1>لوحة تحكم الأدمن</h1>
     <div id="passwordSection">
       <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" />
       <br />
@@ -122,34 +143,74 @@
     </div>
 
     <div id="ordersSection" style="display:none;">
-      <h2>طلبات لم تنفذ بعد</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>اسم المستخدم</th>
-            <th>عدد النجوم</th>
-            <th>دولار</th>
-            <th>TON</th>
-            <th>تاريخ الطلب</th>
-            <th>تم تنفيذ هذا الطلب✅️</th>
-          </tr>
-        </thead>
-        <tbody id="pendingOrdersTableBody"></tbody>
-      </table>
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="showTab('stars')">طلبات النجوم</button>
+        <button class="tab-btn" onclick="showTab('premium')">طلبات البريميوم</button>
+      </div>
 
-      <h2 style="margin-top:50px;">طلبات تم تنفيذها</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>اسم المستخدم</th>
-            <th>عدد النجوم</th>
-            <th>دولار</th>
-            <th>TON</th>
-            <th>تاريخ الطلب</th>
-          </tr>
-        </thead>
-        <tbody id="completedOrdersTableBody"></tbody>
-      </table>
+      <!-- قسم طلبات النجوم -->
+      <div id="starsTab">
+        <h2>طلبات النجوم لم تنفذ بعد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد النجوم</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+              <th>تم تنفيذ هذا الطلب✅️</th>
+            </tr>
+          </thead>
+          <tbody id="pendingStarsTableBody"></tbody>
+        </table>
+
+        <h2 style="margin-top:50px;">طلبات النجوم تم تنفيذها</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد النجوم</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+            </tr>
+          </thead>
+          <tbody id="completedStarsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- قسم طلبات البريميوم -->
+      <div id="premiumTab" style="display:none;">
+        <h2>طلبات البريميوم لم تنفذ بعد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد الأشهر</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+              <th>تم تنفيذ هذا الطلب✅️</th>
+            </tr>
+          </thead>
+          <tbody id="pendingPremiumTableBody"></tbody>
+        </table>
+
+        <h2 style="margin-top:50px;">طلبات البريميوم تم تنفيذها</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد الأشهر</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+            </tr>
+          </thead>
+          <tbody id="completedPremiumTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -161,9 +222,8 @@
     if (entered === PASSWORD) {
       document.getElementById("passwordSection").style.display = "none";
       document.getElementById("ordersSection").style.display = "block";
-      fetchOrders();
+      fetchOrders('stars');
     } else {
-      // رساله تنبيه عند إدخال كلمة المرور غير الصحيحة
       Swal.fire({
         icon: 'error',
         title: 'حاجه متخصكش يصاحبى😎',
@@ -176,15 +236,42 @@
     }
   }
 
-  let ordersList = [];
+  let starsOrders = [];
+  let premiumOrders = [];
 
-  async function fetchOrders() {
+  function showTab(tabName) {
+    // تحديث أزرار التبويب
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.textContent.includes(tabName === 'stars' ? 'النجوم' : 'البريميوم')) {
+        btn.classList.add('active');
+      }
+    });
+
+    // إظهار التبويب المحدد وإخفاء الآخر
+    document.getElementById('starsTab').style.display = tabName === 'stars' ? 'block' : 'none';
+    document.getElementById('premiumTab').style.display = tabName === 'premium' ? 'block' : 'none';
+
+    // جلب البيانات إذا لم تكن محملة بالفعل
+    if (tabName === 'premium' && premiumOrders.length === 0) {
+      fetchOrders('premium');
+    }
+  }
+
+  async function fetchOrders(type) {
     try {
-      const res = await axios.get("https://pandastores.onrender.com/admin");
-      ordersList = res.data.reverse();
-      renderOrders();
+      const endpoint = type === 'stars' ? '/admin/stars' : '/admin/premium';
+      const res = await axios.get(`https://pandastores.onrender.com${endpoint}`);
+      const orders = res.data.reverse();
+      
+      if (type === 'stars') {
+        starsOrders = orders;
+        renderStarsOrders();
+      } else {
+        premiumOrders = orders;
+        renderPremiumOrders();
+      }
     } catch (err) {
-      // رساله تنبيه عند فشل تحميل الطلبات
       Swal.fire({
         icon: 'error',
         title: 'فشل تحميل الطلبات',
@@ -198,13 +285,13 @@
     }
   }
 
-  function renderOrders() {
-    const pendingBody = document.getElementById("pendingOrdersTableBody");
-    const completedBody = document.getElementById("completedOrdersTableBody");
+  function renderStarsOrders() {
+    const pendingBody = document.getElementById("pendingStarsTableBody");
+    const completedBody = document.getElementById("completedStarsTableBody");
     pendingBody.innerHTML = "";
     completedBody.innerHTML = "";
 
-    ordersList.forEach((order, index) => {
+    starsOrders.forEach((order, index) => {
       const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
       const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
       const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
@@ -217,7 +304,7 @@
           <td>${amountUsd}</td>
           <td>${amountTon}</td>
           <td>${createdAt}</td>
-          <td><button class="action-btn" onclick="markAsCompleted(${index})">تم التنفيذ</button></td>
+          <td><button class="action-btn" onclick="markAsCompleted('${order._id}', 'stars')">تم التنفيذ</button></td>
         `;
         pendingBody.appendChild(row);
       } else {
@@ -234,14 +321,60 @@
     });
   }
 
-  async function markAsCompleted(index) {
-    const orderId = ordersList[index]._id;
+  function renderPremiumOrders() {
+    const pendingBody = document.getElementById("pendingPremiumTableBody");
+    const completedBody = document.getElementById("completedPremiumTableBody");
+    pendingBody.innerHTML = "";
+    completedBody.innerHTML = "";
+
+    premiumOrders.forEach((order, index) => {
+      const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
+      const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
+      const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
+
+      if (!order.completed) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>@${order.username}</td>
+          <td>${order.premiumMonths}</td>
+          <td>${amountUsd}</td>
+          <td>${amountTon}</td>
+          <td>${createdAt}</td>
+          <td><button class="action-btn" onclick="markAsCompleted('${order._id}', 'premium')">تم التنفيذ</button></td>
+        `;
+        pendingBody.appendChild(row);
+      } else {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>@${order.username}</td>
+          <td>${order.premiumMonths}</td>
+          <td>${amountUsd}</td>
+          <td>${amountTon}</td>
+          <td>${createdAt}</td>
+        `;
+        completedBody.appendChild(row);
+      }
+    });
+  }
+
+  async function markAsCompleted(orderId, type) {
     try {
       await axios.post(`https://pandastores.onrender.com/complete-order/${orderId}`);
-      ordersList[index].completed = true;
-      renderOrders();
+      
+      if (type === 'stars') {
+        const orderIndex = starsOrders.findIndex(o => o._id === orderId);
+        if (orderIndex !== -1) {
+          starsOrders[orderIndex].completed = true;
+          renderStarsOrders();
+        }
+      } else {
+        const orderIndex = premiumOrders.findIndex(o => o._id === orderId);
+        if (orderIndex !== -1) {
+          premiumOrders[orderIndex].completed = true;
+          renderPremiumOrders();
+        }
+      }
     } catch (err) {
-      // رساله تنبيه عند فشل تحديث حالة الطلب
       Swal.fire({
         icon: 'error',
         title: 'فشل تحديث حالة الطلب',
