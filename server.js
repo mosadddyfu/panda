@@ -232,9 +232,12 @@ app.post('/premium', async (req, res) => {
   }
 });
 
+// ... (بقية الكود كما هو حتى نقاط النهاية)
+
+// نقاط النهاية المعدلة
 app.get('/admin', async (req, res) => {
   try {
-    const orders = await Order.find();
+    const orders = await Order.find().sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -244,7 +247,7 @@ app.get('/admin', async (req, res) => {
 
 app.get('/admin/stars', async (req, res) => {
   try {
-    const orders = await Order.find({ type: 'stars' });
+    const orders = await Order.find({ type: 'stars' }).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -254,7 +257,7 @@ app.get('/admin/stars', async (req, res) => {
 
 app.get('/admin/premium', async (req, res) => {
   try {
-    const orders = await Order.find({ type: 'premium' });
+    const orders = await Order.find({ type: 'premium' }).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -272,6 +275,8 @@ app.post('/complete-order/:id', async (req, res) => {
     res.status(500).send('❌ حدث خطأ أثناء تحديث الطلب');
   }
 });
+
+// ... (بقية الكود كما هو)
 
 // باقي كود ويب هوك التيليجرام كما هو...
 app.post('/telegramWebhook', async (req, res) => {
