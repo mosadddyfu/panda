@@ -245,7 +245,7 @@ app.get('/admin', async (req, res) => {
   }
 });
 
-app.get('/admin', async (req, res) => {
+app.get('/admin/stars', async (req, res) => {
   try {
     const orders = await Order.find({ type: 'stars' }).sort({ createdAt: -1 });
     res.json(orders);
