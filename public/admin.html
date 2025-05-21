@@ -135,7 +135,7 @@
   </div>
 
   <div class="container" id="adminContainer">
-    <h1>لوحة تحكم الأدمن</h1>
+    <h1>قائمة طلبات Panda Store🔥</h1>
     <div id="passwordSection">
       <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" />
       <br />
@@ -222,7 +222,7 @@
     if (entered === PASSWORD) {
       document.getElementById("passwordSection").style.display = "none";
       document.getElementById("ordersSection").style.display = "block";
-      fetchOrders('stars');
+      fetchAllOrders();
     } else {
       Swal.fire({
         icon: 'error',
@@ -236,41 +236,21 @@
     }
   }
 
+  let allOrders = [];
   let starsOrders = [];
   let premiumOrders = [];
 
-  function showTab(tabName) {
-    // تحديث أزرار التبويب
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.textContent.includes(tabName === 'stars' ? 'النجوم' : 'البريميوم')) {
-        btn.classList.add('active');
-      }
-    });
-
-    // إظهار التبويب المحدد وإخفاء الآخر
-    document.getElementById('starsTab').style.display = tabName === 'stars' ? 'block' : 'none';
-    document.getElementById('premiumTab').style.display = tabName === 'premium' ? 'block' : 'none';
-
-    // جلب البيانات إذا لم تكن محملة بالفعل
-    if (tabName === 'premium' && premiumOrders.length === 0) {
-      fetchOrders('premium');
-    }
-  }
-
-  async function fetchOrders(type) {
+  async function fetchAllOrders() {
     try {
-      const endpoint = type === 'stars' ? '/admin/stars' : '/admin/premium';
-      const res = await axios.get(`https://pandastores.onrender.com${endpoint}`);
-      const orders = res.data.reverse();
+      const [starsRes, premiumRes] = await Promise.all([
+        axios.get("https://pandastores.onrender.com/admin/stars"),
+        axios.get("https://pandastores.onrender.com/admin/premium")
+      ]);
       
-      if (type === 'stars') {
-        starsOrders = orders;
-        renderStarsOrders();
-      } else {
-        premiumOrders = orders;
-        renderPremiumOrders();
-      }
+      starsOrders = starsRes.data.reverse();
+      premiumOrders = premiumRes.data.reverse();
+      
+      renderStarsOrders();
     } catch (err) {
       Swal.fire({
         icon: 'error',
@@ -285,13 +265,42 @@
     }
   }
 
+  function showTab(tabName) {
+    // تحديث أزرار التبويب
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.textContent.includes(tabName === 'stars' ? 'النجوم' : 'البريميوم')) {
+        btn.classList.add('active');
+      }
+    });
+
+    // إظهار التبويب المحدد وإخفاء الآخر
+    document.getElementById('starsTab').style.display = tabName === 'stars' ? 'block' : 'none';
+    document.getElementById('premiumTab').style.display = tabName === 'premium' ? 'block' : 'none';
+
+    // إذا كان تبويب البريميوم ولم يتم تحميل بياناته بعد
+    if (tabName === 'premium' && premiumOrders.length === 0) {
+      fetchPremiumOrders();
+    }
+  }
+
+  async function fetchPremiumOrders() {
+    try {
+      const res = await axios.get("https://pandastores.onrender.com/admin/premium");
+      premiumOrders = res.data.reverse();
+      renderPremiumOrders();
+    } catch (err) {
+      console.error("Error fetching premium orders:", err);
+    }
+  }
+
   function renderStarsOrders() {
     const pendingBody = document.getElementById("pendingStarsTableBody");
     const completedBody = document.getElementById("completedStarsTableBody");
     pendingBody.innerHTML = "";
     completedBody.innerHTML = "";
 
-    starsOrders.forEach((order, index) => {
+    starsOrders.forEach((order) => {
       const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
       const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
       const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
@@ -300,7 +309,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>@${order.username}</td>
-          <td>${order.stars}</td>
+          <td>${order.stars || '--'}</td>
           <td>${amountUsd}</td>
           <td>${amountTon}</td>
           <td>${createdAt}</td>
@@ -311,7 +320,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>@${order.username}</td>
-          <td>${order.stars}</td>
+          <td>${order.stars || '--'}</td>
           <td>${amountUsd}</td>
           <td>${amountTon}</td>
           <td>${createdAt}</td>
@@ -327,7 +336,7 @@
     pendingBody.innerHTML = "";
     completedBody.innerHTML = "";
 
-    premiumOrders.forEach((order, index) => {
+    premiumOrders.forEach((order) => {
       const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
       const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
       const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
@@ -336,7 +345,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>@${order.username}</td>
-          <td>${order.premiumMonths}</td>
+          <td>${order.premiumMonths || '--'}</td>
           <td>${amountUsd}</td>
           <td>${amountTon}</td>
           <td>${createdAt}</td>
@@ -347,7 +356,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>@${order.username}</td>
-          <td>${order.premiumMonths}</td>
+          <td>${order.premiumMonths || '--'}</td>
           <td>${amountUsd}</td>
           <td>${amountTon}</td>
           <td>${createdAt}</td>
@@ -374,6 +383,14 @@
           renderPremiumOrders();
         }
       }
+      
+      // إظهار رسالة نجاح
+      Swal.fire({
+        icon: 'success',
+        title: 'تم تحديث حالة الطلب',
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (err) {
       Swal.fire({
         icon: 'error',
