@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "سيرفر لموقع Panda Store لمعالجة الطلبات وتخزينها في MongoDB",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node server.js"
   },
