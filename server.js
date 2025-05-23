@@ -439,7 +439,7 @@ app.post('/telegramWebhook', async (req, res) => {
         inline_keyboard: [
           [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
           [{ text: "للشراء والطلب اضغط هنا 🚀", callback_data: "check_order_time" }],
-          [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/Buy_StarsTG" }]
+          [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
         ]
       };
 
@@ -697,7 +697,7 @@ app.post('/telegramWebhook', async (req, res) => {
       inline_keyboard: [
         [{ text: "للمشاهدة اضغط هنا 🚀", callback_data: "watch_warning" }],
         [{ text: "للشراء والطلب اضغط هنا 🚀", callback_data: "check_order_time" }],
-        [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/Buy_StarsTG" }]
+        [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
       ]
     };
 
