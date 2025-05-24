@@ -459,7 +459,7 @@ app.post('/telegramWebhook', async (req, res) => {
       const welcomeMessage = "✅ تم التحقق بنجاح! مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
       const replyMarkup = {
         inline_keyboard: [
-          [{ text: "للشراء من موقعنا الرسمى 🚀", callback_data: "check_order_time" }],
+          [{ text: "للشراء من هنا 🚀", callback_data: "check_order_time" }],
           [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
         ]
       };
@@ -716,7 +716,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "للشراء من موقعنا الرسمى اضغط هنا 🚀", callback_data: "check_order_time" }],
+        [{ text: "للشراء من هنا 🚀", callback_data: "check_order_time" }],
         [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
       ]
     };
@@ -786,10 +786,10 @@ app.post('/telegramWebhook', async (req, res) => {
       } else {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          text: "✅ يمكنك الآن الشراء من خلال الموقع:",
+          text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم من خلال الرابط أدناه:",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🚀 ابدأ الشراء الآن", url: "https://pandastores.netlify.app" }]
+              [{ text: "🚀 افتح Panda Store ", url: "https://pandastores.netlify.app" }]
             ]
           }
         });
