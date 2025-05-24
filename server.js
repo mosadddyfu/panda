@@ -182,7 +182,7 @@ app.post('/order', async (req, res) => {
     });
     await newOrder.save();
 
-    const fragmentLink = "https://fragment.com/stars";
+    const fragmentLink = "https://fragment.com/stars/buy";
 
     for (let adminId of ADMIN_IDS) {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
@@ -235,6 +235,9 @@ app.post('/premium', async (req, res) => {
         text: `New Premium Order 🛒\n👤 Username: @${username}\n📅 Months: ${months}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
         reply_markup: {
           inline_keyboard: [
+            [
+              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url:fragment.com/premium/gift } }
+            ],
             [
               { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${newOrder._id}` }
             ]
