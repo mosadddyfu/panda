@@ -183,7 +183,6 @@ app.post('/order', async (req, res) => {
     await newOrder.save();
 
     const fragmentStars = "https://fragment.com/stars/buy";
-    const fragmentpremium = "https://fragment.com/premium/gift";
 
     for (let adminId of ADMIN_IDS) {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
@@ -229,7 +228,7 @@ app.post('/premium', async (req, res) => {
       createdAt: orderCreatedAt
     });
     await newOrder.save();
-
+     const fragmentPremium = "https://fragment.com/premium/gift";
     for (let adminId of ADMIN_IDS) {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: adminId,
@@ -237,7 +236,7 @@ app.post('/premium', async (req, res) => {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url:fragmentpremium } }
+              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentPremium } }
             ],
             [
               { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${newOrder._id}` }
