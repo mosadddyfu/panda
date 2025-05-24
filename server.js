@@ -459,7 +459,7 @@ app.post('/telegramWebhook', async (req, res) => {
       const welcomeMessage = "✅ تم التحقق بنجاح! مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
       const replyMarkup = {
         inline_keyboard: [
-          [{ text: "للشراء من هنا 🚀", callback_data: "check_order_time" }],
+          [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
           [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
         ]
       };
@@ -716,7 +716,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "للشراء من هنا 🚀", callback_data: "check_order_time" }],
+        [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
         [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
       ]
     };
