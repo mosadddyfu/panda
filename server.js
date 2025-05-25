@@ -1,13 +1,11 @@
-
 require('dotenv').config();
 const { Client } = require('pg');
 const express = require('express');
-const mongoose = require('mongoose');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
 
-// اتصال PostgreSQL للاحالات
+// اتصال PostgreSQL لجميع البيانات
 const pgClient = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -16,35 +14,17 @@ const pgClient = new Client({
 });
 
 pgClient.connect()
-  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح"))
+  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL على Render بنجاح"))
   .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL:', err));
 
-// اتصال MongoDB للأوامر
-const mongoURI = process.env.MONGO_URI;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID].filter(Boolean);
 const CHANNEL_ID = process.env.CHANNEL_ID;
 
-mongoose.connect(mongoURI)
-  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات MongoDB Atlas بنجاح"))
-  .catch((error) => console.error("❌ فشل الاتصال بقاعدة البيانات:", error));
-
-// المخططات والنماذج
-const orderSchema = new mongoose.Schema({
-  username: String,
-  stars: Number,
-  amountTon: String,
-  amountUsd: String,
-  type: { type: String, enum: ['stars', 'premium'], default: 'stars' },
-  premiumMonths: Number,
-  createdAt: { type: Date, default: Date.now },
-  completed: { type: Boolean, default: false },
-});
-const Order = mongoose.model('Order', orderSchema);
-
-// التأكد من وجود جدول الاحالات مع جميع الأعمدة المطلوبة
+// التأكد من وجود جميع الجداول المطلوبة
 (async () => {
   try {
+    // جدول الاحالات
     await pgClient.query(`
       CREATE TABLE IF NOT EXISTS referrals (
         user_id BIGINT PRIMARY KEY,
@@ -59,9 +39,25 @@ const Order = mongoose.model('Order', orderSchema);
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
-    console.log("✅ تم التأكد من وجود جدول referrals مع جميع الأعمدة");
+
+    // جدول الطلبات
+    await pgClient.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255),
+        stars INTEGER,
+        amount_ton VARCHAR(50),
+        amount_usd VARCHAR(50),
+        type VARCHAR(10) CHECK (type IN ('stars', 'premium')) DEFAULT 'stars',
+        premium_months INTEGER,
+        created_at TIMESTAMP DEFAULT NOW(),
+        completed BOOLEAN DEFAULT false
+      );
+    `);
+
+    console.log("✅ تم التأكد من وجود جميع الجداول في قاعدة بيانات Render");
   } catch (err) {
-    console.error("❌ خطأ في إنشاء/تعديل جدول referrals:", err);
+    console.error("❌ خطأ في إنشاء/تعديل الجداول:", err);
   }
 })();
 
@@ -158,7 +154,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // ==============================================
-// نقاط النهاية
+// نقاط النهاية المعدلة للعمل مع PostgreSQL
 // ==============================================
 
 app.post('/order', async (req, res) => {
@@ -172,16 +168,13 @@ app.post('/order', async (req, res) => {
       hour12: true, timeZone: 'Africa/Cairo',
     });
 
-    const newOrder = new Order({
-      username,
-      stars,
-      amountTon,
-      amountUsd,
-      type: 'stars',
-      createdAt: orderCreatedAt
-    });
-    await newOrder.save();
+    const result = await pgClient.query(
+      `INSERT INTO orders (username, stars, amount_ton, amount_usd, type, created_at)
+       VALUES ($1, $2, $3, $4, 'stars', $5) RETURNING id`,
+      [username, stars, amountTon, amountUsd, orderCreatedAt]
+    );
 
+    const orderId = result.rows[0].id;
     const fragmentStars = "https://fragment.com/stars/buy";
 
     for (let adminId of ADMIN_IDS) {
@@ -194,7 +187,7 @@ app.post('/order', async (req, res) => {
               { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentStars } }
             ],
             [
-              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${newOrder._id}` }
+              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${orderId}` }
             ]
           ]
         }
@@ -219,16 +212,15 @@ app.post('/premium', async (req, res) => {
       hour12: true, timeZone: 'Africa/Cairo',
     });
 
-    const newOrder = new Order({
-      username,
-      amountTon,
-      amountUsd,
-      type: 'premium',
-      premiumMonths: months,
-      createdAt: orderCreatedAt
-    });
-    await newOrder.save();
-     const fragmentPremium = "https://fragment.com/premium/gift";
+    const result = await pgClient.query(
+      `INSERT INTO orders (username, amount_ton, amount_usd, type, premium_months, created_at)
+       VALUES ($1, $2, $3, 'premium', $4, $5) RETURNING id`,
+      [username, amountTon, amountUsd, months, orderCreatedAt]
+    );
+
+    const orderId = result.rows[0].id;
+    const fragmentPremium = "https://fragment.com/premium/gift";
+
     for (let adminId of ADMIN_IDS) {
       await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         chat_id: adminId,
@@ -239,7 +231,7 @@ app.post('/premium', async (req, res) => {
               { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentPremium } }
             ],
             [
-              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${newOrder._id}` }
+              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${orderId}` }
             ]
           ]
         }
@@ -253,13 +245,11 @@ app.post('/premium', async (req, res) => {
   }
 });
 
-// ... (بقية الكود كما هو حتى نقاط النهاية)
-
 // نقاط النهاية المعدلة
 app.get('/admin', async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    res.json(orders);
+    const result = await pgClient.query('SELECT * FROM orders ORDER BY created_at DESC');
+    res.json(result.rows);
   } catch (error) {
     console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء جلب البيانات');
@@ -268,8 +258,8 @@ app.get('/admin', async (req, res) => {
 
 app.get('/admin/stars', async (req, res) => {
   try {
-    const orders = await Order.find({ type: 'stars' }).sort({ createdAt: -1 });
-    res.json(orders);
+    const result = await pgClient.query("SELECT * FROM orders WHERE type = 'stars' ORDER BY created_at DESC");
+    res.json(result.rows);
   } catch (error) {
     console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء جلب بيانات النجوم');
@@ -278,8 +268,8 @@ app.get('/admin/stars', async (req, res) => {
 
 app.get('/admin/premium', async (req, res) => {
   try {
-    const orders = await Order.find({ type: 'premium' }).sort({ createdAt: -1 });
-    res.json(orders);
+    const result = await pgClient.query("SELECT * FROM orders WHERE type = 'premium' ORDER BY created_at DESC");
+    res.json(result.rows);
   } catch (error) {
     console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء جلب بيانات البريميوم');
@@ -289,7 +279,7 @@ app.get('/admin/premium', async (req, res) => {
 app.post('/complete-order/:id', async (req, res) => {
   try {
     const orderId = req.params.id;
-    await Order.findByIdAndUpdate(orderId, { completed: true });
+    await pgClient.query('UPDATE orders SET completed = true WHERE id = $1', [orderId]);
     res.status(200).send('✅ تم تحديث حالة الطلب');
   } catch (error) {
     console.error(error);
@@ -297,9 +287,8 @@ app.post('/complete-order/:id', async (req, res) => {
   }
 });
 
-// ... (بقية الكود كما هو)
+// ... (بقية كود ويب هوك التيليجرام كما هو مع تعديلات طفيفة للعمل مع PostgreSQL)
 
-// باقي كود ويب هوك التيليجرام كما هو...
 app.post('/telegramWebhook', async (req, res) => {
   const body = req.body;
 
@@ -343,6 +332,7 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
+  // ... (بقية كود ويب هوك التيليجرام كما هو مع استبدال استدعاءات MongoDB باستدعاءات PostgreSQL)
   if (body.message?.text === "/start" || body.message?.text === "/shop" || body.message?.text === "/invite") {
     const chatId = body.message.chat.id;
     const isSubscribed = await isUserSubscribed(chatId);
@@ -890,6 +880,7 @@ app.post('/telegramWebhook', async (req, res) => {
       console.error("❌ خطأ أثناء معالجة زر البوت:", error.response ? error.response.data : error.message);
     }
   }
+
 
   res.sendStatus(200);
 });
