@@ -125,7 +125,6 @@
   </style>
 </head>
 <body>
-  <!-- نفس واجهة المستخدم السابقة -->
   <div class="header">
     <div class="nav">
       <a href="/index.html">الرئيسية</a>
@@ -314,9 +313,9 @@
   function createOrderRow(order, type) {
     const row = document.createElement("tr");
     const username = order.username || 'غير معروف';
-    const amountUsd = order.amountUsd ? `$${order.amountUsd}` : "--";
-    const amountTon = order.amountTon ? `${order.amountTon} TON` : "--";
-    const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString("ar-EG") : "--";
+    const amountUsd = order.amount_usd ? `$${order.amount_usd}` : "--";
+    const amountTon = order.amount_ton ? `${order.amount_ton} TON` : "--";
+    const createdAt = order.created_at ? new Date(order.created_at).toLocaleString("ar-EG") : "--";
 
     if (type === 'stars') {
       row.innerHTML = `
@@ -325,16 +324,16 @@
         <td>${amountUsd}</td>
         <td>${amountTon}</td>
         <td>${createdAt}</td>
-        ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order._id}', '${type}')">تم التنفيذ</button></td>` : ''}
+        ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order.id}', '${type}')">تم التنفيذ</button></td>` : ''}
       `;
     } else {
       row.innerHTML = `
         <td>@${username}</td>
-        <td>${order.premiumMonths || '--'}</td>
+        <td>${order.premium_months || '--'}</td>
         <td>${amountUsd}</td>
         <td>${amountTon}</td>
         <td>${createdAt}</td>
-        ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order._id}', '${type}')">تم التنفيذ</button></td>` : ''}
+        ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order.id}', '${type}')">تم التنفيذ</button></td>` : ''}
       `;
     }
 
@@ -346,11 +345,11 @@
       await axios.post(`/complete-order/${orderId}`);
       
       if (type === 'stars') {
-        const order = starsOrders.find(o => o._id === orderId);
+        const order = starsOrders.find(o => o.id == orderId);
         if (order) order.completed = true;
         renderStarsOrders();
       } else {
-        const order = premiumOrders.find(o => o._id === orderId);
+        const order = premiumOrders.find(o => o.id == orderId);
         if (order) order.completed = true;
         renderPremiumOrders();
       }
