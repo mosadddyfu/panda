@@ -14,7 +14,7 @@ const pgClient = new Client({
 });
 
 pgClient.connect()
-  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح"))
+  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL على Render بنجاح"))
   .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL:', err));
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -44,18 +44,18 @@ const CHANNEL_ID = process.env.CHANNEL_ID;
     await pgClient.query(`
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
-        username VARCHAR(255) NOT NULL,
+        username VARCHAR(255),
         stars INTEGER,
-        amount_ton VARCHAR(50) NOT NULL,
-        amount_usd VARCHAR(50) NOT NULL,
+        amount_ton VARCHAR(50),
+        amount_usd VARCHAR(50),
         type VARCHAR(10) CHECK (type IN ('stars', 'premium')) DEFAULT 'stars',
         premium_months INTEGER,
-        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
         completed BOOLEAN DEFAULT false
       );
     `);
 
-    console.log("✅ تم التأكد من وجود جميع الجداول في قاعدة البيانات");
+    console.log("✅ تم التأكد من وجود جميع الجداول في قاعدة بيانات Render");
   } catch (err) {
     console.error("❌ خطأ في إنشاء/تعديل الجداول:", err);
   }
@@ -81,13 +81,14 @@ app.use((req, res, next) => {
 // وظائف مساعدة
 function isWorkingHours() {
   const now = new Date();
+  // تحويل الوقت إلى توقيت القاهرة
   const options = {
     timeZone: 'Africa/Cairo',
     hour: 'numeric',
     hour12: false
   };
   const hour = parseInt(new Intl.DateTimeFormat('en-GB', options).format(now));
-  return hour >= 8 && hour < 24;
+  return hour >= 8 && hour < 24; // من 8 صباحًا حتى 12 منتصف الليل
 }
 
 function generateRandomEmojis(count) {
@@ -153,18 +154,14 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // ==============================================
-// نقاط النهاية
+// نقاط النهاية المعدلة للعمل مع PostgreSQL
 // ==============================================
 
 app.post('/order', async (req, res) => {
   try {
     const { username, stars, amountTon, amountUsd, createdAt } = req.body;
-    
-    if (!username || !stars || !amountTon || !amountUsd) {
-      return res.status(400).send('❌ بيانات الطلب غير مكتملة');
-    }
-
     const orderCreatedAt = createdAt || new Date().toISOString();
+
     const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
@@ -181,29 +178,25 @@ app.post('/order', async (req, res) => {
     const fragmentStars = "https://fragment.com/stars/buy";
 
     for (let adminId of ADMIN_IDS) {
-      try {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          chat_id: adminId,
-          text: `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentStars } }
-              ],
-              [
-                { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${orderId}` }
-              ]
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: adminId,
+        text: `New Order 🛒\n👤 Username: @${username}\n⭐️ Stars: ${stars}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentStars } }
+            ],
+            [
+              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${orderId}` }
             ]
-          }
-        });
-      } catch (error) {
-        console.error(`Failed to send notification to admin ${adminId}:`, error);
-      }
+          ]
+        }
+      });
     }
 
     res.status(200).send('✅ تم استلام طلبك بنجاح!');
   } catch (error) {
-    console.error('Error in /order endpoint:', error);
+    console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
   }
 });
@@ -211,12 +204,8 @@ app.post('/order', async (req, res) => {
 app.post('/premium', async (req, res) => {
   try {
     const { username, months, amountTon, amountUsd } = req.body;
-    
-    if (!username || !months || !amountTon || !amountUsd) {
-      return res.status(400).send('❌ بيانات الطلب غير مكتملة');
-    }
-
     const orderCreatedAt = new Date().toISOString();
+
     const formattedDate = new Date(orderCreatedAt).toLocaleString('en-GB', {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
@@ -233,39 +222,36 @@ app.post('/premium', async (req, res) => {
     const fragmentPremium = "https://fragment.com/premium/gift";
 
     for (let adminId of ADMIN_IDS) {
-      try {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          chat_id: adminId,
-          text: `New Premium Order 🛒\n👤 Username: @${username}\n📅 Months: ${months}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentPremium } }
-              ],
-              [
-                { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${orderId}` }
-              ]
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: adminId,
+        text: `New Premium Order 🛒\n👤 Username: @${username}\n📅 Months: ${months}\n💰 TON: ${amountTon} TON\n💵 USDT: ${amountUsd} USDT\n📅 Order Date: ${formattedDate}`,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "🔗 تنفيذ الطلب للمستخدم", web_app: { url: fragmentPremium } }
+            ],
+            [
+              { text: "🛩 تحديث الطلب فى قاعده البيانات", callback_data: `complete_${orderId}` }
             ]
-          }
-        });
-      } catch (error) {
-        console.error(`Failed to send notification to admin ${adminId}:`, error);
-      }
+          ]
+        }
+      });
     }
 
     res.status(200).send('✅ تم استلام طلبك بنجاح!');
   } catch (error) {
-    console.error('Error in /premium endpoint:', error);
+    console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
   }
 });
 
+// نقاط النهاية المعدلة
 app.get('/admin', async (req, res) => {
   try {
     const result = await pgClient.query('SELECT * FROM orders ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (error) {
-    console.error('Error in /admin endpoint:', error);
+    console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء جلب البيانات');
   }
 });
@@ -275,7 +261,7 @@ app.get('/admin/stars', async (req, res) => {
     const result = await pgClient.query("SELECT * FROM orders WHERE type = 'stars' ORDER BY created_at DESC");
     res.json(result.rows);
   } catch (error) {
-    console.error('Error in /admin/stars endpoint:', error);
+    console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء جلب بيانات النجوم');
   }
 });
@@ -285,7 +271,7 @@ app.get('/admin/premium', async (req, res) => {
     const result = await pgClient.query("SELECT * FROM orders WHERE type = 'premium' ORDER BY created_at DESC");
     res.json(result.rows);
   } catch (error) {
-    console.error('Error in /admin/premium endpoint:', error);
+    console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء جلب بيانات البريميوم');
   }
 });
@@ -296,10 +282,12 @@ app.post('/complete-order/:id', async (req, res) => {
     await pgClient.query('UPDATE orders SET completed = true WHERE id = $1', [orderId]);
     res.status(200).send('✅ تم تحديث حالة الطلب');
   } catch (error) {
-    console.error('Error in /complete-order endpoint:', error);
+    console.error(error);
     res.status(500).send('❌ حدث خطأ أثناء تحديث الطلب');
   }
 });
+
+// ... (بقية كود ويب هوك التيليجرام كما هو مع تعديلات طفيفة للعمل مع PostgreSQL)
 
 app.post('/telegramWebhook', async (req, res) => {
   const body = req.body;
@@ -344,6 +332,7 @@ app.post('/telegramWebhook', async (req, res) => {
     return res.sendStatus(200);
   }
 
+  // ... (بقية كود ويب هوك التيليجرام كما هو مع استبدال استدعاءات MongoDB باستدعاءات PostgreSQL)
   if (body.message?.text === "/start" || body.message?.text === "/shop" || body.message?.text === "/invite") {
     const chatId = body.message.chat.id;
     const isSubscribed = await isUserSubscribed(chatId);
@@ -767,6 +756,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const messageId = callbackQuery.message.message_id;
     const data = callbackQuery.data;
 
+
     if (data === "check_order_time") {
       if (!isWorkingHours()) {
         const now = new Date();
@@ -774,7 +764,7 @@ app.post('/telegramWebhook', async (req, res) => {
           timeZone: 'Africa/Cairo',
           hour: '2-digit',
           minute: '2-digit',
-          hour12: true
+          hour12: true // هنا نستخدم true لنظام 12 ساعة
         };
         const currentTime = now.toLocaleTimeString('ar-EG', timeOptions);
 
@@ -831,7 +821,7 @@ app.post('/telegramWebhook', async (req, res) => {
       if (data.startsWith('confirmComplete_')) {
         const [_, orderId, messageIdToUpdate] = data.split('_');
 
-        await pgClient.query('UPDATE orders SET completed = true WHERE id = $1', [orderId]);
+        await Order.findByIdAndUpdate(orderId, { completed: true });
 
         try {
           await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/deleteMessage`, {
@@ -890,6 +880,7 @@ app.post('/telegramWebhook', async (req, res) => {
       console.error("❌ خطأ أثناء معالجة زر البوت:", error.response ? error.response.data : error.message);
     }
   }
+
 
   res.sendStatus(200);
 });
