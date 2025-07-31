@@ -1,21 +1,34 @@
-require('dotenv').config();
+// 1. تحميل متغيرات البيئة
+require('dotenv').config(); // يمكن حذفه إذا كنت تستخدم Render وتضبط المتغيرات هناك
+
+// 2. استيراد المكتبات
 const { Client } = require('pg');
 const express = require('express');
-const axios = require('axios');
-const bodyParser = require('body-parser');
-const app = express();
-
-// اتصال PostgreSQL لجميع البيانات
 const pgClient = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString: 'postgresql://data_k7hh_user:a4rANFLml8luQBejgZ7nq4mDj2wvWWeT@dpg-d259o063jp1c73d43is0-a.oregon-postgres.render.com/data_k7hh',
+  ssl: { rejectUnauthorized: false }
 });
 
+// الاتصال بقاعدة البيانات لمرة واحدة فقط
 pgClient.connect()
   .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح"))
   .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL:', err));
+
+const axios = require('axios');
+const bodyParser = require('body-parser');
+
+// 3. إنشاء تطبيق Express
+const app = express();
+
+// 4. إعداد الاتصال بقاعدة البيانات
+// const pgClient = new Client({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: { rejectUnauthorized: false }
+// });
+
+// 5. الاتصال بقاعدة البيانا
+
+// ... باقي الكود كما هو ...
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID].filter(Boolean);
@@ -63,8 +76,9 @@ const CHANNEL_ID = process.env.CHANNEL_ID;
 
 const allowedOrigins = [
   'https://pandastores.netlify.app',
+  'https://pandastores.netlify.app/buy',
   'https://panda-stores-mu.vercel.app',
-  'https://pandastores.onrender.com'
+  'https://pandastore-f2yn.onrender.com'
 ];
 
 app.use((req, res, next) => {
@@ -749,7 +763,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const helpMessage = "عرض قائمة الطلبات:";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "DataBase🚀", web_app: { url: "https://pandastores.onrender.com/admin.html" } }]
+        [{ text: "DataBase🚀", web_app: { url: "https://pandastore-f2yn.onrender.com/admin.html" } }]
       ]
     };
 
@@ -900,7 +914,7 @@ app.get("/", (req, res) => {
 
 const activateWebhook = async () => {
   try {
-    const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastores.onrender.com/telegramWebhook`;
+    const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastore-f2yn.onrender.com/telegramWebhook`;
     const { data } = await axios.get(botUrl);
     console.log("✅ Webhook set successfully:", data);
   } catch (error) {
