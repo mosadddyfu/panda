@@ -796,17 +796,15 @@ app.post('/telegramWebhook', async (req, res) => {
           text: `❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n\n🕘 ساعات العمل: من 8 صباحًا حتى 12 منتصف الليل بتوقيت القاهرة (مصر).\n\n⏳ الوقت الحالي في مصر: ${currentTime}\n\n🔁 يرجى المحاولة مرة أخرى خلال ساعات العمل.`
         });
       } else {
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم من خلال الرابط أدناه:",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🚀 اشترى نجوم من هنا ⭐️", url: "t.me/PandaStores_bot/stars" }]
-            ],
-            inline_keyboard: [
-            [{text: "🚀 اشترى بريميوم من هنا 🫆" , url: "t.me/PandaStores_bot/premium"}  
-          ] 
-              }
+              [{ text: "🚀 اشترى نجوم من هنا ⭐️", url: "t.me/PandaStores_bot/stars" }],
+              [{ text: "🚀 اشترى بريميوم من هنا 🫆", url: "t.me/PandaStores_bot/premium" }]
+            ]
+          }
         });
       }
     }
