@@ -801,9 +801,12 @@ app.post('/telegramWebhook', async (req, res) => {
           text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم من خلال الرابط أدناه:",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🚀 افتح Panda Store ", url: "t.me/PandaStores_bot/stars" }]
-            ]
-          }
+              [{ text: "🚀 اشترى نجوم من هنا ⭐️", url: "t.me/PandaStores_bot/stars" }]
+            ],
+            inline_keyboard: [
+            [{text: "🚀 اشترى بريميوم من هنا 🫆" , url: "t.me/PandaStores_bot/premium"}  
+          ] 
+              }
         });
       }
     }
