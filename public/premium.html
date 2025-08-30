@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" id="htmlElement">
+<html lang="ar" dir="rtl" id="htmlElement">
 
 <head>
   <meta charset="UTF-8">
@@ -7,6 +7,11 @@
   <title>Buy Telegram Premium - Panda Store</title>
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" type="image/png" href="/assets/pandastore.jpg">
+
+  <!-- Shared site styles to match buy page navbar -->
+  <link href="https://staropay.com/css/reset.css" rel="stylesheet" />
+  <link href="https://staropay.com/css/base.css?v=2" rel="stylesheet" />
+  <link href="https://staropay.com/css/nav.css" rel="stylesheet" />
 
   <!-- Axios Library -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -22,162 +27,369 @@
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #121212;
-      color: #e0e0e0;
+      background: linear-gradient(135deg, #1e2a47 0%, #0e1830 100%);
+      color: #e6f2ff;
       font-size: 16px;
       margin: 0;
-      padding: 0;
+      padding: 0 12px 40px;
       text-align: center;
-      position: relative;
     }
 
     .header {
-      background: #1a1a1e;
-      color: #e0e0e0;
-      padding: 10px;
+      background: rgba(10, 19, 38, 0.7);
+      backdrop-filter: blur(8px);
+      color: #e6f2ff;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid rgba(0, 163, 255, 0.15);
     }
 
     .nav {
       display: flex;
-      gap: 15px;
+      gap: 10px;
     }
 
     .nav a {
-      background: #2c2c2c;
-      color: #e0e0e0;
+      background: #0f1e36;
+      color: #e6f2ff;
       text-decoration: none;
-      font-size: 16px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      border: #3a3a3a 1px solid;
-      transition: background-color 0.3s, color 0.3s;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 163, 255, 0.18);
+      transition: all .2s ease;
     }
 
     .nav a:hover {
-      background: #007aff;
-      color: #ffffff;
+      background: #0c1a2f;
+      color: #fff;
     }
 
     .wallet-btn {
       font-size: 16px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      margin-left: 10px;
+      padding: 6px 10px;
+      border-radius: 8px;
       color: white;
       border: none;
     }
 
     .container {
-      max-width: 700px;
-      margin: 30px auto;
-      border-radius: 10px;
-      padding: 20px;
-      background: #1a1a1e;
-      color: #ffffff;
-      border: 1px solid #2a2a2e;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 16px 12px;
+      background: transparent;
     }
 
     .section-title {
-      font-size: 24px;
-      margin-bottom: 10px;
-      color: #ffffff;
+      font-size: 28px;
+      margin: 12px 0 2px;
+      color: #fff;
     }
 
     .section-sub {
-      margin-bottom: 30px;
-      color: #b0b0b0;
+      margin: 0 0 18px;
+      color: #9ecbff;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #c7c7c7;
+      margin: 0 0 8px;
+      font-weight: 600;
+      color: #cfe6ff;
+      text-align: start;
     }
 
     input {
-      width: 93%;
-      padding: 10px;
-      margin-bottom: 20px;
-      background-color: #252525;
-      color: #e0e0e0;
-      border: 1px solid #383838;
-      border-radius: 6px;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      background: #0f1a2e;
+      color: #e6f2ff;
+      border: 1px solid rgba(0, 163, 255, 0.2);
+      border-radius: 12px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    /* Smaller username textbox */
+    #username {
+      display: block;
+      max-width: 360px;
+      /* smaller width */
+      padding: 12px 16px;
+      /* match card horizontal padding */
+      margin: 0 auto;
+      /* center horizontally */
+      font-size: 15px;
+      border-radius: 18px;
+      /* match card radius */
     }
 
     input:focus {
-      border-color: #007aff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      border-color: #34b3ff;
+      box-shadow: 0 0 0 3px rgba(0, 163, 255, 0.15);
     }
 
     .premium-options {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr;
+      margin-top: 24px;
+      padding-inline: 18px;
     }
 
     .premium-option {
-      border: 1px solid #3a3a3a;
-      border-radius: 8px;
-      padding: 15px;
-      background: #2c2c2c;
-      color: #e0e0e0;
-      cursor: pointer;
+      border-radius: 18px;
+      padding: 18px 16px 16px;
+      background: linear-gradient(180deg, rgba(13, 25, 48, 0.97), rgba(10, 22, 39, 0.97));
+      color: #e6f2ff;
       text-align: center;
+      border: 1.5px solid rgba(0, 163, 255, 0.18);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.6s forwards;
-      transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      transform: translateY(18px);
+      animation: fadeInUp .5s forwards;
+      position: relative;
     }
 
     .premium-option:nth-child(1) {
-      animation-delay: 0.1s;
+      animation-delay: .05s
     }
 
     .premium-option:nth-child(2) {
-      animation-delay: 0.2s;
+      animation-delay: .1s
     }
 
     .premium-option:nth-child(3) {
-      animation-delay: 0.3s;
+      animation-delay: .15s
     }
 
     .premium-option:hover {
-      background: #2a2a2e;
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      border-color: #2a6ada;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 163, 255, 0.25);
+      border-color: rgba(0, 163, 255, 0.35);
     }
 
-    @keyframes fadeInUp {
+    .premium-option.active {
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6), 0 0 28px rgba(52, 179, 255, 0.45);
+      border-color: rgba(52, 179, 255, 0.6);
+      animation: glowPulse 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      from {
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 16px rgba(52, 179, 255, 0.35);
+      }
+
       to {
-        opacity: 1;
-        transform: translateY(0);
+        box-shadow: 0 22px 70px rgba(0, 0, 0, 0.65), 0 0 32px rgba(52, 179, 255, 0.55);
       }
     }
 
-    .buy-btn {
-      background: #007aff;
-      color: #fff;
-      padding: 12px 24px;
+    .plan-hero {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .plan-hero img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0, 163, 255, .2));
+      background: transparent;
+      border-radius: 0;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+    }
+
+    .premium-option h3 {
+      margin: 4px 0 8px;
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .premium-details {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      margin: 6px 0 10px;
+    }
+
+    .premium-price {
+      font-weight: 800;
+      color: #ffd76a;
+    }
+
+    .ton-val {
+      color: #9ecbff;
+      font-size: 14px;
+    }
+
+    .benefits {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 12px;
+      color: #d7e9ff;
+      text-align: start;
+    }
+
+    .benefits li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+    }
+
+    .benefits li::before {
+      content: "✓";
+      color: #8be28b;
+      font-weight: 900;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      justify-content: center;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 700;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background-color 0.3s;
+      font-size: 15px;
     }
 
-    .buy-btn:hover {
-      background: #0056b3;
+    .btn-buy {
+      background: linear-gradient(90deg, #ff4d77, #ff7a59);
     }
 
+    .btn-buy:active {
+      transform: translateY(1px);
+    }
+
+    /* Preview modal */
+    .preview-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 10, 20, 0.6);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+    }
+
+    .preview-modal {
+      width: min(560px, 92vw);
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(13, 25, 48, 0.97), rgba(10, 22, 39, 0.97));
+      border: 1px solid rgba(0, 163, 255, .25);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .55), 0 0 30px rgba(0, 163, 255, .25);
+      transform: scale(.95);
+      opacity: 0;
+      transition: .18s ease;
+      color: #e6f2ff;
+    }
+
+    .preview-backdrop.show {
+      display: flex;
+    }
+
+    .preview-backdrop.show .preview-modal {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .preview-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .preview-close {
+      background: transparent;
+      border: none;
+      color: #cfe6ff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .preview-body {
+      text-align: center;
+    }
+
+    .preview-hero {
+      display: flex;
+      justify-content: center;
+      margin: 6px 0 10px;
+    }
+
+    .preview-hero img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+    }
+
+    .preview-price {
+      font-weight: 800;
+      color: #ffd76a;
+      font-size: 18px;
+      margin-top: 6px;
+    }
+
+    .preview-ton {
+      color: #9ecbff;
+      font-size: 14px;
+    }
+
+    .preview-benefits {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 14px;
+      text-align: start;
+    }
+
+    .preview-benefits li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+    }
+
+    .preview-benefits li::before {
+      content: "✓";
+      color: #8be28b;
+      font-weight: 900;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .btn-cancel {
+      background: #0f1e36;
+      border: 1px solid rgba(0, 163, 255, .3);
+    }
+
+    /* Settings */
     .wallet-container {
       display: flex;
       align-items: center;
@@ -191,58 +403,55 @@
     }
 
     .settings-btn {
-      background: #2c2c2c;
-      color: #e0e0e0;
-      font-size: 16px;
-      padding: 8px 15px;
-      border-radius: 5px;
+      background: #0f1e36;
+      color: #e6f2ff;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      border: none;
-      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 163, 255, .2);
+      transition: all .2s;
     }
 
     .settings-btn:hover {
-      background: #3a3a3a;
-      transform: scale(1.05);
+      background: #0c1a2f;
     }
 
     .settings-menu {
       position: absolute;
       right: 0;
       top: 100%;
-      background: #1e1e1e;
-      color: #e0e0e0;
-      font-size: 16px;
-      border-radius: 8px;
+      background: #0f1a2e;
+      color: #e6f2ff;
+      font-size: 14px;
+      border-radius: 12px;
       padding: 8px 0;
       text-align: center;
       display: none;
       min-width: 180px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, .4);
       z-index: 1000;
-      border: 1px solid #333333;
+      border: 1px solid rgba(0, 163, 255, .2);
     }
 
     .settings-menu.show {
       display: block;
-      animation: fadeInDropdown 0.3s ease;
+      animation: fadeInDropdown .2s ease;
     }
 
     .settings-menu-item {
-      padding: 10px 20px;
+      padding: 10px 16px;
       cursor: pointer;
-      transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
     .settings-menu-item:hover {
-      background: #3a3a3a;
-      color: #ffffff;
+      background: #0c1a2f;
     }
 
     .settings-menu-item i {
@@ -250,10 +459,17 @@
       text-align: center;
     }
 
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     @keyframes fadeInDropdown {
       from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
       }
 
       to {
@@ -262,120 +478,269 @@
       }
     }
 
-    #preview {
-      position: absolute;
-      left: 0;
-      bottom: -10px;
-      color: #00A3FF;
-      background-color: transparent;
-      font-size: large;
-      padding: 2px 0;
+    #buy-btn {
+      display: none;
     }
 
-    .premium-details {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      color: #4CAF50;
-    }
-
-    .premium-price {
-      font-weight: bold;
-      color: #4CAF50;
-    }
-
-    @media (max-width: 600px) {
-      .settings-btn {
-        padding: 8px 12px;
+    @media (min-width: 720px) {
+      .premium-options {
+        grid-template-columns: 1fr 1fr 1fr;
       }
+    }
 
-      .settings-btn span {
+    /* Minimal helpers for buy-like mobile menu */
+    .mobile-menu-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 80%;
+      max-width: 300px;
+      height: 100%;
+      background-color: #030e17;
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, .5);
+    }
+
+    .mobile-menu-header {
+      padding: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .mobile-menu-body {
+      padding: 20px;
+    }
+
+    .mobile-menu-ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mobile-menu-li {
+      margin-bottom: 15px;
+    }
+
+    .mobile-menu-a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      display: block;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .mobile-menu-a:hover {
+      background-color: #031724;
+    }
+
+    .mobile-wallet-btn {
+      background: #031724;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 15px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .burger-btn {
+      display: none;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .navbar-wrapper {
         display: none;
       }
 
-      .settings-menu {
-        min-width: 150px;
+      .burger-btn {
+        display: block;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .burger-btn {
+        display: none;
       }
 
-      input {
-        width: 90%;
+      .mobile-menu-container {
+        display: none !important;
       }
+    }
+
+    /* Force burger on the right, logo on the left on mobile */
+    .navbar {
+      direction: ltr !important;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .navbar .burger-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 0;
+    }
+
+    .navbar .logo-wrapper {
+      margin-right: 0;
     }
   </style>
 </head>
 
 <body>
-  <div class="header">
-    <div class="nav">
-      <a href="/index.html" id="home-link">Home</a>
-      <a href="/buy.html" id="stars-link">Stars</a>
-      <a href="/premium.html" id="premium-link">Premium</a>
+  <nav class="navbar">
+    <div class="logo-wrapper">
+      <a class="navbar-brand" href="/index.html">
+        <img alt="Panda Store" src="/assets/pandastore.jpg" />
+        <h1>Panda Store</h1>
+      </a>
     </div>
-    <div class="wallet-container">
-      <div id="ton-connect-btn" class="wallet-btn"></div>
-    </div>
-  </div>
-
-  <div class="settings-container">
-    <button class="settings-btn" id="settings-btn">
-      <i class="fas fa-cog"></i>
-      <span id="settings-text">Settings</span>
-    </button>
-    <div class="settings-menu" id="settings-menu">
-      <div class="settings-menu-item" onclick="toggleLanguage()" id="language-switcher">
-        <i class="fas fa-language"></i>
-        <span>اللغة العربية</span>
+    <div class="navbar-wrapper">
+      <div class="navbar-sub-wrapper">
+        <ul class="navbar-items-wrapper">
+          <li class="item-default"><a class="item item-a" href="/index.html" id="home-link">Home</a></li>
+          <li class="item-default"><a class="item item-a" href="/buy.html" id="stars-link">Stars</a></li>
+          <li class="item-default"><a class="item item-a" href="/premium.html" id="premium-link">Premium</a></li>
+          <li class="item-default"><a class="item item-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
+              id="support-link">Support</a></li>
+          <li class="item-default"><a class="item item-a" href="https://t.me/PandaStoreShop" target="_blank"
+              id="channel-link">TG Channel</a></li>
+        </ul>
+      </div>
+      <div class="navbar-sub-wrapper navbar-profiler" style="gap:8px">
+        <button class="wallet-btn" style="background:#0f1e36;border:1px solid rgba(0,163,255,.25)"
+          onclick="toggleLanguage()" id="language-switcher">AR / EN</button>
       </div>
     </div>
+    <div class="burger-btn" id="burger_btn" aria-label="menu">
+      <svg fill="none" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+        <path d="M3 7C3 6.448 3.448 6 4 6H24C24.552 6 25 6.448 25 7C25 7.552 24.552 8 24 8H4C3.448 8 3 7.552 3 7Z"
+          fill="#ffffff" />
+        <path
+          d="M3 14C3 13.448 3.448 13 4 13H24C24.552 13 25 13.448 25 14C25 14.552 24.552 15 24 15H4C3.448 15 3 14.552 3 14Z"
+          fill="#ffffff" />
+        <path
+          d="M4 20C3.448 20 3 20.448 3 21C3 21.552 3.448 22 4 22H24C24.552 22 25 21.552 25 21C25 20.448 24.552 20 24 20H4Z"
+          fill="#ffffff" />
+      </svg>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu-container" id="mobile_menu_container">
+    <div class="mobile-menu-header">
+      <div class="mobile-menu-cross" id="mobile_menu_cross">
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+          <path d="M19 5L5 19M5.00001 5L19 19" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </div>
+    </div>
+    <div class="mobile-menu-body">
+      <div id="ton-connect-btn-mobile" class="mobile-wallet-btn">Connect Wallet : <br><br></div>
+      <button class="mobile-wallet-btn" onclick="toggleLanguage()">AR / EN</button>
+      <ul class="mobile-menu-ul">
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/index.html" id="home-link-mobile">Home</a></li>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/buy.html" id="stars-link-mobile">Stars</a></li>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/premium.html" id="premium-link-mobile">Premium</a>
+        </li>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
+            id="support-link-mobile">Support</a></li>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="https://t.me/PandaStoreShop" target="_blank"
+            id="channel-link-mobile">TG Channel</a></li>
+      </ul>
+    </div>
   </div>
 
-  <h1 class="section-title" id="main-title">Buy Telegram Premium</h1>
-  <p class="section-sub" id="sub-title">Subscribe for yourself or friends</p>
+  <h1 class="section-title" id="main-title">اشترِ تليجرام بريميوم</h1><br>
+  <p class="section-sub" id="sub-title">اشترك لنفسك أو لأصدقائك</p>
 
   <div class="container">
     <label id="username-label">Telegram username</label>
-    <input type="text" placeholder="@username" id="username" required />
-
-    <label id="plan-label">Choose a subscription plan:</label>
+    <input type="text" placeholder="@username" id="username" required /><br>
+    <label id="plan-label">اختر خطة الاشتراك:</label>
     <div class="premium-options">
-      <div class="premium-option" onclick="selectPlan(3, 13)">
-        <h3 id="plan-3-title">3 Months</h3>
+      <div class="premium-option">
+        <div class="plan-hero"><img src="/assets/3month.png" alt="3 أشهر" /></div>
+        <h3 id="plan-3-title">3 أشهر</h3>
         <div class="premium-details">
           <span id="plan-3-price" class="premium-price">$13.00</span>
-          <span id="plan-3-ton"></span>
+          <span id="plan-3-ton" class="ton-val"></span>
+        </div>
+        <ul id="plan-3-features" class="benefits"></ul>
+        <div class="actions">
+          <button class="btn btn-buy" onclick="buyNow(3,13)">شراء الآن</button>
         </div>
       </div>
-      <div class="premium-option" onclick="selectPlan(6, 17)">
-        <h3 id="plan-6-title">6 Months</h3>
+      <div class="premium-option">
+        <div class="plan-hero"><img src="/assets/6month.png" alt="6 أشهر" /></div>
+        <h3 id="plan-6-title">6 أشهر</h3>
         <div class="premium-details">
           <span id="plan-6-price" class="premium-price">$17.00</span>
-          <span id="plan-6-ton"></span>
+          <span id="plan-6-ton" class="ton-val"></span>
+        </div>
+        <ul id="plan-6-features" class="benefits"></ul>
+        <div class="actions">
+          <button class="btn btn-buy" onclick="buyNow(6,17)">شراء الآن</button>
         </div>
       </div>
-      <div class="premium-option" onclick="selectPlan(12, 30)">
-        <h3 id="plan-12-title">12 Months</h3>
+      <div class="premium-option">
+        <div class="plan-hero"><img src="/assets/12month.png" alt="12 شهر" /></div>
+        <h3 id="plan-12-title">12 شهر</h3>
         <div class="premium-details">
           <span id="plan-12-price" class="premium-price">$30.00</span>
-          <span id="plan-12-ton"></span>
+          <span id="plan-12-ton" class="ton-val"></span>
+        </div>
+        <ul id="plan-12-features" class="benefits"></ul>
+        <div class="actions">
+          <button class="btn btn-buy" onclick="buyNow(12,30)">شراء الآن</button>
         </div>
       </div>
     </div>
 
-    <button class="buy-btn" id="buy-btn" onclick="submitOrder()">Subscribe Now</button>
+    <button class="buy-btn" id="buy-btn" onclick="submitOrder()">اشترك الآن</button>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="preview_backdrop" class="preview-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="preview-modal" role="document">
+      <div class="preview-header">
+        <div class="preview-title" id="preview_title">Premium</div>
+        <button class="preview-close" id="preview_close" aria-label="Close">×</button>
+      </div>
+      <div class="preview-body">
+        <div class="preview-hero"><img id="preview_img" src="" alt="" /></div>
+        <div class="preview-ton" id="preview_ton"></div>
+        <div class="preview-price" id="preview_price"></div>
+        <ul class="preview-benefits" id="preview_benefits"></ul>
+        <div class="preview-actions">
+          <button class="btn btn-cancel" id="preview_cancel">Cancel</button>
+          <button class="btn btn-buy" id="preview_confirm">Buy Now</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Initialize TonConnect
+    // Initialize TonConnect (mobile button only, like buy page)
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect-btn'
+      buttonRootId: 'ton-connect-btn-mobile'
     });
 
     const MERCHANT_ADDRESS = "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN";
     let currentTonUsd = null;
     let selectedPlan = null;
     let selectedPrice = null;
-    let isEnglish = true; // Default to English
+    let isEnglish = false; // Default to Arabic
 
     // Complete translations
     const translations = {
@@ -450,34 +815,37 @@
       settings: {
         ar: "الإعدادات",
         en: "Settings"
+      },
+      features: {
+        ar: {
+          "3": ["شارة Premium", "تحميل أسرع", "تحويل الصوت إلى نص", "حدود أعلى للقنوات"],
+          "6": ["شارة Premium", "تحميل أسرع", "تحويل الصوت إلى نص", "صور بروفايل متحركة"],
+          "12": ["جميع مميزات Premium", "مساحة تخزين أكبر", "ملصقات حصرية", "أولوية في الدعم"]
+        },
+        en: {
+          "3": ["Premium badge", "Faster downloads", "Voice to text", "Higher channel limits"],
+          "6": ["Premium badge", "Faster downloads", "Voice to text", "Animated profile photos"],
+          "12": ["All Premium features", "More storage", "Exclusive stickers", "Priority support"]
+        }
       }
     };
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function () {
-      // Initialize settings menu toggle
-      const settingsBtn = document.getElementById('settings-btn');
-      const settingsMenu = document.getElementById('settings-menu');
-
-      settingsBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        settingsMenu.classList.toggle('show');
-      });
-
-      // Close menu when clicking outside
-      document.addEventListener('click', function (e) {
-        if (!settingsMenu.contains(e.target) && e.target !== settingsBtn) {
-          settingsMenu.classList.remove('show');
-        }
-      });
-
-      // Close menu when clicking on menu item
-      const menuItems = document.querySelectorAll('.settings-menu-item');
-      menuItems.forEach(item => {
-        item.addEventListener('click', function () {
-          settingsMenu.classList.remove('show');
+      // Burger/mobile menu wiring
+      const burgerBtn = document.getElementById('burger_btn');
+      const mobileMenu = document.getElementById('mobile_menu_container');
+      const closeBtn = document.getElementById('mobile_menu_cross');
+      if (burgerBtn && mobileMenu && closeBtn) {
+        burgerBtn.addEventListener('click', function () {
+          mobileMenu.style.display = 'block';
+          document.body.style.overflow = 'hidden';
         });
-      });
+        closeBtn.addEventListener('click', function () {
+          mobileMenu.style.display = 'none';
+          document.body.style.overflow = '';
+        });
+      }
 
       // Fetch TON price and update plan prices
       fetchTonPrice();
@@ -500,16 +868,21 @@
       try {
         const walletConnection = tonConnectUI.wallet;
         if (!walletConnection) {
-          throw new Error('Wallet not connected');
+          return {
+            success: false,
+            message: isEnglish ?
+              'Please connect your wallet first 🛡️' :
+              'يرجى ربط المحفظة أولاً 🛡️'
+          };
         }
 
         const response = await axios.get(`https://toncenter.com/api/v2/getAddressBalance?address=${walletConnection.account.address}`);
-        const availableBalance = parseFloat(response.data.result) / 1e9; // Convert from nanotons to TON
+        const availableBalance = parseFloat(response.data.result) / 1e9;
 
         if (availableBalance < requiredTon) {
           return {
             success: false,
-            message: isEnglish ? 
+            message: isEnglish ?
               `Your balance (${availableBalance.toFixed(2)} TON) is insufficient. You need ${requiredTon.toFixed(2)} TON.` :
               `رصيدك (${availableBalance.toFixed(2)} TON) غير كافٍ. تحتاج ${requiredTon.toFixed(2)} TON.`
           };
@@ -531,16 +904,16 @@
       try {
         // Create new cell
         const cell = new TonWeb.boc.Cell();
-        
+
         // Write 32-bit zero (op=0 for simple comments)
         cell.bits.writeUint(0, 32);
-        
+
         // Write comment as UTF-8
         cell.bits.writeString(comment);
-        
+
         // Convert cell to BOC (Bag of Cells)
         const boc = await TonWeb.boc.Cell.toBoc(cell);
-        
+
         // Convert BOC to base64
         return btoa(String.fromCharCode.apply(null, new Uint8Array(boc)));
       } catch (e) {
@@ -586,10 +959,16 @@
     }
 
     function updateAllText() {
-      // Update button text
-      document.getElementById('language-switcher').querySelector('span').textContent =
-        translations.switchLanguage[isEnglish ? 'en' : 'ar'];
-      document.getElementById('settings-text').textContent = translations.settings[isEnglish ? 'en' : 'ar'];
+      // Update language switcher text (if present)
+      const langBtn = document.getElementById('language-switcher');
+      if (langBtn) {
+        if (langBtn.tagName.toLowerCase() === 'button') {
+          langBtn.textContent = translations.switchLanguage[isEnglish ? 'en' : 'ar'];
+        } else {
+          const span = langBtn.querySelector('span');
+          if (span) span.textContent = translations.switchLanguage[isEnglish ? 'en' : 'ar'];
+        }
+      }
 
       // Update main titles
       document.getElementById('main-title').textContent = translations.title[isEnglish ? 'en' : 'ar'];
@@ -603,10 +982,14 @@
       // Update buttons
       document.getElementById('buy-btn').textContent = translations.subscribeNow[isEnglish ? 'en' : 'ar'];
 
-      // Update navigation links
+      // Update navigation links (desktop)
       document.getElementById('home-link').textContent = translations.home[isEnglish ? 'en' : 'ar'];
       document.getElementById('stars-link').textContent = translations.stars[isEnglish ? 'en' : 'ar'];
       document.getElementById('premium-link').textContent = translations.premium[isEnglish ? 'en' : 'ar'];
+      // Update navigation links (mobile if present)
+      const homeM = document.getElementById('home-link-mobile'); if (homeM) homeM.textContent = translations.home[isEnglish ? 'en' : 'ar'];
+      const starsM = document.getElementById('stars-link-mobile'); if (starsM) starsM.textContent = translations.stars[isEnglish ? 'en' : 'ar'];
+      const premiumM = document.getElementById('premium-link-mobile'); if (premiumM) premiumM.textContent = translations.premium[isEnglish ? 'en' : 'ar'];
 
       // Update plan titles and prices
       const plans = [3, 6, 12];
@@ -622,6 +1005,23 @@
         }
       });
 
+      // Update features lists
+      const feats = translations.features[isEnglish ? 'en' : 'ar'];
+      [3, 6, 12].forEach(m => {
+        const ul = document.getElementById(`plan-${m}-features`);
+        if (ul) {
+          ul.innerHTML = '';
+          feats[m].forEach(text => {
+            const li = document.createElement('li');
+            li.textContent = text;
+            ul.appendChild(li);
+          });
+        }
+      });
+      // Update per-card buy buttons text
+      document.querySelectorAll('.btn-buy').forEach(btn => {
+        btn.textContent = isEnglish ? 'Buy Now' : 'شراء الآن';
+      });
       // Update TON prices
       updatePlanPrices();
     }
@@ -629,18 +1029,67 @@
     function selectPlan(months, price) {
       selectedPlan = months;
       selectedPrice = price;
-
-      // Highlight selected plan
-      document.querySelectorAll('.premium-option').forEach(option => {
-        option.style.borderColor = '#3a3a3a';
-        option.style.backgroundColor = '#2c2c2c';
-      });
-
-      const selectedElement = document.querySelector(`.premium-option[onclick="selectPlan(${months}, ${price})"]`);
-      if (selectedElement) {
-        selectedElement.style.borderColor = '#2a6ada';
-        selectedElement.style.backgroundColor = '#1e3a8a';
+      // Highlight selected plan visually
+      const cards = document.querySelectorAll('.premium-option');
+      cards.forEach(c => c.style.outline = 'none');
+      const idx = { 3: 0, 6: 1, 12: 2 }[months];
+      if (typeof idx !== 'undefined' && cards[idx]) {
+        cards[idx].style.outline = '2.5px solid #34b3ff';
       }
+    }
+
+    function buyNow(months, price) {
+      selectPlan(months, price);
+      openPreview(months, price);
+    }
+
+    function openPreview(months, price) {
+      const backdrop = document.getElementById('preview_backdrop');
+      const title = document.getElementById('preview_title');
+      const img = document.getElementById('preview_img');
+      const ton = document.getElementById('preview_ton');
+      const usd = document.getElementById('preview_price');
+      const benefits = document.getElementById('preview_benefits');
+
+      // Title
+      title.textContent = isEnglish ? translations.plans.en[String(months)] : translations.plans.ar[String(months)];
+      // Image
+      const imgMap = { 3: '/assets/3month.png', 6: '/assets/6month.png', 12: '/assets/12month.png' };
+      img.src = imgMap[months] || '';
+      img.alt = title.textContent;
+      // Prices
+      const priceText = isEnglish ? translations.prices.en[String(months)] : translations.prices.ar[String(months)];
+      usd.textContent = priceText;
+      if (currentTonUsd) {
+        const tonAmount = (price / currentTonUsd).toFixed(5);
+        ton.textContent = (isEnglish ? '≈ ' : '≈ ') + tonAmount + ' TON';
+      } else {
+        ton.textContent = '';
+      }
+      // Benefits
+      const feats = translations.features[isEnglish ? 'en' : 'ar'][String(months)] || [];
+      benefits.innerHTML = '';
+      feats.forEach(t => { const li = document.createElement('li'); li.textContent = t; benefits.appendChild(li); });
+
+      backdrop.classList.add('show');
+      document.body.style.overflow = 'hidden';
+
+      // Highlight active card
+      const idx = { 3: 0, 6: 1, 12: 2 }[months];
+      const cards = document.querySelectorAll('.premium-option');
+      cards.forEach(c => c.classList.remove('active'));
+      if (typeof idx !== 'undefined' && cards[idx]) cards[idx].classList.add('active');
+
+      // Wire buttons
+      const close = document.getElementById('preview_close');
+      const cancel = document.getElementById('preview_cancel');
+      const confirm = document.getElementById('preview_confirm');
+      // Localize buttons
+      cancel.textContent = isEnglish ? 'Cancel' : 'إلغاء';
+      confirm.textContent = isEnglish ? 'Buy Now' : 'شراء الآن';
+      const closeFn = () => { backdrop.classList.remove('show'); document.body.style.overflow = ''; cards.forEach(c => c.classList.remove('active')); };
+      close.onclick = cancel.onclick = closeFn;
+      confirm.onclick = () => { closeFn(); submitOrder(); };
     }
 
     async function submitOrder() {
@@ -729,7 +1178,7 @@
       const comment = isEnglish ?
         `${selectedPlan} months Telegram Premium for @${username} - PANDA STORE - Ref#${refNumber}` :
         `${selectedPlan} شهر بريميوم تليجرام لـ@${username} - PANDA STORE - Ref#${refNumber}`;
-      
+
       const payload = await encodeComment(comment);
 
       const tx = {
@@ -774,7 +1223,7 @@
 
         setTimeout(async () => {
           try {
-            await axios.post("https://pandastores.onrender.com/premium", {
+            await axios.post("https://pandastore-f2yn.onrender.com/premium", {
               username,
               months: selectedPlan,
               amountTon: (requiredTon).toFixed(5),
@@ -789,8 +1238,8 @@
               title: isEnglish ?
                 `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes ⏳` :
                 `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} فى غضون 5 : 10 دقائق ⏳`,
-              text: isEnglish ? 
-                `Reference: ${refNumber}` : 
+              text: isEnglish ?
+                `Reference: ${refNumber}` :
                 `رقم المرجع: ${refNumber}`,
               showConfirmButton: false,
               timer: 8000,
@@ -806,8 +1255,8 @@
               title: isEnglish ?
                 `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes ⏳` :
                 `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} فى غضون 5 : 10 دقائق ⏳`,
-              text: isEnglish ? 
-                `Reference: ${refNumber}` : 
+              text: isEnglish ?
+                `Reference: ${refNumber}` :
                 `رقم المرجع: ${refNumber}`,
               showConfirmButton: false,
               timer: 8000,
@@ -820,11 +1269,11 @@
 
       } catch (error) {
         console.error('Transaction error:', error);
-        
+
         let errorMessage = isEnglish ? 'Please try again.' : 'حاول مرة أخرى.';
         if (error.message.includes('Insufficient balance')) {
-          errorMessage = isEnglish ? 
-            'Your wallet does not have enough TON to complete this transaction.' : 
+          errorMessage = isEnglish ?
+            'Your wallet does not have enough TON to complete this transaction.' :
             'محفظتك لا تحتوي على رصيد كافٍ من TON لإتمام هذه العملية.';
         }
 
