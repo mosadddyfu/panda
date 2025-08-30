@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Panda Store - أفضل خدمات تيليجرام</title>
+  <link rel="icon" type="image/png" href="/assets/pandastore.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{
+      --bg1:#0b1020;--bg2:#0a1326;--c1:#e6f2ff;--c2:#9ecbff;--brand:#34b3ff;--accent:#ffd76a;--danger:#ff5a73;--ok:#8be28b
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family:'Cairo',sans-serif;margin:0;padding:0;color:var(--c1);
+      background:
+        radial-gradient(1200px 600px at 50% -120px, rgba(98, 0, 234, .35), transparent),
+        radial-gradient(900px 500px at 100% 0%, rgba(0, 163, 255, .23), transparent),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+      text-align:center
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
+    /* Header: logo + name only */
+    .header{position:sticky;top:0;z-index:50;background:rgba(10,19,38,.6);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,163,255,.18)}
+  .header .container{direction:ltr}
+  .brand{display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:12px 0}
+    .brand img{width:42px;height:42px;border-radius:50%;box-shadow:0 4px 12px rgba(0,163,255,.25)}
+    .brand h1{font-size:22px;margin:0}
+  /* GIF banner: big center star with distributed sparkles */
+  .gif-banner{position:relative;display:block;padding:10px 12px;margin:12px auto 0;max-width:980px;height:180px;border-radius:18px;background:none;border:0;box-shadow:none;isolation:isolate}
+    /* Soft edges for all GIFs to hide rectangular boundaries */
+    .gif-banner img{
+      /* Stronger feather: wider fade band to kill hard GIF edge */
+      -webkit-mask-image: radial-gradient(circle at center,
+        rgba(0,0,0,1) 58%,
+        rgba(0,0,0,.9) 70%,
+        rgba(0,0,0,.45) 82%,
+        rgba(0,0,0,0) 100%);
+      mask-image: radial-gradient(circle at center,
+        rgba(0,0,0,1) 58%,
+        rgba(0,0,0,.9) 70%,
+        rgba(0,0,0,.45) 82%,
+        rgba(0,0,0,0) 100%);
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      backface-visibility: hidden;
+    }
+  .gif-banner .center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:150px;width:auto;filter:drop-shadow(0 6px 18px rgba(255,215,106,.35))}
+    /* Slightly stronger core for the big star */
+    .gif-banner .center{
+      -webkit-mask-image: none;
+      mask-image: none;
+      mix-blend-mode: screen;
+      filter: saturate(1.05) brightness(1.12);
+      clip-path: none;
+    }
+  .gif-banner .spark{position:absolute;height:54px;width:auto;opacity:.96;filter:none;animation:floaty 4s ease-in-out infinite;mix-blend-mode:screen}
+  .gif-banner .s1{top:14px;left:18%;animation-delay:.1s}
+  .gif-banner .s2{top:10px;right:18%;animation-delay:.4s}
+  .gif-banner .s3{bottom:14px;left:28%;animation-delay:.7s}
+  .gif-banner .s4{bottom:12px;right:28%;animation-delay:1s}
+  .gif-banner .s5{top:calc(50% - 27px);left:8%;animation-delay:1.3s}
+  .gif-banner .s6{top:calc(50% - 27px);right:6%;animation-delay:1.6s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @media(max-width:600px){.gif-banner{height:140px;border-radius:14px}.gif-banner .center{height:110px}.gif-banner .spark{height:38px}.gif-banner .s1{left:16%}.gif-banner .s2{right:16%}.gif-banner .s3{left:24%}.gif-banner .s4{right:24%}.gif-banner .s5{top:calc(50% - 19px);left:6%}.gif-banner .s6{top:calc(50% - 19px);right:4%}}
+    /* Hero */
+    .hero{padding:32px 0 20px}
+    .hero h2{font-size:36px;margin:6px 0 8px}
+    .hero p{color:var(--c2);margin:0 0 16px}
+    .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{border:none;padding:12px 18px;border-radius:12px;color:#fff;font-weight:800;cursor:pointer;font-size:16px}
+    .btn-stars{background:linear-gradient(90deg,#6e38ff,#5a4fff)}
+    .btn-premium{background:linear-gradient(90deg,#ff4d77,#ff7a59)}
+    .btn:hover{opacity:.95}
+    /* Features */
+    .features{padding:22px 0}
+    .features-grid{display:grid;gap:14px;grid-template-columns:1fr}
+    .feature{background:linear-gradient(180deg,rgba(13,25,48,.95),rgba(10,22,39,.95));border:1px solid rgba(0,163,255,.18);border-radius:16px;padding:16px;display:flex;gap:12px;align-items:flex-start;text-align:start}
+    .feature i{color:var(--brand);font-size:20px;margin-top:4px}
+    .feature h3{margin:0 0 6px;font-size:18px}
+    .feature p{margin:0;color:var(--c2)}
+    @media(min-width:720px){.features-grid{grid-template-columns:1fr 1fr 1fr}}
+    /* Plans preview */
+    .plans{padding:4px 0 26px}
+    .plans h3{margin:0 0 12px}
+    .plan-grid{display:grid;gap:16px;grid-template-columns:1fr}
+    .plan{border-radius:18px;padding:16px 14px;background:linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96));border:1px solid rgba(0,163,255,.18);box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .2s, box-shadow .2s}
+    .plan:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.45)}
+    .plan-hero{display:flex;justify-content:center;margin-bottom:8px}
+    .plan-hero img{width:86px;height:86px;object-fit:contain}
+    .plan h4{margin:4px 0 6px;font-size:18px}
+    .price{color:var(--accent);font-weight:800}
+    .link{display:inline-block;margin-top:8px;color:#fff;background:#0f1e36;border:1px solid rgba(0,163,255,.25);padding:8px 12px;border-radius:10px}
+    @media(min-width:720px){.plan-grid{grid-template-columns:1fr 1fr 1fr}}
+    /* Gallery strip */
+    .gallery{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:22px auto 0}
+    .gallery img{height:90px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+    /* Footer */
+    footer{margin-top:30px;padding:18px 0;color:var(--c2);border-top:1px solid rgba(0,163,255,.15)}
+    .socials a{display:inline-block;margin:0 8px}
+    .copy{margin-top:8px;font-size:13px;color:#a8cfff}
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/index.html" class="brand">
+        <img src="/assets/pandastore.jpg" alt="Panda Store"/>
+        <h1>Panda Store</h1>
+      </a>
+    </div>
+  </header>
+
+  <!-- Decorative GIFs banner -->
+  <div class="gif-banner" aria-hidden="true">
+    <img class="center" src="/assets/bigstar.gif" alt="" loading="lazy" decoding="async" />
+    <img class="spark s1" src="/assets/star1.gif" alt="" loading="lazy" decoding="async" />
+    <img class="spark s2" src="/assets/star2.gif" alt="" loading="lazy" decoding="async" />
+    <img class="spark s3" src="/assets/star1.gif" alt="" loading="lazy" decoding="async" />
+    <img class="spark s4" src="/assets/star2.gif" alt="" loading="lazy" decoding="async" />
+    <img class="spark s5" src="/assets/star1.gif" alt="" loading="lazy" decoding="async" />
+  <img class="spark s6" src="/assets/star2.gif" alt="" loading="lazy" decoding="async" />
+  </div>
+
+  <section class="hero container">
+    <h2>خليك نجم على تيليجرام ✨</h2>
+    <p>نجوم، بريميوم، وسرعة تنفيذ عالية — كل ده في مكان واحد موثوق.</p>
+    <div class="cta">
+      <a class="btn btn-stars" href="/buy.html"><i class="fa-solid fa-star"></i> شراء النجوم</a>
+      <a class="btn btn-premium" href="/premium.html"><i class="fa-solid fa-crown"></i> اشترك بريميوم</a>
+    </div>
+  </section>
+
+  <section class="features container">
+    <div class="features-grid">
+      <div class="feature">
+        <i class="fa-solid fa-bolt"></i>
+        <div>
+          <h3>تنفيذ فوري وآمن</h3>
+          <p>معالجة الطلبات خلال دقائق مع إشعار فوري — بدون أي تعقيد.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <i class="fa-solid fa-wallet"></i>
+        <div>
+          <h3>أسعار منافسة وشفافة</h3>
+          <p>أفضل قيمة مقابل السعر، من غير مصاريف مخفية.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div>
+          <h3>موثوقية ودعم</h3>
+          <p>فريق دعم جاهز لمساعدتك، وخبرة حقيقية في خدمات تيليجرام.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="plans container">
+    <h3>باقات بريميوم الأشهر</h3>
+    <div class="plan-grid">
+      <div class="plan">
+        <div class="plan-hero"><img src="/assets/3month.png" alt="3 أشهر"/></div>
+        <h4>3 أشهر</h4>
+        <div class="price">$13.00</div>
+        <a class="link" href="/premium.html">تفاصيل أكثر</a>
+      </div>
+      <div class="plan">
+        <div class="plan-hero"><img src="/assets/6month.png" alt="6 أشهر"/></div>
+        <h4>6 أشهر</h4>
+        <div class="price">$17.00</div>
+        <a class="link" href="/premium.html">تفاصيل أكثر</a>
+      </div>
+      <div class="plan">
+        <div class="plan-hero"><img src="/assets/12month.png" alt="12 شهر"/></div>
+        <h4>12 شهر</h4>
+        <div class="price">$30.00</div>
+        <a class="link" href="/premium.html">تفاصيل أكثر</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>تواصل معنا</div>
+      <div class="socials">
+        <a href="https://wa.me/qr/J6BDWBGNYGEKI1" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="https://www.facebook.com/share/1DEzb2Fq4T/" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://www.instagram.com/omar_shehata_1?igsh=MXdrbzY2enE3YmVhYw==" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="http://t.me/OMAR_M_SHEHATA" target="_blank" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+        <a href="https://www.tiktok.com/@omar_m.shehata?_t=ZS-8uUfGvZvsUk&_r=1" target="_blank" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+      </div>
+      <div class="copy">© <span id="year"></span> Panda Store. جميع الحقوق محفوظة.</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>

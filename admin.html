@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>لوحة الأدمن - Panda Store</title>
+  <link rel="icon" type="image/png" href="/assets/pandastore.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    :root{--bg1:#0b1020;--bg2:#0a1326;--panel:#0e1c34;--panel2:#0a1a2e;--c1:#e6f2ff;--c2:#a6c9ff;--brand:#34b3ff;--accent:#ffd76a;--ok:#42d17b;--danger:#ff6b6b;--muted:#7b90b2}
+    *{box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;margin:0;padding:0;color:var(--c1);background:
+      radial-gradient(1000px 600px at 100% -120px, rgba(98,0,234,.24), transparent),
+      radial-gradient(900px 500px at 0% 0%, rgba(0,163,255,.18), transparent),
+      linear-gradient(180deg,var(--bg1),var(--bg2));}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+    /* Header */
+    .header{position:sticky;top:0;z-index:50;background:rgba(10,19,38,.6);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,163,255,.18)}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand img{width:40px;height:40px;border-radius:50%;box-shadow:0 4px 12px rgba(0,163,255,.25)}
+    .brand h1{font-size:18px;margin:0}
+    .quick-nav{display:flex;gap:8px}
+    .quick-nav a{padding:8px 12px;border-radius:10px;background:#0f1e36;border:1px solid rgba(0,163,255,.25);color:#fff;font-size:13px}
+    /* Panels */
+    .page{padding:18px 0}
+    .card{background:linear-gradient(180deg,rgba(13,25,48,.98),rgba(10,22,39,.98));border:1px solid rgba(0,163,255,.18);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .card.pad{padding:16px}
+    /* Auth box */
+    .auth{max-width:520px;margin:20px auto;text-align:center}
+    .auth h1{margin:6px 0 12px}
+    .auth input[type=password]{width:100%;max-width:380px;padding:12px 14px;border-radius:12px;border:1px solid rgba(0,163,255,.25);background:#0a1730;color:#fff}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:12px;padding:10px 14px;color:#fff;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,#6e38ff,#5a4fff)}
+    .btn-outline{background:#0f1e36;border:1px solid rgba(0,163,255,.25)}
+    .btn-success{background:linear-gradient(90deg,#1cc97a,#10b981)}
+    /* KPIs */
+    .stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+    .stat{display:flex;align-items:center;gap:12px;padding:12px}
+    .stat i{font-size:22px}
+    .stat .v{font-weight:800;font-size:20px}
+    .muted{color:var(--muted);font-size:12px}
+    @media(max-width:900px){.stats{grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.stats{grid-template-columns:1fr}}
+    /* Tabs */
+    .tab-container{display:flex;justify-content:center;gap:8px;margin:14px 0}
+    .tab-btn{padding:10px 16px;border:none;border-radius:999px;background:#0f1e36;border:1px solid rgba(0,163,255,.25);color:#fff;cursor:pointer}
+    .tab-btn.active{background:linear-gradient(90deg,#34b3ff,#7cc8ff);color:#0b1020}
+    /* Tables */
+    .table-wrap{margin-top:10px;overflow:auto}
+    table{width:100%;min-width:700px;border-collapse:separate;border-spacing:0}
+    thead th{position:sticky;top:0;background:#0a1730;color:#cfe5ff}
+    th,td{padding:12px 10px;text-align:center;border-bottom:1px solid rgba(0,163,255,.15)}
+    tbody tr:hover{background:#0a1730}
+    tbody tr:nth-child(even){background:rgba(255,255,255,0.02)}
+    .action-btn{padding:6px 10px;border:none;border-radius:10px;background:linear-gradient(90deg,#1cc97a,#10b981);color:#fff;cursor:pointer}
+    /* Actions */
+    .actions{display:flex;gap:8px;justify-content:flex-start;margin:10px 0}
+    .section-title{margin:0 0 6px}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap header-inner">
+      <div class="brand">
+        <img src="/assets/pandastore.jpg" alt="Panda Store"/>
+        <h1>لوحة الأدمن</h1>
+      </div>
+      <nav class="quick-nav">
+        <a href="/index.html"><i class="fa-solid fa-house"></i> الرئيسية</a>
+        <a href="/buy.html"><i class="fa-solid fa-star"></i> النجوم</a>
+        <a href="/premium.html"><i class="fa-solid fa-crown"></i> البريميوم</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap page" id="adminContainer">
+    <div id="passwordSection" class="card pad auth">
+      <h1>تسجيل الدخول</h1>
+      <input type="password" id="adminPassword" placeholder="أدخل كلمة المرور" />
+      <div style="margin-top:10px">
+        <button class="btn btn-primary" onclick="checkPassword()"><i class="fa-solid fa-right-to-bracket"></i> دخول</button>
+      </div>
+    </div>
+
+    <div id="ordersSection" class="card pad" style="display:none;">
+      <h2 class="section-title">قائمة الطلبات</h2>
+      <div class="actions">
+        <button id="refreshBtn" class="btn btn-outline"><i class="fa-solid fa-rotate"></i> تحديث</button>
+        <button id="logoutBtn" class="btn btn-outline"><i class="fa-solid fa-arrow-right-from-bracket"></i> خروج</button>
+      </div>
+
+      <div class="stats">
+        <div class="card stat"><i class="fa-solid fa-clock"></i><div><div class="muted">نجوم قيد التنفيذ</div><div class="v" id="kpi-stars-pending">—</div></div></div>
+        <div class="card stat"><i class="fa-solid fa-check-double"></i><div><div class="muted">نجوم مكتملة</div><div class="v" id="kpi-stars-done">—</div></div></div>
+        <div class="card stat"><i class="fa-solid fa-hourglass-half"></i><div><div class="muted">بريميوم قيد التنفيذ</div><div class="v" id="kpi-premium-pending">—</div></div></div>
+        <div class="card stat"><i class="fa-solid fa-badge-check"></i><div><div class="muted">بريميوم مكتمل</div><div class="v" id="kpi-premium-done">—</div></div></div>
+      </div>
+
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="showTab('stars')">طلبات النجوم</button>
+        <button class="tab-btn" onclick="showTab('premium')">طلبات البريميوم</button>
+      </div>
+
+      <!-- قسم طلبات النجوم -->
+      <div id="starsTab" class="table-wrap">
+        <h2>طلبات النجوم لم تنفذ بعد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد النجوم</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+              <th>تم تنفيذ هذا الطلب✅️</th>
+            </tr>
+          </thead>
+          <tbody id="pendingStarsTableBody"></tbody>
+        </table>
+
+        <h2 style="margin-top:50px;">طلبات النجوم تم تنفيذها</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد النجوم</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+            </tr>
+          </thead>
+          <tbody id="completedStarsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- قسم طلبات البريميوم -->
+      <div id="premiumTab" class="table-wrap" style="display:none;">
+        <h2>طلبات البريميوم لم تنفذ بعد</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد الأشهر</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+              <th>تم تنفيذ هذا الطلب✅️</th>
+            </tr>
+          </thead>
+          <tbody id="pendingPremiumTableBody"></tbody>
+        </table>
+
+        <h2 style="margin-top:50px;">طلبات البريميوم تم تنفيذها</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>اسم المستخدم</th>
+              <th>عدد الأشهر</th>
+              <th>دولار</th>
+              <th>TON</th>
+              <th>تاريخ الطلب</th>
+            </tr>
+          </thead>
+          <tbody id="completedPremiumTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const PASSWORD = "OmarShehata@123";
+  let starsOrders = [];
+  let premiumOrders = [];
+
+  function checkPassword() {
+    const entered = document.getElementById("adminPassword").value;
+    if (entered === PASSWORD) {
+  document.getElementById("passwordSection").style.display = "none";
+  document.getElementById("ordersSection").style.display = "block";
+      loadAllOrders();
+  Swal.fire({icon:'success',title:'تم الدخول',timer:1200,showConfirmButton:false});
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'كلمة مرور خاطئة',
+        text: 'الرجاء إدخال كلمة المرور الصحيحة',
+        timer: 2000
+      });
+    }
+  }
+
+  async function loadAllOrders() {
+    try {
+      await loadStarsOrders();
+      await loadPremiumOrders();
+      showTab('stars');
+  updateStats();
+    } catch (error) {
+      console.error("Error loading orders:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'خطأ في تحميل البيانات',
+        text: 'تعذر تحميل قائمة الطلبات',
+        timer: 2000
+      });
+    }
+  }
+
+  async function loadStarsOrders() {
+    try {
+      const response = await axios.get('/admin/stars');
+      starsOrders = response.data;
+      renderStarsOrders();
+    } catch (error) {
+      console.error("Error loading stars orders:", error);
+      throw error;
+    }
+  }
+
+  async function loadPremiumOrders() {
+    try {
+      const response = await axios.get('/admin/premium');
+      premiumOrders = response.data;
+      renderPremiumOrders();
+    } catch (error) {
+      console.error("Error loading premium orders:", error);
+      throw error;
+    }
+  }
+
+  function showTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.includes(tabName === 'stars' ? 'النجوم' : 'البريميوم'));
+    });
+    document.getElementById('starsTab').style.display = tabName === 'stars' ? 'block' : 'none';
+    document.getElementById('premiumTab').style.display = tabName === 'premium' ? 'block' : 'none';
+  }
+
+  function updateStats(){
+    const sp = starsOrders.filter(o=>!o.completed).length;
+    const sd = starsOrders.filter(o=>o.completed).length;
+    const pp = premiumOrders.filter(o=>!o.completed).length;
+    const pd = premiumOrders.filter(o=>o.completed).length;
+    document.getElementById('kpi-stars-pending').textContent = sp;
+    document.getElementById('kpi-stars-done').textContent = sd;
+    document.getElementById('kpi-premium-pending').textContent = pp;
+    document.getElementById('kpi-premium-done').textContent = pd;
+  }
+
+  function renderStarsOrders() {
+    const pendingBody = document.getElementById("pendingStarsTableBody");
+    const completedBody = document.getElementById("completedStarsTableBody");
+    pendingBody.innerHTML = completedBody.innerHTML = "";
+
+    starsOrders.forEach(order => {
+      const row = createOrderRow(order, 'stars');
+      if (order.completed) {
+        completedBody.appendChild(row);
+      } else {
+        pendingBody.appendChild(row);
+      }
+    });
+  }
+
+  function renderPremiumOrders() {
+    const pendingBody = document.getElementById("pendingPremiumTableBody");
+    const completedBody = document.getElementById("completedPremiumTableBody");
+    pendingBody.innerHTML = completedBody.innerHTML = "";
+
+    premiumOrders.forEach(order => {
+      const row = createOrderRow(order, 'premium');
+      if (order.completed) {
+        completedBody.appendChild(row);
+      } else {
+        pendingBody.appendChild(row);
+      }
+    });
+  }
+
+  function createOrderRow(order, type) {
+    const row = document.createElement("tr");
+    const username = order.username || 'غير معروف';
+    const amountUsd = order.amount_usd ? `$${order.amount_usd}` : "--";
+    const amountTon = order.amount_ton ? `${order.amount_ton} TON` : "--";
+    const createdAt = order.created_at ? new Date(order.created_at).toLocaleString("ar-EG") : "--";
+
+    if (type === 'stars') {
+      row.innerHTML = `
+        <td>@${username}</td>
+        <td>${order.stars || '--'}</td>
+        <td>${amountUsd}</td>
+        <td>${amountTon}</td>
+        <td>${createdAt}</td>
+        ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order.id}', '${type}')">تم التنفيذ</button></td>` : ''}
+      `;
+    } else {
+      row.innerHTML = `
+        <td>@${username}</td>
+        <td>${order.premium_months || '--'}</td>
+        <td>${amountUsd}</td>
+        <td>${amountTon}</td>
+        <td>${createdAt}</td>
+        ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order.id}', '${type}')">تم التنفيذ</button></td>` : ''}
+      `;
+    }
+
+    return row;
+  }
+
+  async function completeOrder(orderId, type) {
+    try {
+      await axios.post(`/complete-order/${orderId}`);
+      
+      if (type === 'stars') {
+        const order = starsOrders.find(o => o.id == orderId);
+        if (order) order.completed = true;
+        renderStarsOrders();
+      } else {
+        const order = premiumOrders.find(o => o.id == orderId);
+        if (order) order.completed = true;
+        renderPremiumOrders();
+      }
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'تم تحديث حالة الطلب',
+        timer: 1500
+      });
+      updateStats();
+    } catch (error) {
+      console.error("Error completing order:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'خطأ في تحديث الطلب',
+        text: 'تعذر تحديث حالة الطلب',
+        timer: 2000
+      });
+    }
+  }
+
+  // Actions
+  document.addEventListener('DOMContentLoaded',()=>{
+    const refresh = document.getElementById('refreshBtn');
+    const logout = document.getElementById('logoutBtn');
+    if(refresh) refresh.addEventListener('click', ()=> loadAllOrders());
+    if(logout) logout.addEventListener('click', ()=>{
+      document.getElementById('ordersSection').style.display='none';
+      document.getElementById('passwordSection').style.display='block';
+      document.getElementById('adminPassword').value='';
+    });
+  });
+</script>
+</body>
+</html>
