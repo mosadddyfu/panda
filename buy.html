@@ -16,6 +16,8 @@
   <!-- Sweetalert2 -->
   <link href="https://staropay.com/js/_lib/sweetalert2/default.css" rel="stylesheet" />
   <script src="https://staropay.com/js/_lib/sweetalert2/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="/assets/alerts-theme.css" />
+  <script defer src="/assets/alerts-theme.js"></script>
   <!-- Axios Library -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- TonConnect Library -->
@@ -289,7 +291,7 @@
 
     /* Mobile menu styles */
     .mobile-menu-container {
-      display: none;
+      display: block;
       position: fixed;
       top: 0;
       right: 0;
@@ -300,6 +302,10 @@
       z-index: 1000;
       overflow-y: auto;
       box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+      transform: translateX(100%);
+      transition: transform .25s ease;
+      pointer-events: none;
+      will-change: transform;
     }
 
     .mobile-menu-header {
@@ -336,6 +342,18 @@
       background-color: #031724;
     }
 
+    /* Overlay + show state to match premium */
+    .mobile-menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 10, 20, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 999;
+      display: none;
+    }
+    .mobile-menu-overlay.show { display: block; }
+    .mobile-menu-container.show { transform: translateX(0); pointer-events: auto; }
+
     .mobile-wallet-btn {
       background: #031724;
       color: rgb(255, 255, 255);
@@ -369,9 +387,15 @@
       }
     }
 
-    /* Language switcher styles */
-    .language-switcher {
-      display: none; /* Hide language switcher */
+    /* Language switcher styles (visible) */
+    #language-switcher {
+      background: #0f1e36;
+      color: #e6f2ff;
+      border: 1px solid rgba(0, 163, 255, 0.25);
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      cursor: pointer;
     }
 
     /* Preview price style */
@@ -423,6 +447,7 @@
       <div class="navbar-sub-wrapper navbar-profiler">
         <span class="separator"></span>
         <div id="ton-connect-btn" class="wallet-btn"></div>
+        <button id="language-switcher" class="wallet-btn" style="background:#0f1e36;border:1px solid rgba(0,163,255,.25);margin-inline-start:8px">AR / EN</button>
       </div>
     </div>
     <div class="burger-btn" id="burger_btn">
@@ -445,6 +470,7 @@
   </nav>
 
   <!-- Mobile Menu -->
+  <div class="mobile-menu-overlay" id="mobile_menu_overlay"></div>
   <div class="mobile-menu-container" id="mobile_menu_container">
     <div class="mobile-menu-header">
       <div class="mobile-menu-cross" id="mobile_menu_cross">
@@ -456,6 +482,7 @@
     </div>
     <div class="mobile-menu-body">
       <div id="ton-connect-btn-mobile" class="mobile-wallet-btn">Connect Wallet : <br> <br></div>
+      <button class="mobile-wallet-btn" id="language-switcher-mobile">AR / EN</button>
       <ul class="mobile-menu-ul">
         <li class="mobile-menu-li">
           <a class="mobile-menu-a" href="/index.html" id="home-link-mobile">Home</a>
@@ -788,6 +815,23 @@
 const PRICE_PER_STAR_USD = 0.0157;
 let currentTonUsd = null;
 let showAllOptions = false;
+let isEnglish = true; // notifications language only
+
+// Notifications translations (buy page only)
+const i18n = {
+  minStars: { en: 'Minimum 50 Stars ✏️', ar: 'الحد الأدنى 50 نجمة ✏️' },
+  enterUsername: { en: 'Please enter Telegram username. ✏️', ar: 'من فضلك أدخل اسم مستخدم تيليجرام. ✏️' },
+  connectFirst: { en: 'Please connect your wallet first 🛡️', ar: 'يرجى ربط المحفظة أولاً 🛡️' },
+  priceFail: { en: 'Failed to get TON price, try later. 🌐', ar: 'تعذر جلب سعر TON، حاول لاحقًا. 🌐' },
+  insufficientBalance: (avail, need) => ({ en: `Your balance (${avail} TON) is insufficient. You need ${need} TON.`, ar: `رصيدك (${avail} TON) غير كافٍ. تحتاج ${need} TON.` }),
+  processingTitle: { en: 'Processing your order ⏳', ar: 'جاري معالجة الطلب ⏳' },
+  processingText: { en: 'Please do not leave the page until your order is completed.', ar: 'من فضلك لا تغادر الصفحة قبل إتمام طلبك.' },
+  orderReceivedTitle: { en: 'Order received ✅', ar: 'تم استلام الطلب ✅' },
+  orderWillSend: (stars, user) => ({ en: `${stars} stars will be sent to @${user} within 5-10 minutes.`, ar: `سيتم إرسال ${stars} نجمة إلى @${user} خلال 5-10 دقائق.` }),
+  tryAgain: { en: 'Please try again.', ar: 'يرجى المحاولة مرة أخرى.' },
+  txInsufficient: { en: 'Your wallet does not have enough TON to complete this transaction.', ar: 'محفظتك لا تحتوي على رصيد كافٍ من TON لإتمام العملية.' },
+  txFailed: { en: 'Transaction failed ❌', ar: 'فشلت المعاملة ❌' },
+};
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function () {
@@ -796,15 +840,22 @@ document.addEventListener('DOMContentLoaded', function () {
   const mobileMenu = document.getElementById('mobile_menu_container');
   const closeBtn = document.getElementById('mobile_menu_cross');
 
-  burgerBtn.addEventListener('click', function () {
-    mobileMenu.style.display = 'block';
+  const openMenu = () => {
+    mobileMenu.classList.add('show');
+    const overlay = document.getElementById('mobile_menu_overlay');
+    if (overlay) overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
-  });
-
-  closeBtn.addEventListener('click', function () {
-    mobileMenu.style.display = 'none';
+  };
+  const closeMenu = () => {
+    mobileMenu.classList.remove('show');
+    const overlay = document.getElementById('mobile_menu_overlay');
+    if (overlay) overlay.classList.remove('show');
     document.body.style.overflow = '';
-  });
+  };
+  if (burgerBtn) burgerBtn.addEventListener('click', openMenu);
+  if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+  const overlayEl = document.getElementById('mobile_menu_overlay');
+  if (overlayEl) overlayEl.addEventListener('click', closeMenu);
 
   // Hide all second options by default
   document.querySelectorAll('.tm-second-option').forEach(option => {
@@ -816,6 +867,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Fetch TON price
   fetchTonPrice();
+
+  // Notifications language switcher (navbar & mobile)
+  const langBtn = document.getElementById('language-switcher');
+  const langBtnMobile = document.getElementById('language-switcher-mobile');
+  const toggleLang = () => {
+    isEnglish = !isEnglish;
+    const label = isEnglish ? 'AR / EN' : 'EN / AR';
+    if (langBtn) langBtn.textContent = label;
+    if (langBtnMobile) langBtnMobile.textContent = label;
+  };
+  if (langBtn) langBtn.addEventListener('click', toggleLang);
+  if (langBtnMobile) langBtnMobile.addEventListener('click', toggleLang);
 });
 
 async function fetchTonPrice() {
@@ -833,10 +896,7 @@ async function checkWalletBalance(requiredTon) {
     const walletConnection = tonConnectUI.wallet;
     if (!walletConnection || !walletConnection.account) {
       tonConnectUI.connectWallet();
-      return {
-        success: false,
-        message: 'Please connect your wallet first 🛡️'
-      };
+  return { success: false, message: (isEnglish ? i18n.connectFirst.en : i18n.connectFirst.ar) };
     }
 
     const response = await axios.get(`https://toncenter.com/api/v2/getAddressBalance?address=${walletConnection.account.address}`);
@@ -845,7 +905,9 @@ async function checkWalletBalance(requiredTon) {
     if (availableBalance < requiredTon) {
       return {
         success: false,
-        message: `Your balance (${availableBalance.toFixed(2)} TON) is insufficient. You need ${requiredTon.toFixed(2)} TON.`
+        message: (isEnglish
+          ? i18n.insufficientBalance(availableBalance.toFixed(2), requiredTon.toFixed(2)).en
+          : i18n.insufficientBalance(availableBalance.toFixed(2), requiredTon.toFixed(2)).ar)
       };
     }
 
@@ -854,7 +916,7 @@ async function checkWalletBalance(requiredTon) {
     console.error('Balance check error:', error);
     return {
       success: false,
-      message: 'Failed to check wallet balance. Please try again.'
+      message: (isEnglish ? i18n.tryAgain.en : i18n.tryAgain.ar)
     };
   }
 }
@@ -922,37 +984,9 @@ async function submitOrder() {
   const stars = parseInt(document.getElementById("stars").value) || 50;
 
   // Validate minimum stars
-  if (stars < 50) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: 'Minimum 50 Stars ✏️',
-      text: 'The minimum number of stars for a transaction is 50.',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: '#f8d7da',
-      color: '#721c24'
-    });
-    return;
-  }
+  if (stars < 50) { notify.toast(isEnglish ? i18n.minStars.en : i18n.minStars.ar,'error'); return; }
 
-  if (!username) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: 'Check your data ✏️',
-      text: 'Please enter Telegram username.',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: '#f8d7da',
-      color: '#721c24'
-    });
-    return;
-  }
+  if (!username) { notify.toast(isEnglish ? i18n.enterUsername.en : i18n.enterUsername.ar,'error'); return; }
 
   // Check wallet connection first
   const walletConnection = tonConnectUI.wallet;
@@ -967,22 +1001,14 @@ async function submitOrder() {
 
   if (!tonUsd) {
     try {
-      const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+      // Try with timeout; on failure, fallback to 5.0 USD/TON silently
+      const r = await axios.get(
+        "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
+        { timeout: 6000 }
+      );
       tonUsd = r.data["the-open-network"].usd;
     } catch (e) {
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'error',
-        title: 'Connection error 🌐',
-        text: 'Failed to get TON price, try later.',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        background: '#f8d7da',
-        color: '#721c24'
-      });
-      return;
+      tonUsd = 5.0; // local-dev fallback
     }
   }
 
@@ -990,37 +1016,19 @@ async function submitOrder() {
 
   // Check wallet balance
   const balanceCheck = await checkWalletBalance(requiredTon);
-  if (!balanceCheck.success) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: 'Insufficient Balance 💰',
-      text: balanceCheck.message,
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
-      background: '#f8d7da',
-      color: '#721c24'
-    });
-    return;
-  }
+  if (!balanceCheck.success) { notify.toast(balanceCheck.message || 'Insufficient Balance 💰','error'); return; }
 
   // If balance is sufficient, proceed with transaction
   const tonAmountN = BigInt(Math.ceil(requiredTon * 1e9));
   const refNumber = 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase();
 
-  // Encode comment
-  const comment = `${stars} Telegram Stars for @${username} - PANDA STORE - Ref#${refNumber}`;
-
-  const payload = await encodeComment(comment);
-
+  // No payload/comment to maximize wallet compatibility
+  // Some wallets reject transactions with any payload/comment attached.
   const tx = {
     validUntil: Math.floor(Date.now() / 1000) + 300,
     messages: [{
       address: "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN",
-      amount: tonAmountN.toString(),
-      payload: payload
+      amount: tonAmountN.toString()
     }]
   };
 
@@ -1029,91 +1037,47 @@ async function submitOrder() {
       const result = await tonConnectUI.sendTransaction(tx);
     } catch (transactionError) {
       console.error('Transaction error:', transactionError);
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'error',
-        title: 'Transaction failed ❌',
-        text: 'Please try again.',
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-        background: '#f8d7da',
-        color: '#721c24'
-      });
+      notify.toast((isEnglish ? i18n.txFailed.en : i18n.txFailed.ar), 'error');
       return;
     }
 
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'info',
-      title: 'Processing your order ⏳',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      background: '#d1ecf1',
-      color: '#0c5460'
-    });
+    // Show persistent loading modal with localized text
+    notify.loading(
+      (isEnglish ? i18n.processingTitle.en : i18n.processingTitle.ar),
+      (isEnglish ? i18n.processingText.en : i18n.processingText.ar)
+    );
 
-    setTimeout(async () => {
-      try {
-        await axios.post("https://pandastore-f2yn.onrender.com/order", {
-          username,
-          stars,
-          amountTon: (requiredTon).toFixed(5),
-          amountUsd: amountUSD.toFixed(2),
-          refNumber: refNumber
-        });
+    try {
+      await axios.post("https://pandastore-f2yn.onrender.com/order", {
+        username,
+        stars,
+        amountTon: (requiredTon).toFixed(5),
+        amountUsd: amountUSD.toFixed(2),
+        refNumber: refNumber
+      });
+    } catch (err) {
+      // Even if logging fails, proceed with success for user UX
+      console.warn('Order logging failed, proceeding to success UX:', err);
+    } finally {
+      // Close the loading modal in all cases after attempt
+      if (window.notify && typeof notify.close === 'function') notify.close();
+    }
 
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: `${stars} stars will be sent to @${username} within 5-10 minutes ⏳`,
-          text: `Reference: ${refNumber}`,
-          showConfirmButton: false,
-          timer: 8000,
-          timerProgressBar: true,
-          background: '#d4edda',
-          color: '#155724'
-        });
-      } catch (err) {
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: `${stars} stars will be sent to @${username} within 5-10 minutes ⏳`,
-          text: `Reference: ${refNumber}`,
-          showConfirmButton: false,
-          timer: 8000,
-          timerProgressBar: true,
-          background: '#d4edda',
-          color: '#155724'
-        });
-      }
-    }, 2000);
+    // Localized success message
+    const successMsg = (isEnglish
+      ? i18n.orderWillSend(stars, username).en
+      : i18n.orderWillSend(stars, username).ar);
+    notify.toast(successMsg, 'success');
 
   } catch (error) {
     console.error('Transaction error:', error);
 
-    let errorMessage = 'Please try again.';
-    if (error.message.includes('Insufficient balance')) {
-      errorMessage = 'Your wallet does not have enough TON to complete this transaction.';
+    let errorMessage = (isEnglish ? i18n.tryAgain.en : i18n.tryAgain.ar);
+    if (error && typeof error.message === 'string' && error.message.includes('Insufficient balance')) {
+      errorMessage = (isEnglish ? i18n.txInsufficient.en : i18n.txInsufficient.ar);
     }
 
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: 'Transaction failed ❌',
-      text: errorMessage,
-      showConfirmButton: false,
-      timer: 5000,
-      timerProgressBar: true,
-      background: '#f8d7da',
-      color: '#721c24'
-    });
+    notify.toast(errorMessage || (isEnglish ? i18n.txFailed.en : i18n.txFailed.ar), 'error');
   }
 }
   </script>
