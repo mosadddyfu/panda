@@ -789,12 +789,12 @@ app.post('/telegramWebhook', async (req, res) => {
   // 11. معالجة /start و /help و /database
   if (body.message && body.message.text === "/start") {
     const chatId = body.message.chat.id;
-    const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
+    const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nافتح الموقع لشراء النجوم والاشتراك بريميوم وإدارة ملفك الشخصي.";
     const replyMarkup = {
       inline_keyboard: [
   [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
   [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }],
-  [{ text: "👤 ملفي الشخصي", web_app: { url: `${WEB_BASE}/profile.html` } }]
+  [{ text: "�️ افتح الموقع", web_app: { url: `${WEB_BASE}` } }]
       ]
     };
 
@@ -810,10 +810,10 @@ app.post('/telegramWebhook', async (req, res) => {
     const chatId = body.message.chat.id;
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
       chat_id: chatId,
-      text: "افتح ملفك الشخصي داخل تليجرام:",
+      text: "افتح الموقع من الزر بالأسفل:",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "👤 ملفي الشخصي", web_app: { url: `${WEB_BASE}/profile.html` } }]
+          [{ text: "�️ افتح الموقع", web_app: { url: `${WEB_BASE}` } }]
         ]
       }
     });
