@@ -139,7 +139,10 @@
         <div id="tg-username" class="profile-username">@guest</div>
       </div>
       <div class="profile-actions">
-        <button id="open-profile" class="btn-profile">فتح الملف الشخصي</button>
+        <button id="open-profile" class="btn-profile" type="button"
+          onclick="event.preventDefault(); event.stopImmediatePropagation(); location.href='profile.html';">
+          فتح الملف الشخصي
+        </button>
       </div>
     </div>
   </section>
@@ -288,7 +291,7 @@
     })();
 
     // TonConnect mini referral widget
-    const miniTon = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: 'tonconnect-manifest.json', buttonRootId: 'ton-mini-btn' });
+    const miniTon = new TON_CONNECT_UI.TonConnectUI({   manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json', buttonRootId: 'ton-mini-btn' });
 
     function buildRefLink(addr){
       try { return new URL(`buy.html?ref=${encodeURIComponent(addr)}`, location.href).toString(); }
