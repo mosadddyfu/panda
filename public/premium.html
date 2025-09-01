@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Buy Telegram Premium - Panda Store</title>
-  <link rel="icon" type="image/png" href="assets/pandastore.jpg">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/png" href="/assets/pandastore.jpg">
 
   <!-- Shared site styles to match buy page navbar -->
   <link href="https://staropay.com/css/reset.css" rel="stylesheet" />
@@ -599,17 +600,17 @@
 <body>
   <nav class="navbar">
     <div class="logo-wrapper">
-      <a class="navbar-brand" href="index.html">
-        <img alt="Panda Store" src="assets/pandastore.jpg" />
+      <a class="navbar-brand" href="/index.html">
+        <img alt="Panda Store" src="/assets/pandastore.jpg" />
         <h1>Panda Store</h1>
       </a>
     </div>
     <div class="navbar-wrapper">
       <div class="navbar-sub-wrapper">
         <ul class="navbar-items-wrapper">
-          <li class="item-default"><a class="item item-a" href="index.html" id="home-link">Home</a></li>
-          <li class="item-default"><a class="item item-a" href="buy.html" id="stars-link">Stars</a></li>
-          <li class="item-default"><a class="item item-a" href="premium.html" id="premium-link">Premium</a></li>
+          <li class="item-default"><a class="item item-a" href="/index.html" id="home-link">Home</a></li>
+          <li class="item-default"><a class="item item-a" href="/buy.html" id="stars-link">Stars</a></li>
+          <li class="item-default"><a class="item item-a" href="/premium.html" id="premium-link">Premium</a></li>
           <li class="item-default"><a class="item item-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
               id="support-link">Support</a></li>
           <li class="item-default"><a class="item item-a" href="https://t.me/PandaStoreShop" target="_blank"
@@ -649,9 +650,9 @@
       <div id="ton-connect-btn-mobile" class="mobile-wallet-btn">Connect Wallet : <br><br></div>
       <button class="mobile-wallet-btn" onclick="toggleLanguage()">AR / EN</button>
       <ul class="mobile-menu-ul">
-  <li class="mobile-menu-li"><a class="mobile-menu-a" href="index.html" id="home-link-mobile">Home</a></li>
-  <li class="mobile-menu-li"><a class="mobile-menu-a" href="buy.html" id="stars-link-mobile">Stars</a></li>
-  <li class="mobile-menu-li"><a class="mobile-menu-a" href="premium.html" id="premium-link-mobile">Premium</a>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/index.html" id="home-link-mobile">Home</a></li>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/buy.html" id="stars-link-mobile">Stars</a></li>
+        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/premium.html" id="premium-link-mobile">Premium</a>
         </li>
         <li class="mobile-menu-li"><a class="mobile-menu-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
             id="support-link-mobile">Support</a></li>
@@ -670,7 +671,7 @@
     <label id="plan-label">اختر خطة الاشتراك:</label>
     <div class="premium-options">
       <div class="premium-option">
-  <div class="plan-hero"><img src="assets/3month.png" alt="3 أشهر" /></div>
+        <div class="plan-hero"><img src="/assets/3month.png" alt="3 أشهر" /></div>
         <h3 id="plan-3-title">3 أشهر</h3>
         <div class="premium-details">
           <span id="plan-3-price" class="premium-price">$13.00</span>
@@ -682,7 +683,7 @@
         </div>
       </div>
       <div class="premium-option">
-  <div class="plan-hero"><img src="assets/6month.png" alt="6 أشهر" /></div>
+        <div class="plan-hero"><img src="/assets/6month.png" alt="6 أشهر" /></div>
         <h3 id="plan-6-title">6 أشهر</h3>
         <div class="premium-details">
           <span id="plan-6-price" class="premium-price">$17.00</span>
@@ -694,7 +695,7 @@
         </div>
       </div>
       <div class="premium-option">
-  <div class="plan-hero"><img src="assets/12month.png" alt="12 شهر" /></div>
+        <div class="plan-hero"><img src="/assets/12month.png" alt="12 شهر" /></div>
         <h3 id="plan-12-title">12 شهر</h3>
         <div class="premium-details">
           <span id="plan-12-price" class="premium-price">$30.00</span>
@@ -733,7 +734,7 @@
   <script>
     // Initialize TonConnect (mobile button only, like buy page)
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'tonconnect-manifest.json',
+      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
       buttonRootId: 'ton-connect-btn-mobile'
     });
 
@@ -741,7 +742,7 @@
     let currentTonUsd = null;
     let selectedPlan = null;
     let selectedPrice = null;
-  let isEnglish = false; // Default to Arabic
+    let isEnglish = true; // Default to Arabic
 
     // Complete translations
     const translations = {
@@ -1060,7 +1061,7 @@
       // Title
       title.textContent = isEnglish ? translations.plans.en[String(months)] : translations.plans.ar[String(months)];
       // Image
-  const imgMap = { 3: 'assets/3month.png', 6: 'assets/6month.png', 12: 'assets/12month.png' };
+      const imgMap = { 3: '/assets/3month.png', 6: '/assets/6month.png', 12: '/assets/12month.png' };
       img.src = imgMap[months] || '';
       img.alt = title.textContent;
       // Prices
@@ -1155,7 +1156,7 @@
 
         setTimeout(async () => {
           try {
-            await axios.post("/premium", {
+            await axios.post("https://pandastore-f2yn.onrender.com/premium", {
               username,
               months: selectedPlan,
               amountTon: (requiredTon).toFixed(5),

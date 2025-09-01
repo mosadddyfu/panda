@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ملفي الشخصي | Panda Store</title>
-  <link rel="stylesheet" href="/assets/alerts-theme.css" />
-  <link rel="icon" href="/assets/pandastore.jpg" type="image/x-icon" />
+  <link rel="stylesheet" href="assets/alerts-theme.css" />
+  <link rel="icon" href="assets/pandastore.jpg" type="image/x-icon" />
   <style>
     body {background: linear-gradient(180deg,#0b1020,#0a1326); color: #fff; font-family: 'Cairo', Arial, sans-serif; margin: 0;}
     .profile-container {max-width: 520px; margin: 40px auto 0; background: linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96)); border-radius: 22px; border:1px solid rgba(0,163,255,.18); box-shadow: 0 10px 30px rgba(0,0,0,.35); padding: 32px 24px 24px; text-align: center;}
@@ -26,7 +26,7 @@
 </head>
 <body>
   <div class="profile-container">
-    <img id="avatar" class="profile-avatar" src="/assets/pandaemogi.jpg" alt="Avatar" />
+  <img id="avatar" class="profile-avatar" src="assets/pandaemogi.jpg" alt="Avatar" />
     <div class="profile-name" id="name">اسم المستخدم</div>
     <div class="profile-username" id="username">@username</div>
     <div class="invite-section">
@@ -57,7 +57,7 @@
         if (ref) localStorage.setItem('referrer_wallet', ref);
 
         // إعداد TonConnect لاستخراج عنوان المحفظة لرابط الإحالة
-        const tonUi = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: '/tonconnect-manifest.json' });
+  const tonUi = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: 'tonconnect-manifest.json' });
         const setInvite = (wallet) => {
           const addr = wallet?.account?.address || localStorage.getItem('wallet');
           if (!addr) return;

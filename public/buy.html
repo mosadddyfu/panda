@@ -5,7 +5,7 @@
   <meta charset="utf-8" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     name="viewport" />
   <title>Buy Telegram Stars - Panda Store</title>
-  <link href="assets/pandastore.jpg" rel="icon" type="image/x-icon" />
+  <link href="/assets/pandastore.jpg" rel="icon" type="image/x-icon" />
 
   <!-- TrustBox script -->
   <script async="" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
@@ -16,8 +16,8 @@
   <!-- Sweetalert2 -->
   <link href="https://staropay.com/js/_lib/sweetalert2/default.css" rel="stylesheet" />
   <script src="https://staropay.com/js/_lib/sweetalert2/sweetalert2.min.js"></script>
-  <link rel="stylesheet" href="assets/alerts-theme.css" />
-  <script defer src="assets/alerts-theme.js"></script>
+  <link rel="stylesheet" href="/assets/alerts-theme.css" />
+  <script defer src="/assets/alerts-theme.js"></script>
   <!-- Axios Library -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- TonConnect Library -->
@@ -107,14 +107,14 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-  background-image:
-  url('assets/star1.gif'),
-  url('assets/star2.gif'),
-  url('assets/star1.gif'),
-  url('assets/star2.gif'),
-  url('assets/star1.gif'),
-  url('assets/star2.gif'),
-  url('assets/star1.gif');
+      background-image:
+      url('/assets/star1.gif'),
+      url('/assets/star2.gif'),
+      url('/assets/star1.gif'),
+      url('/assets/star2.gif'),
+      url('/assets/star1.gif'),
+      url('/assets/star2.gif'),
+      url('/assets/star1.gif');
       background-repeat: no-repeat;
       /* final target positions moved upward (closer to header / big star) */
       background-position:
@@ -415,8 +415,8 @@
 
   <nav class="navbar">
     <div class="logo-wrapper">
-      <a class="navbar-brand" href="index.html">
-        <img alt="Panda Store" src="assets/pandastore.jpg" />
+      <a class="navbar-brand" href="/index.html">
+        <img alt="Panda Store" src="/assets/pandastore.jpg" />
         <h1>Panda Store</h1>
       </a>
     </div>
@@ -424,13 +424,13 @@
       <div class="navbar-sub-wrapper">
         <ul class="navbar-items-wrapper">
           <li class="item-default">
-            <a class="item item-a" href="index.html" id="home-link">Home</a>
+            <a class="item item-a" href="/index.html" id="home-link">Home</a>
           </li>
           <li class="item-default">
-            <a class="item item-a" href="buy.html" id="stars-link">Stars</a>
+            <a class="item item-a" href="/buy.html" id="stars-link">Stars</a>
           </li>
           <li class="item-default">
-            <a class="item item-a" href="premium.html" id="premium-link">Premium</a>
+            <a class="item item-a" href="/premium.html" id="premium-link">Premium</a>
           </li>
           <li class="item-default">
             <a class="item item-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank" id="support-link">
@@ -481,17 +481,17 @@
       </div>
     </div>
     <div class="mobile-menu-body">
-  <div id="ton-connect-btn-mobile" class="mobile-wallet-btn">Connect Wallet : <br> <br></div>
+      <div id="ton-connect-btn-mobile" class="mobile-wallet-btn">Connect Wallet : <br> <br></div>
       <button class="mobile-wallet-btn" id="language-switcher-mobile">AR / EN</button>
       <ul class="mobile-menu-ul">
         <li class="mobile-menu-li">
-          <a class="mobile-menu-a" href="index.html" id="home-link-mobile">Home</a>
+          <a class="mobile-menu-a" href="/index.html" id="home-link-mobile">Home</a>
         </li>
         <li class="mobile-menu-li">
-          <a class="mobile-menu-a" href="buy.html" id="stars-link-mobile">Stars</a>
+          <a class="mobile-menu-a" href="/buy.html" id="stars-link-mobile">Stars</a>
         </li>
         <li class="mobile-menu-li">
-          <a class="mobile-menu-a" href="premium.html" id="premium-link-mobile">Premium</a>
+          <a class="mobile-menu-a" href="/premium.html" id="premium-link-mobile">Premium</a>
         </li>
         <li class="mobile-menu-li">
           <a class="mobile-menu-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank" id="support-link-mobile">Support</a>
@@ -505,16 +505,16 @@
 
   <div class="section buy-section" id="buy-section">
     <div class="rocket-duck-sticker">
-  <lottie-player autoplay="" background="transparent" loop="" speed="1" src="assets/rocketDuckSticker.json"
+      <lottie-player autoplay="" background="transparent" loop="" speed="1" src="/img/rocketDuckSticker.json"
         style="width: 200px; height: 200px;">
       </lottie-player>
     </div>
       
     <!-- Decorative GIFs banner -->
     <div class="gif-banner" aria-hidden="true">
-  <img src="assets/star1.gif" alt="" loading="lazy" decoding="async" />
-  <img src="assets/bigstar.gif" alt="" loading="lazy" decoding="async" />
-  <img src="assets/star2.gif" alt="" loading="lazy" decoding="async" />
+      <img src="/assets/star1.gif" alt="" loading="lazy" decoding="async" />
+      <img src="/assets/bigstar.gif" alt="" loading="lazy" decoding="async" />
+      <img src="/assets/star2.gif" alt="" loading="lazy" decoding="async" />
     </div>
 
 
@@ -811,11 +811,6 @@
   manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
   buttonRootId: 'ton-connect-btn-mobile'
 });
-// زر المحفظة على سطح المكتب
-const tonConnectUIDesktop = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
-  buttonRootId: 'ton-connect-btn'
-});
 
 const PRICE_PER_STAR_USD = 0.0157;
 let currentTonUsd = null;
@@ -1003,9 +998,6 @@ async function submitOrder() {
 
   const amountUSD = stars * PRICE_PER_STAR_USD;
   let tonUsd = currentTonUsd;
-  // قراءة محفظة المُحيل من الاستعلام (ref) أو localStorage
-  const params = new URLSearchParams(location.search);
-  const refWallet = params.get('ref') || localStorage.getItem('referrer_wallet') || '';
 
   if (!tonUsd) {
     try {
@@ -1061,8 +1053,7 @@ async function submitOrder() {
         stars,
         amountTon: (requiredTon).toFixed(5),
         amountUsd: amountUSD.toFixed(2),
-        refNumber: refNumber,
-        refWallet
+        refNumber: refNumber
       });
     } catch (err) {
       // Even if logging fails, proceed with success for user UX
