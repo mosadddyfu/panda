@@ -291,24 +291,38 @@
 
     // TonConnect mini referral widget
   const miniTon = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-mini-btn'
   });
 
-    function buildRefLink(addr){
+    function buildWalletRefLink(addr){
       try { return new URL(`buy.html?ref=${encodeURIComponent(addr)}`, location.href).toString(); }
       catch { return `buy.html?ref=${encodeURIComponent(addr)}`; }
     }
+    async function loadBotRefLink(){
+      // يستند إلى معرف تيليجرام لإنتاج رابط البوت: https://t.me/<BOT>?start=<code>
+      try{
+        const u = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe?.user) ? Telegram.WebApp.initDataUnsafe.user : JSON.parse(localStorage.getItem('tg_user')||'null');
+        if(!u||!u.id) return null;
+        const resp = await fetch(`/referral/my-link?tg_id=${encodeURIComponent(u.id)}`);
+        if(!resp.ok) return null; const data = await resp.json();
+        return data?.link || null;
+      }catch{return null}
+    }
 
-    function updateMini(wallet){
+    async function updateMini(wallet){
       const el=document.getElementById('mini-ref'); const copyBtn=document.getElementById('mini-copy');
-      if(!wallet||!wallet.account){
-        el.textContent='وصّل محفظتك لتوليد رابط الإحالة تلقائيًا.';
-        copyBtn.disabled=false; // اترك النسخ يعمل حتى قبل التوصيل (سيستخدم المحفظة المخزنة)
-        return;
+      const botLink = await loadBotRefLink();
+      if (botLink) {
+        el.textContent = botLink; copyBtn.disabled=false; return;
       }
-      const addr=wallet.account.address; const link=buildRefLink(addr); el.textContent=link; copyBtn.disabled=false;
-      try{localStorage.setItem('wallet', addr);}catch{}
+      // فشل البوت: استخدم رابط محفظة كحل احتياطي
+      if(wallet && wallet.account){
+        const addr=wallet.account.address; const link=buildWalletRefLink(addr); el.textContent=link; copyBtn.disabled=false; try{localStorage.setItem('wallet', addr);}catch{}
+      } else {
+        el.textContent='افتح الموقع من البوت للحصول على رابط إحالة البوت (المفضل) أو وصّل محفظتك لرابط بديل.';
+        copyBtn.disabled=false;
+      }
     }
 
     (function ensureCopy(){
@@ -317,16 +331,15 @@
         const el=document.getElementById('mini-ref');
         let link=(el?.textContent||'').trim();
         if(!/^https?:\/\//i.test(link)){
-          // Try to build using connected or cached wallet
-          let addr=null; try{addr=(await miniTon.getWallet())?.account?.address} catch{}
-          if(!addr) addr=localStorage.getItem('wallet');
-          if(!addr){
-            // No wallet yet: open connect modal inside mini app instead of error
-            if(typeof miniTon.connectWallet === 'function'){ miniTon.connectWallet(); }
-            return;
+          const botLink = await loadBotRefLink();
+          if (botLink) { link = botLink; el.textContent = link; }
+          else {
+            // Wallet fallback
+            let addr=null; try{addr=(await miniTon.getWallet())?.account?.address} catch{}
+            if(!addr) addr=localStorage.getItem('wallet');
+            if(!addr){ if(typeof miniTon.connectWallet==='function'){ miniTon.connectWallet(); } return; }
+            link=buildWalletRefLink(addr); el.textContent=link;
           }
-          link=buildRefLink(addr);
-          if(el) el.textContent=link;
         }
         try{
           if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(link);} else {const ta=document.createElement('textarea'); ta.value=link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);} btn.textContent='تم النسخ'; setTimeout(()=>btn.textContent='نسخ',1200);

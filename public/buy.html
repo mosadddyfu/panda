@@ -1048,12 +1048,15 @@ async function submitOrder() {
     );
 
     try {
-      await axios.post("https://pandastore-f2yn.onrender.com/order", {
+      // اجلب معرف تيليجرام إن وجد ليسجل عمولة الإحالة بنظام البوت
+      let tgId = null; try{ tgId = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe?.user?.id) || JSON.parse(localStorage.getItem('tg_user')||'null')?.id || null; }catch{}
+      await axios.post("/order", {
         username,
         stars,
         amountTon: (requiredTon).toFixed(5),
         amountUsd: amountUSD.toFixed(2),
-        refNumber: refNumber
+        refNumber: refNumber,
+        tgId
       });
     } catch (err) {
       // Even if logging fails, proceed with success for user UX

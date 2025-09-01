@@ -46,7 +46,7 @@
     <!-- عرض عنوان المحفظة المرتبطة -->
     <div id="wallet-address" style="margin-top:10px;color:#b3c6e0;font-size:0.95rem;"></div>
 
-  <div class="invite-stats">عدد الأشخاص المدعوين: <span id="ref-count">0</span></div>
+  <div class="invite-stats">عدد الأشخاص المدعوين (المؤكدين): <span id="ref-count">0</span></div>
   <div class="earnings">أرباحك من الدعوات: <span id="ref-earn">0.00</span> $</div>
   <div class="invite-stats">صافى ربحك بالنجوم: <span id="net-stars">0</span> ⭐</div>
   <button class="copy-btn" id="withdraw-btn" style="margin-top:12px;background:linear-gradient(90deg,#ff7b7b,#ff4b4b)">سحب الأرباح</button>
@@ -60,6 +60,7 @@
       // إنشاء مثيل واحد عالمي لإعادة استخدامه في الأسفل
       window.tcu = new TON_CONNECT_UI.TonConnectUI({
       manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+
         buttonRootId: 'ton-connect-btn'
       });
 
@@ -112,27 +113,28 @@
         const ref = params.get('ref');
         if (ref) localStorage.setItem('referrer_wallet', ref);
 
-        // استخدام نفس مثيل TonConnect UI لتوليد رابط الإحالة
-        const setInvite = (session) => {
-          const addr = session?.account?.address || localStorage.getItem('wallet');
+        // حاول أولاً الحصول على رابط البوت المعتمد ثم ارجع للمحفظة كحل بديل
+        async function setInviteFromBotOrWallet(session){
           const el = document.getElementById('invite-link');
+          try{
+            const tg = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe?.user) ? Telegram.WebApp.initDataUnsafe.user : JSON.parse(localStorage.getItem('tg_user')||'null');
+            if (tg && tg.id) {
+              const r = await fetch(`/referral/my-link?tg_id=${encodeURIComponent(tg.id)}`);
+              if (r.ok) { const d = await r.json(); if (d?.link) { el.textContent = d.link; return; } }
+            }
+          }catch{}
+          const addr = session?.account?.address || localStorage.getItem('wallet');
           if (addr) {
             const invite = `${location.origin}/buy.html?ref=${encodeURIComponent(addr)}`;
-            el.textContent = invite;
-            try { localStorage.setItem('wallet', addr); } catch {}
+            el.textContent = invite; try { localStorage.setItem('wallet', addr); } catch {}
           } else {
-            el.textContent = 'وصّل محفظتك لتوليد رابط الإحالة تلقائيًا.';
+            el.textContent = 'افتح الموقع من البوت للحصول على رابط إحالة البوت (المفضل) أو وصّل محفظتك لرابط بديل.';
           }
-        };
-        if (window.tcu && typeof window.tcu.getWallet === 'function') {
-          window.tcu.getWallet().then(setInvite).catch(()=>{
-            setInvite(null);
-          });
-          if (typeof window.tcu.onStatusChange === 'function') window.tcu.onStatusChange(setInvite);
-        } else {
-          // Fallback على المخزن المحلي
-          setInvite(null);
         }
+        if (window.tcu && typeof window.tcu.getWallet === 'function') {
+          window.tcu.getWallet().then(setInviteFromBotOrWallet).catch(()=>setInviteFromBotOrWallet(null));
+          if (typeof window.tcu.onStatusChange === 'function') window.tcu.onStatusChange(setInviteFromBotOrWallet);
+        } else { setInviteFromBotOrWallet(null); }
       } catch (e) {
         console.warn('Telegram WebApp init failed', e);
       }
@@ -143,8 +145,7 @@
       const el = document.getElementById('invite-link');
       const link = (el.textContent||'').trim();
       if (!/^https?:\/\//i.test(link)) {
-        try{ if(window.tcu && typeof window.tcu.openModal==='function'){ await window.tcu.openModal(); return; } }catch{}
-        alert('من فضلك وصّل محفظتك أولًا لتوليد رابط الإحالة.');
+        alert('افتح الموقع من البوت للحصول على رابط إحالة البوت، أو وصّل محفظتك من الزر لإنشاء رابط بديل.');
         return;
       }
       try {
@@ -159,12 +160,14 @@
     // نظام إحصائيات الدعوات (توضيح فقط)
     // في التطبيق الحقيقي يجب جلب البيانات من قاعدة بيانات
     function loadReferralStats() {
-      // محاولة جلب ملخص الإحالات من السيرفر
-      const myWallet = localStorage.getItem('wallet') || 'WALLET_ADDRESS';
-      fetch(`/affiliate/summary?wallet=${encodeURIComponent(myWallet)}`)
+      const tg = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe?.user) ? Telegram.WebApp.initDataUnsafe.user : JSON.parse(localStorage.getItem('tg_user')||'null');
+      const myWallet = localStorage.getItem('wallet') || '';
+      const summaryUrl = tg && tg.id ? `/affiliate/summary?tg_id=${encodeURIComponent(tg.id)}` : (myWallet ? `/affiliate/summary?wallet=${encodeURIComponent(myWallet)}` : null);
+      (async()=>{ try{ if(tg && tg.id){ const r=await fetch(`/referral/my-link?tg_id=${encodeURIComponent(tg.id)}`); if(r.ok){ const d=await r.json(); if(typeof d.count==='number'){ document.getElementById('ref-count').textContent = d.count; } } } }catch{} })();
+      if (!summaryUrl) { document.getElementById('ref-earn').textContent='0.00'; document.getElementById('net-stars').textContent='0'; return; }
+      fetch(summaryUrl)
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(data => {
-          document.getElementById('ref-count').textContent = data.total_orders ?? 0;
           document.getElementById('ref-earn').textContent = Number(data.total_usd || 0).toFixed(4);
           const netStars = (Number(data.total_usd || 0) / 0.0157) || 0;
           document.getElementById('net-stars').textContent = Math.floor(netStars);
