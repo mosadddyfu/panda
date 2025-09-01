@@ -35,6 +35,7 @@ const WEB_BASE = process.env.WEB_BASE || 'https://pandastore-f2yn.onrender.com';
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const ADMIN_IDS = [process.env.ADMIN_ID, process.env.SECOND_ADMIN_ID].filter(Boolean);
 const CHANNEL_ID = process.env.CHANNEL_ID;
+const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
 
 // التأكد من وجود جميع الجداول المطلوبة
 (async () => {
@@ -81,6 +82,19 @@ const CHANNEL_ID = process.env.CHANNEL_ID;
         paid BOOLEAN DEFAULT false,
         created_at TIMESTAMP DEFAULT NOW()
       );
+    `);
+
+    // إضافة عمود ref_code إذا لم يكن موجودًا لدعم الإحالات عبر البوت
+    await pgClient.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name='affiliate_commissions' AND column_name='ref_code'
+        ) THEN
+          ALTER TABLE affiliate_commissions ADD COLUMN ref_code VARCHAR(32);
+        END IF;
+      END$$;
     `);
 
     console.log("✅ تم التأكد من وجود جميع الجداول في قاعدة البيانات");
@@ -188,7 +202,7 @@ app.use(express.static('public'));
 
 app.post('/order', async (req, res) => {
   try {
-  const { username, stars, amountTon, amountUsd, createdAt, refWallet } = req.body;
+  const { username, stars, amountTon, amountUsd, createdAt, refWallet, tgId } = req.body;
     
     if (!username || !stars || !amountTon || !amountUsd) {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
@@ -210,10 +224,24 @@ app.post('/order', async (req, res) => {
     const orderId = result.rows[0].id;
     const fragmentStars = "https://fragment.com/stars/buy";
 
-    // حساب عمولة الإحالة إن وُجدت محفظة مرجع
+    // حساب عمولة الإحالة: أولوية لنظام البوت (ref_code) إذا كان الطلب مفتوح من داخل البوت
     try {
-      if (refWallet && typeof refWallet === 'string' && refWallet.trim().length > 10) {
-        const starsInt = parseInt(stars, 10) || 0;
+      const starsInt = parseInt(stars, 10) || 0;
+      if (tgId) {
+        // استخدم رمز الدعوة لمن دعا هذا المستخدم
+        const { rows } = await pgClient.query('SELECT invited_by FROM referrals WHERE user_id = $1', [tgId]);
+        const invitedBy = rows[0]?.invited_by;
+        if (invitedBy) {
+          const profitPerStar = 0.0157 - 0.015; // 0.0007 USD
+          const commissionUsd = (starsInt * profitPerStar * 0.10); // 10%
+          await pgClient.query(
+            `INSERT INTO affiliate_commissions (ref_wallet, ref_code, order_id, stars, commission_usd)
+             VALUES ($1, $2, $3, $4, $5)`,
+            ['BOT_REF', invitedBy, orderId, starsInt, commissionUsd]
+          );
+        }
+      } else if (refWallet && typeof refWallet === 'string' && refWallet.trim().length > 10) {
+        // توافق خلفي: عمولة عبر رابط محفظة قديم
         const profitPerStar = 0.0157 - 0.015; // 0.0007 USD
         const commissionUsd = (starsInt * profitPerStar * 0.10); // 10%
         await pgClient.query(
@@ -258,28 +286,68 @@ app.post('/order', async (req, res) => {
 app.get('/affiliate/summary', async (req, res) => {
   try {
     const wallet = (req.query.wallet || '').toString().trim();
-    if (!wallet) return res.status(400).json({ error: 'wallet is required' });
+    const tgId = req.query.tg_id ? parseInt(req.query.tg_id, 10) : null;
+    if (!wallet && !tgId) return res.status(400).json({ error: 'wallet or tg_id is required' });
 
-    const { rows } = await pgClient.query(
-      `SELECT 
-         COALESCE(SUM(CASE WHEN paid = false THEN commission_usd END), 0) AS unpaid_usd,
-         COALESCE(SUM(commission_usd), 0) AS total_usd,
-         COALESCE(SUM(stars), 0) AS total_stars,
-         COUNT(*) AS total_orders
-       FROM affiliate_commissions
-       WHERE ref_wallet = $1`,
-      [wallet]
-    );
-
-    res.json({
-      wallet,
-      unpaid_usd: Number(rows[0].unpaid_usd),
-      total_usd: Number(rows[0].total_usd),
-      total_stars: Number(rows[0].total_stars),
-      total_orders: Number(rows[0].total_orders)
-    });
+    let rows;
+    if (tgId) {
+      // اجلب رمز إحالة صاحب الحساب ثم لخص العمولات عليه
+      const { rows: r } = await pgClient.query('SELECT referral_code FROM referrals WHERE user_id = $1', [tgId]);
+      const code = r[0]?.referral_code;
+      if (!code) return res.json({ wallet: null, code: null, unpaid_usd: 0, total_usd: 0, total_stars: 0, total_orders: 0 });
+      ({ rows } = await pgClient.query(
+        `SELECT 
+           COALESCE(SUM(CASE WHEN paid = false THEN commission_usd END), 0) AS unpaid_usd,
+           COALESCE(SUM(commission_usd), 0) AS total_usd,
+           COALESCE(SUM(stars), 0) AS total_stars,
+           COUNT(*) AS total_orders
+         FROM affiliate_commissions
+         WHERE ref_code = $1`,
+        [code]
+      ));
+      return res.json({ code, unpaid_usd: Number(rows[0].unpaid_usd), total_usd: Number(rows[0].total_usd), total_stars: Number(rows[0].total_stars), total_orders: Number(rows[0].total_orders) });
+    } else {
+      ({ rows } = await pgClient.query(
+        `SELECT 
+           COALESCE(SUM(CASE WHEN paid = false THEN commission_usd END), 0) AS unpaid_usd,
+           COALESCE(SUM(commission_usd), 0) AS total_usd,
+           COALESCE(SUM(stars), 0) AS total_stars,
+           COUNT(*) AS total_orders
+         FROM affiliate_commissions
+         WHERE ref_wallet = $1`,
+        [wallet]
+      ));
+      return res.json({ wallet, unpaid_usd: Number(rows[0].unpaid_usd), total_usd: Number(rows[0].total_usd), total_stars: Number(rows[0].total_stars), total_orders: Number(rows[0].total_orders) });
+    }
   } catch (err) {
     console.error('Error in /affiliate/summary:', err);
+    res.status(500).json({ error: 'server error' });
+  }
+});
+
+// رابط الإحالة الخاص بالمستخدم وعدد الإحالات الناجحة (المُتحققة)
+app.get('/referral/my-link', async (req, res) => {
+  try {
+    const tgId = req.query.tg_id ? parseInt(req.query.tg_id, 10) : null;
+    if (!tgId) return res.status(400).json({ error: 'tg_id is required' });
+
+    let r = await pgClient.query('SELECT referral_code FROM referrals WHERE user_id = $1', [tgId]);
+    let code = r.rows[0]?.referral_code;
+    if (!code) {
+      // أنشئ الرمز إن لم يوجد
+      code = await generateReferralCode(tgId);
+    }
+    if (!code) return res.status(500).json({ error: 'failed to generate code' });
+
+    const stats = await pgClient.query(
+      'SELECT COUNT(*)::int AS cnt FROM referrals WHERE invited_by = $1 AND verified = true',
+      [code]
+    );
+    const count = stats.rows[0]?.cnt || 0;
+    const link = `https://t.me/${BOT_USERNAME}?start=${code}`;
+    res.json({ code, link, count });
+  } catch (err) {
+    console.error('Error in /referral/my-link:', err);
     res.status(500).json({ error: 'server error' });
   }
 });
