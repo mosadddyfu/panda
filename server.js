@@ -876,15 +876,14 @@ app.post('/telegramWebhook', async (req, res) => {
         });
       } else {
 await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          chat_id: chatId,
-          text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم من خلال الرابط أدناه:",
-          reply_markup: {
-            inline_keyboard: [
-        [{ text: "🚀 اشترى نجوم من هنا ⭐️", url: `${WEB_BASE}/buy.html` }],
-        [{ text: "🚀 اشترى بريميوم من هنا 🫆", url: `${WEB_BASE}/premium.html` }]
-            ]
-          }
-        });
+  chat_id: chatId,
+  text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم وفتح ملفك الشخصي من خلال الزر أدناه:",
+  reply_markup: {
+    inline_keyboard: [
+      [{ text: "🌐 افتح الموقع", web_app: { url: `${WEB_BASE}` } }]
+    ]
+  }
+});
       }
     }
 
