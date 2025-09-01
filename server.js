@@ -284,6 +284,44 @@ app.get('/affiliate/summary', async (req, res) => {
   }
 });
 
+// طلب سحب أرباح الإحالة: يرسل إشعارًا إلى الأدمن
+app.post('/affiliate/withdraw', async (req, res) => {
+  try {
+    const { wallet, usd, stars, tg } = req.body || {};
+    const amountUsd = Number(usd || 0);
+    const amountStars = Number(stars || 0);
+    if (!wallet && !tg) return res.status(400).json({ error: 'wallet or tg is required' });
+
+    const msgLines = [
+      'طلب سحب أرباح',
+      wallet ? `المحفظة: ${wallet}` : 'المحفظة: غير متوفر',
+      `الإجمالي: ${amountUsd.toFixed(4)}$`,
+      `صافى بالنجوم (تقريبي): ${Math.floor(amountUsd / 0.0157)}⭐`,
+    ];
+    if (tg && typeof tg === 'object') {
+      const u = tg;
+      msgLines.push(`المستخدم: ${u.username ? '@'+u.username : (u.first_name||'مستخدم')} (ID: ${u.id||'N/A'})`);
+    }
+    const text = msgLines.join('\n');
+
+    for (let adminId of ADMIN_IDS) {
+      try {
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: adminId,
+          text
+        });
+      } catch (err) {
+        console.error('Failed to notify admin of withdraw:', err.response?.data || err.message);
+      }
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error in /affiliate/withdraw:', err);
+    res.status(500).json({ error: 'server error' });
+  }
+});
+
 app.post('/premium', async (req, res) => {
   try {
     const { username, months, amountTon, amountUsd } = req.body;
