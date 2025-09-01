@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="assets/alerts-theme.css" />
+  <script defer src="assets/alerts-theme.js"></script>
 <style>
     :root{--bg1:#0b1020;--bg2:#0a1326;--panel:#0e1c34;--panel2:#0a1a2e;--c1:#e6f2ff;--c2:#a6c9ff;--brand:#34b3ff;--accent:#ffd76a;--ok:#42d17b;--danger:#ff6b6b;--muted:#7b90b2}
     *{box-sizing:border-box}
@@ -182,14 +184,9 @@
   document.getElementById("passwordSection").style.display = "none";
   document.getElementById("ordersSection").style.display = "block";
       loadAllOrders();
-  Swal.fire({icon:'success',title:'تم الدخول',timer:1200,showConfirmButton:false});
+  notify.success('تم الدخول');
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'كلمة مرور خاطئة',
-        text: 'الرجاء إدخال كلمة المرور الصحيحة',
-        timer: 2000
-      });
+  notify.error('كلمة مرور خاطئة','الرجاء إدخال كلمة المرور الصحيحة');
     }
   }
 
@@ -201,12 +198,7 @@
   updateStats();
     } catch (error) {
       console.error("Error loading orders:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'خطأ في تحميل البيانات',
-        text: 'تعذر تحميل قائمة الطلبات',
-        timer: 2000
-      });
+  notify.error('خطأ في تحميل البيانات','تعذر تحميل قائمة الطلبات');
     }
   }
 
@@ -325,20 +317,11 @@
         renderPremiumOrders();
       }
       
-      Swal.fire({
-        icon: 'success',
-        title: 'تم تحديث حالة الطلب',
-        timer: 1500
-      });
+  notify.success('تم تحديث حالة الطلب');
       updateStats();
     } catch (error) {
       console.error("Error completing order:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'خطأ في تحديث الطلب',
-        text: 'تعذر تحديث حالة الطلب',
-        timer: 2000
-      });
+  notify.error('خطأ في تحديث الطلب','تعذر تحديث حالة الطلب');
     }
   }
 
