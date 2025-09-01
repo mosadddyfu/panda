@@ -68,6 +68,19 @@ const CHANNEL_ID = process.env.CHANNEL_ID;
       );
     `);
 
+    // جدول عمولات الإحالة (محفظة مرجع + عدد النجوم + العمولة بالدولار + حالة الدفع)
+    await pgClient.query(`
+      CREATE TABLE IF NOT EXISTS affiliate_commissions (
+        id SERIAL PRIMARY KEY,
+        ref_wallet VARCHAR(128) NOT NULL,
+        order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+        stars INTEGER NOT NULL,
+        commission_usd NUMERIC(12,6) NOT NULL,
+        paid BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
     console.log("✅ تم التأكد من وجود جميع الجداول في قاعدة البيانات");
   } catch (err) {
     console.error("❌ خطأ في إنشاء/تعديل الجداول:", err);
@@ -171,7 +184,7 @@ app.use(express.static('public'));
 
 app.post('/order', async (req, res) => {
   try {
-    const { username, stars, amountTon, amountUsd, createdAt } = req.body;
+  const { username, stars, amountTon, amountUsd, createdAt, refWallet } = req.body;
     
     if (!username || !stars || !amountTon || !amountUsd) {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
@@ -192,6 +205,22 @@ app.post('/order', async (req, res) => {
 
     const orderId = result.rows[0].id;
     const fragmentStars = "https://fragment.com/stars/buy";
+
+    // حساب عمولة الإحالة إن وُجدت محفظة مرجع
+    try {
+      if (refWallet && typeof refWallet === 'string' && refWallet.trim().length > 10) {
+        const starsInt = parseInt(stars, 10) || 0;
+        const profitPerStar = 0.0157 - 0.015; // 0.0007 USD
+        const commissionUsd = (starsInt * profitPerStar * 0.10); // 10%
+        await pgClient.query(
+          `INSERT INTO affiliate_commissions (ref_wallet, order_id, stars, commission_usd)
+           VALUES ($1, $2, $3, $4)`,
+          [refWallet.trim(), orderId, starsInt, commissionUsd]
+        );
+      }
+    } catch (affErr) {
+      console.error('Failed to record affiliate commission:', affErr);
+    }
 
     for (let adminId of ADMIN_IDS) {
       try {
@@ -218,6 +247,36 @@ app.post('/order', async (req, res) => {
   } catch (error) {
     console.error('Error in /order endpoint:', error);
     res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
+  }
+});
+
+// ملخص الإحالات حسب المحفظة
+app.get('/affiliate/summary', async (req, res) => {
+  try {
+    const wallet = (req.query.wallet || '').toString().trim();
+    if (!wallet) return res.status(400).json({ error: 'wallet is required' });
+
+    const { rows } = await pgClient.query(
+      `SELECT 
+         COALESCE(SUM(CASE WHEN paid = false THEN commission_usd END), 0) AS unpaid_usd,
+         COALESCE(SUM(commission_usd), 0) AS total_usd,
+         COALESCE(SUM(stars), 0) AS total_stars,
+         COUNT(*) AS total_orders
+       FROM affiliate_commissions
+       WHERE ref_wallet = $1`,
+      [wallet]
+    );
+
+    res.json({
+      wallet,
+      unpaid_usd: Number(rows[0].unpaid_usd),
+      total_usd: Number(rows[0].total_usd),
+      total_stars: Number(rows[0].total_stars),
+      total_orders: Number(rows[0].total_orders)
+    });
+  } catch (err) {
+    console.error('Error in /affiliate/summary:', err);
+    res.status(500).json({ error: 'server error' });
   }
 });
 
@@ -729,8 +788,9 @@ app.post('/telegramWebhook', async (req, res) => {
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nيمكنك شراء نجوم تليجرام من موقعنا الرسمى🚀\nارسل امر /invite لبدا الربح من البوت";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
-        [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }]
+  [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
+  [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }],
+  [{ text: "👤 ملفي الشخصي", web_app: { url: "https://pandastore-f2yn.onrender.com/profile.html" } }]
       ]
     };
 
@@ -739,6 +799,21 @@ app.post('/telegramWebhook', async (req, res) => {
       text: welcomeMessage,
       reply_markup: replyMarkup
     });
+  }
+
+  // فتح صفحة الملف الشخصي داخل تليجرام
+  if (body.message && (body.message.text === "/profile" || body.message.text === "profile")) {
+    const chatId = body.message.chat.id;
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      chat_id: chatId,
+      text: "افتح ملفك الشخصي داخل تليجرام:",
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "👤 ملفي الشخصي", web_app: { url: "https://pandastore-f2yn.onrender.com/profile.html" } }]
+        ]
+      }
+    });
+    return res.sendStatus(200);
   }
 
   if (body.message && body.message.text === "/help") {
