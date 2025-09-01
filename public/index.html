@@ -284,14 +284,16 @@
     (function(){
       const btn=document.getElementById('open-profile'); if(!btn) return;
       btn.addEventListener('click', ()=>{
-        const url=new URL('profile.html', location.href).toString();
-        try{ if(window.Telegram && Telegram.WebApp){ Telegram.WebApp.openLink(url,{try_instant_view:false}); return; } }catch{}
-        location.href=url;
+        // Navigate inside the same mini app WebView
+        location.href = 'profile.html';
       });
     })();
 
     // TonConnect mini referral widget
-    const miniTon = new TON_CONNECT_UI.TonConnectUI({   manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json', buttonRootId: 'ton-mini-btn' });
+  const miniTon = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+    buttonRootId: 'ton-mini-btn'
+  });
 
     function buildRefLink(addr){
       try { return new URL(`buy.html?ref=${encodeURIComponent(addr)}`, location.href).toString(); }
@@ -312,18 +314,23 @@
     (function ensureCopy(){
       const btn=document.getElementById('mini-copy'); if(!btn) return;
       btn.onclick=async()=>{
-        try{
-          const el=document.getElementById('mini-ref');
-          let link=(el?.textContent||'').trim();
-          if(!/^https?:\/\//i.test(link)){
-            let addr=null; try{addr=(await miniTon.getWallet())?.account?.address} catch{}
-            if(!addr) addr=localStorage.getItem('wallet');
-            if(!addr) throw new Error('noaddr');
-            link=buildRefLink(addr);
-            if(el) el.textContent=link;
+        const el=document.getElementById('mini-ref');
+        let link=(el?.textContent||'').trim();
+        if(!/^https?:\/\//i.test(link)){
+          // Try to build using connected or cached wallet
+          let addr=null; try{addr=(await miniTon.getWallet())?.account?.address} catch{}
+          if(!addr) addr=localStorage.getItem('wallet');
+          if(!addr){
+            // No wallet yet: open connect modal inside mini app instead of error
+            if(typeof miniTon.connectWallet === 'function'){ miniTon.connectWallet(); }
+            return;
           }
+          link=buildRefLink(addr);
+          if(el) el.textContent=link;
+        }
+        try{
           if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(link);} else {const ta=document.createElement('textarea'); ta.value=link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);} btn.textContent='تم النسخ'; setTimeout(()=>btn.textContent='نسخ',1200);
-        }catch{alert('تعذر النسخ، انسخ الرابط يدويًا.');}
+        }catch{ /* silent */ }
       };
     })();
 

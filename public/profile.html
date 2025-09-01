@@ -26,6 +26,9 @@
 </head>
 <body>
   <div class="profile-container">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <button id="back-btn" class="copy-btn" style="background:#0f1e36;border:1px solid rgba(0,163,255,.25);">رجوع</button>
+    </div>
   <img id="avatar" class="profile-avatar" src="assets/pandaemogi.jpg" alt="Avatar" />
   <div class="profile-name" id="name">اسم المستخدم</div>
   <div class="profile-username" id="username">@username</div>
@@ -43,8 +46,10 @@
     <!-- عرض عنوان المحفظة المرتبطة -->
     <div id="wallet-address" style="margin-top:10px;color:#b3c6e0;font-size:0.95rem;"></div>
 
-    <div class="invite-stats">عدد الأشخاص المدعوين: <span id="ref-count">0</span></div>
-    <div class="earnings">أرباحك من الدعوات: <span id="ref-earn">0.00</span> $</div>
+  <div class="invite-stats">عدد الأشخاص المدعوين: <span id="ref-count">0</span></div>
+  <div class="earnings">أرباحك من الدعوات: <span id="ref-earn">0.00</span> $</div>
+  <div class="invite-stats">صافى ربحك بالنجوم: <span id="net-stars">0</span> ⭐</div>
+  <button class="copy-btn" id="withdraw-btn" style="margin-top:12px;background:linear-gradient(90deg,#ff7b7b,#ff4b4b)">سحب الأرباح</button>
     </div>
 
     <script>
@@ -54,8 +59,8 @@
       const inviteEl = document.getElementById('invite-link');
       // إنشاء مثيل واحد عالمي لإعادة استخدامه في الأسفل
       window.tcu = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
-  buttonRootId: 'ton-connect-btn'
+      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect-btn'
       });
 
       function applyAddress(addr){
@@ -79,6 +84,16 @@
     </script>
   </div>
   <script>
+    // زر رجوع: يغلق الويب فيو داخل تيليجرام أو يعود صفحة للخلف بالمتصفح
+    (function(){
+      const back=document.getElementById('back-btn');
+      if(!back) return;
+      back.addEventListener('click', ()=>{
+        try{ if(window.Telegram && Telegram.WebApp){ Telegram.WebApp.close(); return; } }catch{}
+        history.length > 1 ? history.back() : (location.href = 'index.html');
+      });
+    })();
+
     // تهيئة Telegram WebApp وتحميل بيانات المستخدم
     function loadTelegramProfile() {
       try {
@@ -97,27 +112,49 @@
         const ref = params.get('ref');
         if (ref) localStorage.setItem('referrer_wallet', ref);
 
-        // إعداد TonConnect لاستخراج عنوان المحفظة لرابط الإحالة
-  const tonUi = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: 'tonconnect-manifest.json' });
-        const setInvite = (wallet) => {
-          const addr = wallet?.account?.address || localStorage.getItem('wallet');
-          if (!addr) return;
-          const invite = `${location.origin}/buy.html?ref=${encodeURIComponent(addr)}`;
-          document.getElementById('invite-link').textContent = invite;
-          try { localStorage.setItem('wallet', addr); } catch {}
+        // استخدام نفس مثيل TonConnect UI لتوليد رابط الإحالة
+        const setInvite = (session) => {
+          const addr = session?.account?.address || localStorage.getItem('wallet');
+          const el = document.getElementById('invite-link');
+          if (addr) {
+            const invite = `${location.origin}/buy.html?ref=${encodeURIComponent(addr)}`;
+            el.textContent = invite;
+            try { localStorage.setItem('wallet', addr); } catch {}
+          } else {
+            el.textContent = 'وصّل محفظتك لتوليد رابط الإحالة تلقائيًا.';
+          }
         };
-        tonUi.getWallet().then(setInvite);
-        tonUi.onStatusChange(setInvite);
+        if (window.tcu && typeof window.tcu.getWallet === 'function') {
+          window.tcu.getWallet().then(setInvite).catch(()=>{
+            setInvite(null);
+          });
+          if (typeof window.tcu.onStatusChange === 'function') window.tcu.onStatusChange(setInvite);
+        } else {
+          // Fallback على المخزن المحلي
+          setInvite(null);
+        }
       } catch (e) {
         console.warn('Telegram WebApp init failed', e);
       }
     }
     loadTelegramProfile();
     // زر نسخ رابط الدعوة
-    function copyInvite() {
-      const link = document.getElementById('invite-link').textContent;
-      navigator.clipboard.writeText(link);
-      alert('تم نسخ رابط الدعوة!');
+    async function copyInvite() {
+      const el = document.getElementById('invite-link');
+      const link = (el.textContent||'').trim();
+      if (!/^https?:\/\//i.test(link)) {
+        try{ if(window.tcu && typeof window.tcu.openModal==='function'){ await window.tcu.openModal(); return; } }catch{}
+        alert('من فضلك وصّل محفظتك أولًا لتوليد رابط الإحالة.');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(link);
+        alert('تم نسخ رابط الدعوة!');
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = link; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); alert('تم نسخ رابط الدعوة!'); } finally { document.body.removeChild(ta); }
+      }
     }
     // نظام إحصائيات الدعوات (توضيح فقط)
     // في التطبيق الحقيقي يجب جلب البيانات من قاعدة بيانات
@@ -129,6 +166,9 @@
         .then(data => {
           document.getElementById('ref-count').textContent = data.total_orders ?? 0;
           document.getElementById('ref-earn').textContent = Number(data.total_usd || 0).toFixed(4);
+          const netStars = (Number(data.total_usd || 0) / 0.0157) || 0;
+          document.getElementById('net-stars').textContent = Math.floor(netStars);
+          window.__affiliateSummary = { usd: Number(data.total_usd||0), stars: Number(data.total_stars||0) };
         })
         .catch(() => {
           // رجوع إلى حساب محلي بسيط
@@ -138,9 +178,49 @@
           const myShare = 0.10 * commissionPerStar * parseInt(starsSoldByRefs, 10);
           document.getElementById('ref-count').textContent = count;
           document.getElementById('ref-earn').textContent = myShare.toFixed(4);
+          const netStars = (myShare / 0.0157) || 0;
+          document.getElementById('net-stars').textContent = Math.floor(netStars);
+          window.__affiliateSummary = { usd: myShare, stars: Number(starsSoldByRefs)||0 };
         });
     }
     loadReferralStats();
+
+    // زر سحب الأرباح: يرسل طلب برسالة إلى الأدمن داخل تيليجرام
+    (function(){
+      const btn = document.getElementById('withdraw-btn');
+      if(!btn) return;
+      btn.addEventListener('click', async ()=>{
+        const addr = localStorage.getItem('wallet') || (window.tcu && (await window.tcu.getWallet())?.account?.address) || '';
+        const sum = window.__affiliateSummary || { usd: 0, stars: 0 };
+        const tgUser = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe?.user) || null;
+        try{
+          const resp = await fetch('/affiliate/withdraw', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ wallet: addr, usd: Number(sum.usd||0), stars: Number(sum.stars||0), tg: tgUser })
+          });
+          if (resp.ok) {
+            alert('تم إرسال طلب السحب إلى الإدارة. سنراجع الطلب ونتواصل معك.');
+          } else {
+            const text = encodeURIComponent(`طلب سحب أرباح\nالمحفظة: ${addr||'غير متوفر'}\nإجمالي الأرباح: ${Number(sum.usd||0).toFixed(4)}$\nصافى بالنجوم: ${Math.floor((Number(sum.usd||0)/0.0157)||0)}⭐`);
+            const shareUrl = `https://t.me/share/url?url=&text=${text}`;
+            if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink==='function'){
+              Telegram.WebApp.openTelegramLink(shareUrl);
+            } else {
+              window.open(shareUrl, '_blank');
+            }
+          }
+        } catch (e) {
+          const text = encodeURIComponent(`طلب سحب أرباح\nالمحفظة: ${addr||'غير متوفر'}\nإجمالي الأرباح: ${Number(sum.usd||0).toFixed(4)}$\nصافى بالنجوم: ${Math.floor((Number(sum.usd||0)/0.0157)||0)}⭐`);
+          const shareUrl = `https://t.me/share/url?url=&text=${text}`;
+          if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink==='function'){
+            Telegram.WebApp.openTelegramLink(shareUrl);
+          } else {
+            window.open(shareUrl, '_blank');
+          }
+        }
+      });
+    })();
   </script>
   <footer style="text-align:center;color:#b3c6e0;padding:30px 0 10px;font-size:0.95rem;">جميع الحقوق محفوظة © Panda Store 2025</footer>
 </body>
