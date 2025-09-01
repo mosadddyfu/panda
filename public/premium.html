@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Buy Telegram Premium - Panda Store</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" type="image/png" href="/assets/pandastore.jpg">
+  <link rel="icon" type="image/png" href="assets/pandastore.jpg">
 
   <!-- Shared site styles to match buy page navbar -->
   <link href="https://staropay.com/css/reset.css" rel="stylesheet" />
@@ -19,6 +18,8 @@
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <!-- SweetAlert2 Library -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="assets/alerts-theme.css" />
+    <script defer src="assets/alerts-theme.js"></script>
   <!-- Font Awesome for gear icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- TonWeb Library for BOC encoding -->
@@ -598,17 +599,17 @@
 <body>
   <nav class="navbar">
     <div class="logo-wrapper">
-      <a class="navbar-brand" href="/index.html">
-        <img alt="Panda Store" src="/assets/pandastore.jpg" />
+      <a class="navbar-brand" href="index.html">
+        <img alt="Panda Store" src="assets/pandastore.jpg" />
         <h1>Panda Store</h1>
       </a>
     </div>
     <div class="navbar-wrapper">
       <div class="navbar-sub-wrapper">
         <ul class="navbar-items-wrapper">
-          <li class="item-default"><a class="item item-a" href="/index.html" id="home-link">Home</a></li>
-          <li class="item-default"><a class="item item-a" href="/buy.html" id="stars-link">Stars</a></li>
-          <li class="item-default"><a class="item item-a" href="/premium.html" id="premium-link">Premium</a></li>
+          <li class="item-default"><a class="item item-a" href="index.html" id="home-link">Home</a></li>
+          <li class="item-default"><a class="item item-a" href="buy.html" id="stars-link">Stars</a></li>
+          <li class="item-default"><a class="item item-a" href="premium.html" id="premium-link">Premium</a></li>
           <li class="item-default"><a class="item item-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
               id="support-link">Support</a></li>
           <li class="item-default"><a class="item item-a" href="https://t.me/PandaStoreShop" target="_blank"
@@ -648,9 +649,9 @@
       <div id="ton-connect-btn-mobile" class="mobile-wallet-btn">Connect Wallet : <br><br></div>
       <button class="mobile-wallet-btn" onclick="toggleLanguage()">AR / EN</button>
       <ul class="mobile-menu-ul">
-        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/index.html" id="home-link-mobile">Home</a></li>
-        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/buy.html" id="stars-link-mobile">Stars</a></li>
-        <li class="mobile-menu-li"><a class="mobile-menu-a" href="/premium.html" id="premium-link-mobile">Premium</a>
+  <li class="mobile-menu-li"><a class="mobile-menu-a" href="index.html" id="home-link-mobile">Home</a></li>
+  <li class="mobile-menu-li"><a class="mobile-menu-a" href="buy.html" id="stars-link-mobile">Stars</a></li>
+  <li class="mobile-menu-li"><a class="mobile-menu-a" href="premium.html" id="premium-link-mobile">Premium</a>
         </li>
         <li class="mobile-menu-li"><a class="mobile-menu-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
             id="support-link-mobile">Support</a></li>
@@ -669,7 +670,7 @@
     <label id="plan-label">اختر خطة الاشتراك:</label>
     <div class="premium-options">
       <div class="premium-option">
-        <div class="plan-hero"><img src="/assets/3month.png" alt="3 أشهر" /></div>
+  <div class="plan-hero"><img src="assets/3month.png" alt="3 أشهر" /></div>
         <h3 id="plan-3-title">3 أشهر</h3>
         <div class="premium-details">
           <span id="plan-3-price" class="premium-price">$13.00</span>
@@ -681,7 +682,7 @@
         </div>
       </div>
       <div class="premium-option">
-        <div class="plan-hero"><img src="/assets/6month.png" alt="6 أشهر" /></div>
+  <div class="plan-hero"><img src="assets/6month.png" alt="6 أشهر" /></div>
         <h3 id="plan-6-title">6 أشهر</h3>
         <div class="premium-details">
           <span id="plan-6-price" class="premium-price">$17.00</span>
@@ -693,7 +694,7 @@
         </div>
       </div>
       <div class="premium-option">
-        <div class="plan-hero"><img src="/assets/12month.png" alt="12 شهر" /></div>
+  <div class="plan-hero"><img src="assets/12month.png" alt="12 شهر" /></div>
         <h3 id="plan-12-title">12 شهر</h3>
         <div class="premium-details">
           <span id="plan-12-price" class="premium-price">$30.00</span>
@@ -732,7 +733,7 @@
   <script>
     // Initialize TonConnect (mobile button only, like buy page)
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+      manifestUrl: 'tonconnect-manifest.json',
       buttonRootId: 'ton-connect-btn-mobile'
     });
 
@@ -740,7 +741,7 @@
     let currentTonUsd = null;
     let selectedPlan = null;
     let selectedPrice = null;
-    let isEnglish = false; // Default to Arabic
+  let isEnglish = false; // Default to Arabic
 
     // Complete translations
     const translations = {
@@ -757,7 +758,7 @@
         en: "Telegram username"
       },
       usernamePlaceholder: {
-        ar: "@اسم المستخدم",
+        ar: "@username",
         en: "@username"
       },
       planLabel: {
@@ -852,14 +853,19 @@
     });
 
     async function fetchTonPrice() {
+      const isLocal = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
       try {
-        const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+        const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd", { timeout: 5000 });
         currentTonUsd = res.data["the-open-network"].usd;
-        updatePlanPrices();
       } catch (e) {
-        console.warn("Failed to fetch TON price for preview");
+        console.warn("Failed to fetch TON price for preview", e && e.message);
+        if (isLocal && !currentTonUsd) {
+          currentTonUsd = 5.0; // local fallback USD price per TON
+          if (window.notify) notify.toast(isEnglish ? 'Using fallback TON price (local).' : 'استخدام سعر TON افتراضي (محلي).', 'info');
+        }
       }
 
+      updatePlanPrices();
       // Initialize all text elements
       updateAllText();
     }
@@ -1054,7 +1060,7 @@
       // Title
       title.textContent = isEnglish ? translations.plans.en[String(months)] : translations.plans.ar[String(months)];
       // Image
-      const imgMap = { 3: '/assets/3month.png', 6: '/assets/6month.png', 12: '/assets/12month.png' };
+  const imgMap = { 3: 'assets/3month.png', 6: 'assets/6month.png', 12: 'assets/12month.png' };
       img.src = imgMap[months] || '';
       img.alt = title.textContent;
       // Prices
@@ -1095,59 +1101,26 @@
     async function submitOrder() {
       const username = document.getElementById("username").value.trim().replace(/^@/, '');
 
-      if (!username) {
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'error',
-          title: isEnglish ? 'Check your data ✏️' : 'تحقق من البيانات ✏️',
-          text: isEnglish ? 'Enter Telegram username.' : 'أدخل اسم مستخدم تليجرام.',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          background: '#f8d7da',
-          color: '#721c24'
-        });
-        return;
-      }
+  if (!username) { notify.toast(isEnglish ? 'Enter Telegram username. ✏️' : 'أدخل اسم مستخدم تليجرام. ✏️','error'); return; }
 
-      if (!selectedPlan) {
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'error',
-          title: isEnglish ? 'Select a plan ✏️' : 'اختر خطة ✏️',
-          text: isEnglish ? 'Please select a subscription plan.' : 'الرجاء اختيار خطة اشتراك.',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          background: '#f8d7da',
-          color: '#721c24'
-        });
-        return;
-      }
+  if (!selectedPlan) { notify.toast(isEnglish ? 'Please select a subscription plan. ✏️' : 'الرجاء اختيار خطة اشتراك. ✏️','error'); return; }
 
       const amountUSD = selectedPrice;
 
       let tonUsd = currentTonUsd;
       if (!tonUsd) {
         try {
-          const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+          const r = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd", { timeout: 5000 });
           tonUsd = r.data["the-open-network"].usd;
         } catch (e) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            title: isEnglish ? 'Connection error 🌐' : 'خطأ في الاتصال 🌐',
-            text: isEnglish ? 'Failed to get TON price, try later.' : 'لم يتم جلب سعر TON، حاول لاحقًا.',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            background: '#f8d7da',
-            color: '#721c24'
-          });
-          return;
+          const isLocal = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+          if (isLocal) {
+            tonUsd = 5.0; // local fallback
+            notify.toast(isEnglish ? 'Using fallback TON price (local).' : 'استخدام سعر TON افتراضي (محلي).', 'info');
+          } else {
+            notify.toast(isEnglish ? 'Failed to get TON price, try later. 🌐' : 'لم يتم جلب سعر TON، حاول لاحقًا. 🌐','error');
+            return;
+          }
         }
       }
 
@@ -1155,115 +1128,48 @@
 
       // Check wallet balance first
       const balanceCheck = await checkWalletBalance(requiredTon);
-      if (!balanceCheck.success) {
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'error',
-          title: isEnglish ? 'Insufficient Balance 💰' : 'رصيد غير كافٍ 💰',
-          text: balanceCheck.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-          background: '#f8d7da',
-          color: '#721c24'
-        });
-        return;
-      }
+  if (!balanceCheck.success) { notify.toast(balanceCheck.message || (isEnglish ? 'Insufficient Balance 💰' : 'رصيد غير كافٍ 💰'),'error'); return; }
 
       const tonAmountN = BigInt(Math.ceil(requiredTon * 1e9));
       const refNumber = 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase();
 
-      // Encode comment
-      const comment = isEnglish ?
-        `${selectedPlan} months Telegram Premium for @${username} - PANDA STORE - Ref#${refNumber}` :
-        `${selectedPlan} شهر بريميوم تليجرام لـ@${username} - PANDA STORE - Ref#${refNumber}`;
-
-      const payload = await encodeComment(comment);
-
+      // Send without payload/comment to improve compatibility with wallets
       const tx = {
         validUntil: Math.floor(Date.now() / 1000) + 300,
         messages: [{
           address: MERCHANT_ADDRESS,
-          amount: tonAmountN.toString(),
-          payload: payload
+          amount: tonAmountN.toString()
         }]
       };
 
       try {
         const connectedWallet = tonConnectUI.wallet;
-        if (!connectedWallet) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'warning',
-            title: isEnglish ? 'Connect your wallet first 🛡️' : 'اربط محفظتك أولاً 🛡️',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            background: '#fff3cd',
-            color: '#856404'
-          });
-          return;
-        }
+        if (!connectedWallet) { notify.toast(isEnglish ? 'Connect your wallet first 🛡️' : 'اربط محفظتك أولاً 🛡️','warning'); return; }
 
         const result = await tonConnectUI.sendTransaction(tx);
 
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'info',
-          title: isEnglish ? 'Processing your order ⏳' : 'جاري معالجة الطلب ⏳',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          background: '#d1ecf1',
-          color: '#0c5460'
-        });
+        // Show persistent processing modal with localized text
+        const processingTitle = isEnglish ? 'Processing your order ⏳' : 'جاري معالجة الطلب ⏳';
+        const processingText = isEnglish ? 'Please do not leave the page until your order is completed.' : 'من فضلك لا تغادر الصفحة قبل إتمام طلبك.';
+        notify.loading(processingTitle, processingText);
 
         setTimeout(async () => {
           try {
-            await axios.post("https://pandastore-f2yn.onrender.com/premium", {
+            await axios.post("/premium", {
               username,
               months: selectedPlan,
               amountTon: (requiredTon).toFixed(5),
               amountUsd: amountUSD.toFixed(2),
               refNumber: refNumber
             });
-
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'success',
-              title: isEnglish ?
-                `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes ⏳` :
-                `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} فى غضون 5 : 10 دقائق ⏳`,
-              text: isEnglish ?
-                `Reference: ${refNumber}` :
-                `رقم المرجع: ${refNumber}`,
-              showConfirmButton: false,
-              timer: 8000,
-              timerProgressBar: true,
-              background: '#d4edda',
-              color: '#155724'
-            });
+            notify.close();
+            const msg = isEnglish ? `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes.` : `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} خلال 5-10 دقائق.`;
+            notify.success(isEnglish ? 'Order received ✅' : 'تم استلام الطلب ✅', msg);
           } catch (err) {
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'success',
-              title: isEnglish ?
-                `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes ⏳` :
-                `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} فى غضون 5 : 10 دقائق ⏳`,
-              text: isEnglish ?
-                `Reference: ${refNumber}` :
-                `رقم المرجع: ${refNumber}`,
-              showConfirmButton: false,
-              timer: 8000,
-              timerProgressBar: true,
-              background: '#d4edda',
-              color: '#155724'
-            });
+            // Even if backend logging fails, inform success to user (as before)
+            notify.close();
+            const msg = isEnglish ? `Premium for ${selectedPlan} months will be activated for @${username} within 5-10 minutes.` : `سيتم تفعيل بريميوم لمدة ${selectedPlan} أشهر لـ @${username} خلال 5-10 دقائق.`;
+            notify.success(isEnglish ? 'Order received ✅' : 'تم استلام الطلب ✅', msg);
           }
         }, 2000);
 
@@ -1277,18 +1183,8 @@
             'محفظتك لا تحتوي على رصيد كافٍ من TON لإتمام هذه العملية.';
         }
 
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'error',
-          title: isEnglish ? 'Transaction failed ❌' : 'فشلت المعاملة ❌',
-          text: errorMessage,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-          background: '#f8d7da',
-          color: '#721c24'
-        });
+  notify.close();
+  notify.toast(errorMessage || (isEnglish ? 'Transaction failed ❌' : 'فشلت المعاملة ❌'),'error');
       }
     }
   </script>

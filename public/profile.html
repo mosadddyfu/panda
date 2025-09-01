@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ملفي الشخصي | Panda Store</title>
+  <link rel="stylesheet" href="/assets/alerts-theme.css" />
+  <link rel="icon" href="/assets/pandastore.jpg" type="image/x-icon" />
+  <style>
+    body {background: linear-gradient(180deg,#0b1020,#0a1326); color: #fff; font-family: 'Cairo', Arial, sans-serif; margin: 0;}
+    .profile-container {max-width: 520px; margin: 40px auto 0; background: linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96)); border-radius: 22px; border:1px solid rgba(0,163,255,.18); box-shadow: 0 10px 30px rgba(0,0,0,.35); padding: 32px 24px 24px; text-align: center;}
+    .profile-avatar {width: 110px; height: 110px; border-radius: 50%; border: 4px solid #FFD951; margin-bottom: 18px; object-fit: cover; background: #fff;}
+    .profile-name {font-size: 1.5rem; color: #FFD951; margin-bottom: 6px;}
+    .profile-username {color: #b3c6e0; font-size: 1.1rem; margin-bottom: 18px;}
+    .invite-section {background: #122647; border-radius: 14px; padding: 18px 10px; margin: 18px 0 0; border:1px solid rgba(0,163,255,.18)}
+    .invite-title {color: #FFD951; font-size: 1.1rem; margin-bottom: 8px;}
+    .invite-link {background: #fff; color: #031724; border-radius: 8px; padding: 8px 10px; font-size: 0.98rem; word-break: break-all; display: inline-block; margin-bottom: 8px;}
+    .copy-btn {background: linear-gradient(90deg,#34b3ff,#00a3ff); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 1rem; cursor: pointer; margin-bottom: 10px; transition: background 0.2s;}
+    .copy-btn:hover {background: #FFD951; color: #031724;}
+    .invite-stats {color: #e6f2ff; font-size: 1.05rem; margin-top: 10px;}
+    .earnings {color: #FFD951; font-size: 1.2rem; margin-top: 8px;}
+    @media (max-width: 600px) {.profile-container {padding: 18px 4vw;}}
+  </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+</head>
+<body>
+  <div class="profile-container">
+    <img id="avatar" class="profile-avatar" src="/assets/pandaemogi.jpg" alt="Avatar" />
+    <div class="profile-name" id="name">اسم المستخدم</div>
+    <div class="profile-username" id="username">@username</div>
+    <div class="invite-section">
+      <div class="invite-title">رابط الدعوة الخاص بك</div>
+      <div class="invite-link" id="invite-link">جارٍ التحميل...</div>
+      <button class="copy-btn" onclick="copyInvite()">نسخ الرابط</button>
+      <div class="invite-stats">عدد الأشخاص المدعوين: <span id="ref-count">0</span></div>
+      <div class="earnings">أرباحك من الدعوات: <span id="ref-earn">0.00</span> $</div>
+    </div>
+  </div>
+  <script>
+    // تهيئة Telegram WebApp وتحميل بيانات المستخدم
+    function loadTelegramProfile() {
+      try {
+        if (window.Telegram && Telegram.WebApp) {
+          Telegram.WebApp.ready();
+          const user = Telegram.WebApp.initDataUnsafe?.user;
+          if (user) {
+            document.getElementById('name').textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            document.getElementById('username').textContent = user.username ? '@' + user.username : `ID: ${user.id}`;
+            if (user.photo_url) document.getElementById('avatar').src = user.photo_url;
+          }
+        }
+
+        // قراءة ref من الاستعلام إن وجد وحفظه كمحفظة افتراضية للزائر
+        const params = new URLSearchParams(location.search);
+        const ref = params.get('ref');
+        if (ref) localStorage.setItem('referrer_wallet', ref);
+
+        // إعداد TonConnect لاستخراج عنوان المحفظة لرابط الإحالة
+        const tonUi = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: '/tonconnect-manifest.json' });
+        const setInvite = (wallet) => {
+          const addr = wallet?.account?.address || localStorage.getItem('wallet');
+          if (!addr) return;
+          const invite = `${location.origin}/buy.html?ref=${encodeURIComponent(addr)}`;
+          document.getElementById('invite-link').textContent = invite;
+          try { localStorage.setItem('wallet', addr); } catch {}
+        };
+        tonUi.getWallet().then(setInvite);
+        tonUi.onStatusChange(setInvite);
+      } catch (e) {
+        console.warn('Telegram WebApp init failed', e);
+      }
+    }
+    loadTelegramProfile();
+    // زر نسخ رابط الدعوة
+    function copyInvite() {
+      const link = document.getElementById('invite-link').textContent;
+      navigator.clipboard.writeText(link);
+      alert('تم نسخ رابط الدعوة!');
+    }
+    // نظام إحصائيات الدعوات (توضيح فقط)
+    // في التطبيق الحقيقي يجب جلب البيانات من قاعدة بيانات
+    function loadReferralStats() {
+      // محاولة جلب ملخص الإحالات من السيرفر
+      const myWallet = localStorage.getItem('wallet') || 'WALLET_ADDRESS';
+      fetch(`/affiliate/summary?wallet=${encodeURIComponent(myWallet)}`)
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(data => {
+          document.getElementById('ref-count').textContent = data.total_orders ?? 0;
+          document.getElementById('ref-earn').textContent = Number(data.total_usd || 0).toFixed(4);
+        })
+        .catch(() => {
+          // رجوع إلى حساب محلي بسيط
+          const count = localStorage.getItem('refCount') || 0;
+          const starsSoldByRefs = localStorage.getItem('refSoldStars') || 0;
+          const commissionPerStar = 0.0157 - 0.015;
+          const myShare = 0.10 * commissionPerStar * parseInt(starsSoldByRefs, 10);
+          document.getElementById('ref-count').textContent = count;
+          document.getElementById('ref-earn').textContent = myShare.toFixed(4);
+        });
+    }
+    loadReferralStats();
+  </script>
+  <footer style="text-align:center;color:#b3c6e0;padding:30px 0 10px;font-size:0.95rem;">جميع الحقوق محفوظة © Panda Store 2025</footer>
+</body>
+</html>
