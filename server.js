@@ -19,6 +19,8 @@ const bodyParser = require('body-parser');
 
 // 3. إنشاء تطبيق Express
 const app = express();
+// Base URL for web pages opened from Telegram buttons (configurable)
+const WEB_BASE = process.env.WEB_BASE || 'https://pandastore-f2yn.onrender.com';
 
 // 4. إعداد الاتصال بقاعدة البيانات
 // const pgClient = new Client({
@@ -92,6 +94,8 @@ const allowedOrigins = [
   'https://panda-stores-mu.vercel.app',
   'https://pandastore-f2yn.onrender.com'
 ];
+// Ensure current server base is also allowed for CORS
+if (WEB_BASE && !allowedOrigins.includes(WEB_BASE)) allowedOrigins.push(WEB_BASE);
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -790,7 +794,7 @@ app.post('/telegramWebhook', async (req, res) => {
       inline_keyboard: [
   [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
   [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }],
-  [{ text: "👤 ملفي الشخصي", web_app: { url: "https://pandastore-f2yn.onrender.com/profile.html" } }]
+  [{ text: "👤 ملفي الشخصي", web_app: { url: `${WEB_BASE}/profile.html` } }]
       ]
     };
 
@@ -809,7 +813,7 @@ app.post('/telegramWebhook', async (req, res) => {
       text: "افتح ملفك الشخصي داخل تليجرام:",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "👤 ملفي الشخصي", web_app: { url: "https://pandastore-f2yn.onrender.com/profile.html" } }]
+          [{ text: "👤 ملفي الشخصي", web_app: { url: `${WEB_BASE}/profile.html` } }]
         ]
       }
     });
@@ -837,7 +841,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const helpMessage = "عرض قائمة الطلبات:";
     const replyMarkup = {
       inline_keyboard: [
-        [{ text: "DataBase🚀", web_app: { url: "https://pandastore-f2yn.onrender.com/admin.html" } }]
+  [{ text: "DataBase🚀", web_app: { url: `${WEB_BASE}/admin.html` } }]
       ]
     };
 
@@ -866,7 +870,7 @@ app.post('/telegramWebhook', async (req, res) => {
         };
         const currentTime = now.toLocaleTimeString('ar-EG', timeOptions);
 
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+  await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: `❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n\n🕘 ساعات العمل: من 8 صباحًا حتى 12 منتصف الليل بتوقيت القاهرة (مصر).\n\n⏳ الوقت الحالي في مصر: ${currentTime}\n\n🔁 يرجى المحاولة مرة أخرى خلال ساعات العمل.`
         });
@@ -876,8 +880,8 @@ await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم من خلال الرابط أدناه:",
           reply_markup: {
             inline_keyboard: [
-              [{ text: "🚀 اشترى نجوم من هنا ⭐️", url: "t.me/PandaStores_bot/stars" }],
-              [{ text: "🚀 اشترى بريميوم من هنا 🫆", url: "t.me/PandaStores_bot/premium" }]
+        [{ text: "🚀 اشترى نجوم من هنا ⭐️", url: `${WEB_BASE}/buy.html` }],
+        [{ text: "🚀 اشترى بريميوم من هنا 🫆", url: `${WEB_BASE}/premium.html` }]
             ]
           }
         });
@@ -989,7 +993,8 @@ app.get("/", (req, res) => {
 
 const activateWebhook = async () => {
   try {
-    const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=https://pandastore-f2yn.onrender.com/telegramWebhook`;
+  const PUBLIC_URL = process.env.PUBLIC_URL || WEB_BASE;
+  const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=${encodeURI(PUBLIC_URL)}/telegramWebhook`;
     const { data } = await axios.get(botUrl);
     console.log("✅ Webhook set successfully:", data);
   } catch (error) {
