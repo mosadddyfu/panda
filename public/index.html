@@ -105,11 +105,13 @@
     .socials a{display:inline-block;margin:0 8px}
   .copy{margin-top:8px;font-size:13px;color:#a8cfff}
   /* Profile card */
-  .profile-card{max-width:1100px;margin:12px auto 0;background:linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96));border:1px solid rgba(0,163,255,.18);border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center;cursor:pointer}
+  .profile-card{max-width:1100px;margin:12px auto 0;background:linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96));border:1px solid rgba(0,163,255,.18);border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center}
   .profile-avatar{width:64px;height:64px;border-radius:50%;border:3px solid #ffd76a;object-fit:cover;background:#fff;flex:0 0 auto}
   .profile-meta{display:flex;flex-direction:column;text-align:start}
   .profile-name{font-weight:800;margin:0 0 2px}
   .profile-username{color:var(--c2);font-size:14px}
+  .profile-actions{margin-inline-start:auto}
+  .btn-profile{border:none;padding:10px 14px;border-radius:10px;background:#0f1e36;border:1px solid rgba(0,163,255,.25);color:#fff;cursor:pointer}
   /* Mini referral */
   .mini-ref{max-width:1100px;margin:10px auto 0;background:linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96));border:1px solid rgba(0,163,255,.18);border-radius:16px;padding:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
   .mini-ref .txt{font-size:14px;color:var(--c2);max-width:600px;word-break:break-all;text-align:start}
@@ -135,6 +137,9 @@
       <div class="profile-meta">
         <div id="tg-name" class="profile-name">زائر Panda</div>
         <div id="tg-username" class="profile-username">@guest</div>
+      </div>
+      <div class="profile-actions">
+        <button id="open-profile" class="btn-profile">فتح الملف الشخصي</button>
       </div>
     </div>
   </section>
@@ -272,11 +277,10 @@
       }catch(e){console.warn('TG load failed',e)}
     })();
 
-    // Open profile on card click (mini app aware)
+    // Open internal /profile when pressing the button (mini app aware)
     (function(){
-      const card=document.querySelector('.profile-card');
-      if(!card) return;
-      card.addEventListener('click',()=>{
+      const btn=document.getElementById('open-profile'); if(!btn) return;
+      btn.addEventListener('click', ()=>{
         const url=new URL('profile.html', location.href).toString();
         try{ if(window.Telegram && Telegram.WebApp){ Telegram.WebApp.openLink(url,{try_instant_view:false}); return; } }catch{}
         location.href=url;
