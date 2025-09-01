@@ -105,7 +105,7 @@
     .socials a{display:inline-block;margin:0 8px}
   .copy{margin-top:8px;font-size:13px;color:#a8cfff}
   /* Profile card */
-  .profile-card{max-width:1100px;margin:12px auto 0;background:linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96));border:1px solid rgba(0,163,255,.18);border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center}
+  .profile-card{max-width:1100px;margin:12px auto 0;background:linear-gradient(180deg,rgba(13,25,48,.96),rgba(10,22,39,.96));border:1px solid rgba(0,163,255,.18);border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center;cursor:pointer}
   .profile-avatar{width:64px;height:64px;border-radius:50%;border:3px solid #ffd76a;object-fit:cover;background:#fff;flex:0 0 auto}
   .profile-meta{display:flex;flex-direction:column;text-align:start}
   .profile-name{font-weight:800;margin:0 0 2px}
@@ -167,8 +167,8 @@
         <div id="mini-ref">وصّل محفظتك لتوليد رابط الإحالة تلقائيًا.</div>
       </div>
       <div class="mini-actions">
-        <div id="ton-mini-btn"></div>
-        <button id="mini-copy" class="btn-copy" disabled>نسخ</button>
+  <div id="ton-mini-btn"></div>
+  <button id="mini-copy" class="btn-copy">نسخ</button>
       </div>
     </div>
   </section>
@@ -272,6 +272,17 @@
       }catch(e){console.warn('TG load failed',e)}
     })();
 
+    // Open profile on card click (mini app aware)
+    (function(){
+      const card=document.querySelector('.profile-card');
+      if(!card) return;
+      card.addEventListener('click',()=>{
+        const url=new URL('profile.html', location.href).toString();
+        try{ if(window.Telegram && Telegram.WebApp){ Telegram.WebApp.openLink(url,{try_instant_view:false}); return; } }catch{}
+        location.href=url;
+      });
+    })();
+
     // TonConnect mini referral widget
     const miniTon = new TON_CONNECT_UI.TonConnectUI({ manifestUrl: 'tonconnect-manifest.json', buttonRootId: 'ton-mini-btn' });
 
@@ -282,19 +293,28 @@
 
     function updateMini(wallet){
       const el=document.getElementById('mini-ref'); const copyBtn=document.getElementById('mini-copy');
-      if(!wallet||!wallet.account){ el.textContent='وصّل محفظتك لتوليد رابط الإحالة تلقائيًا.'; copyBtn.disabled=true; return; }
+      if(!wallet||!wallet.account){
+        el.textContent='وصّل محفظتك لتوليد رابط الإحالة تلقائيًا.';
+        copyBtn.disabled=false; // اترك النسخ يعمل حتى قبل التوصيل (سيستخدم المحفظة المخزنة)
+        return;
+      }
       const addr=wallet.account.address; const link=buildRefLink(addr); el.textContent=link; copyBtn.disabled=false;
-      copyBtn.onclick=async()=>{
-        try{ if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(link);} else {const ta=document.createElement('textarea'); ta.value=link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);} copyBtn.textContent='تم النسخ'; setTimeout(()=>copyBtn.textContent='نسخ',1200);}catch{alert('تعذر النسخ، انسخ الرابط يدويًا.');}
-      };
       try{localStorage.setItem('wallet', addr);}catch{}
     }
 
     (function ensureCopy(){
       const btn=document.getElementById('mini-copy'); if(!btn) return;
       btn.onclick=async()=>{
-        try{ let link=(document.getElementById('mini-ref').textContent||'').trim();
-          if(!/^https?:\/\//i.test(link)){ let addr=null; try{addr=(await miniTon.getWallet())?.account?.address||localStorage.getItem('wallet');}catch{} if(addr) link=buildRefLink(addr);} if(!link) throw new Error('no');
+        try{
+          const el=document.getElementById('mini-ref');
+          let link=(el?.textContent||'').trim();
+          if(!/^https?:\/\//i.test(link)){
+            let addr=null; try{addr=(await miniTon.getWallet())?.account?.address} catch{}
+            if(!addr) addr=localStorage.getItem('wallet');
+            if(!addr) throw new Error('noaddr');
+            link=buildRefLink(addr);
+            if(el) el.textContent=link;
+          }
           if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(link);} else {const ta=document.createElement('textarea'); ta.value=link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);} btn.textContent='تم النسخ'; setTimeout(()=>btn.textContent='نسخ',1200);
         }catch{alert('تعذر النسخ، انسخ الرابط يدويًا.');}
       };

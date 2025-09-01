@@ -27,15 +27,56 @@
 <body>
   <div class="profile-container">
   <img id="avatar" class="profile-avatar" src="assets/pandaemogi.jpg" alt="Avatar" />
-    <div class="profile-name" id="name">اسم المستخدم</div>
-    <div class="profile-username" id="username">@username</div>
-    <div class="invite-section">
-      <div class="invite-title">رابط الدعوة الخاص بك</div>
-      <div class="invite-link" id="invite-link">جارٍ التحميل...</div>
-      <button class="copy-btn" onclick="copyInvite()">نسخ الرابط</button>
-      <div class="invite-stats">عدد الأشخاص المدعوين: <span id="ref-count">0</span></div>
-      <div class="earnings">أرباحك من الدعوات: <span id="ref-earn">0.00</span> $</div>
+  <div class="profile-name" id="name">اسم المستخدم</div>
+  <div class="profile-username" id="username">@username</div>
+
+  <div class="invite-section">
+    <div class="invite-title">رابط الدعوة الخاص بك</div>
+    <div class="invite-link" id="invite-link">جارٍ التحميل...</div>
+
+    <!-- زر نسخ الرابط -->
+    <button class="copy-btn" onclick="copyInvite()">نسخ الرابط</button>
+
+  <!-- زر TON Connect (نفس مكون باقي الصفحات) -->
+  <div id="ton-connect-btn" style="display:inline-block;margin-left:8px;"></div>
+
+    <!-- عرض عنوان المحفظة المرتبطة -->
+    <div id="wallet-address" style="margin-top:10px;color:#b3c6e0;font-size:0.95rem;"></div>
+
+    <div class="invite-stats">عدد الأشخاص المدعوين: <span id="ref-count">0</span></div>
+    <div class="earnings">أرباحك من الدعوات: <span id="ref-earn">0.00</span> $</div>
     </div>
+
+    <script>
+    // استخدام زر TonConnect الرسمي كما في باقي الصفحات
+    (function initTonConnectUI(){
+      const walletAddressEl = document.getElementById('wallet-address');
+      const inviteEl = document.getElementById('invite-link');
+      // إنشاء مثيل واحد عالمي لإعادة استخدامه في الأسفل
+      window.tcu = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+  buttonRootId: 'ton-connect-btn'
+      });
+
+      function applyAddress(addr){
+        if (addr) {
+          walletAddressEl.textContent = 'محفظة مرتبطة: ' + addr;
+          inviteEl.textContent = `${location.origin}/buy.html?ref=${encodeURIComponent(addr)}`;
+          try{ localStorage.setItem('wallet', addr); }catch{}
+        } else {
+          walletAddressEl.textContent = '';
+          const fallback = localStorage.getItem('wallet');
+          inviteEl.textContent = fallback ? `${location.origin}/buy.html?ref=${encodeURIComponent(fallback)}` : 'جارٍ التحميل...';
+        }
+      }
+
+      const setFromSession = (session)=> applyAddress(session?.account?.address || null);
+      // عند التحميل
+      window.tcu.getWallet().then(setFromSession).catch(()=>applyAddress(localStorage.getItem('wallet')));
+      // عند تغير الحالة
+      window.tcu.onStatusChange(setFromSession);
+    })();
+    </script>
   </div>
   <script>
     // تهيئة Telegram WebApp وتحميل بيانات المستخدم
