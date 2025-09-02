@@ -344,7 +344,7 @@ app.get('/referral/my-link', async (req, res) => {
       [code]
     );
     const count = stats.rows[0]?.cnt || 0;
-    const link = `https://t.me/${BOT_USERNAME}?start=${code}`;
+  const link = `https://t.me/${BOT_USERNAME}?startapp=${code}`;
     res.json({ code, link, count });
   } catch (err) {
     console.error('Error in /referral/my-link:', err);
@@ -734,7 +734,7 @@ app.post('/telegramWebhook', async (req, res) => {
     }
 
     const referralCode = userResult.rows[0].referral_code || await generateReferralCode(userId);
-    const referralLink = `https://t.me/PandaStores_bot?start=${referralCode}`;
+  const referralLink = `https://t.me/${BOT_USERNAME}?startapp=${referralCode}`;
 
     const statsResult = await pgClient.query(
       'SELECT COUNT(*) FROM referrals WHERE invited_by = $1 AND verified = true',
@@ -978,15 +978,33 @@ app.post('/telegramWebhook', async (req, res) => {
 
   await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          text: `❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n\n🕘 ساعات العمل: من 8 صباحًا حتى 12 منتصف الليل بتوقيت القاهرة (مصر).\n\n⏳ الوقت الحالي في مصر: ${currentTime}\n\n🔁 يرجى المحاولة مرة أخرى خلال ساعات العمل.`
+          text: `❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n\n🕘 ساعات العمل: من 8 صباحًا حتى 12 منتصف الليل بتوقيت القاهرة (مصر).\n\n⏳ الوقت الحالي في مصر: ${currentTime}\n\n🔁 يرجى المحاولة مرة أخرى خلال ساعات العمل.\n\nروابط سريعة:`,
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: '⭐️ النجوم', url: `https://t.me/${BOT_USERNAME}/stars` },
+                { text: '👑 البريميوم', url: `https://t.me/${BOT_USERNAME}/premium` }
+              ],
+              [
+                { text: '🏠 واجهة الموقع', url: `https://t.me/${BOT_USERNAME}/start` }
+              ]
+            ]
+          }
         });
       } else {
 await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
   chat_id: chatId,
-  text: "✅ الموقع يعمل الآن! يمكنك البدء في شراء النجوم وفتح ملفك الشخصي من خلال الزر أدناه:",
+  text: "✅ الموقع يعمل الآن! يمكنك البدء فورًا:\n\n- افتح الموقع من الزر أدناه\n- أو استخدم الروابط السريعة داخل البوت:",
   reply_markup: {
     inline_keyboard: [
-      [{ text: "🌐 افتح الموقع", web_app: { url: `${WEB_BASE}` } }]
+      [{ text: "🌐 افتح الموقع", web_app: { url: `${WEB_BASE}` } }],
+      [
+        { text: '⭐️ النجوم', url: `https://t.me/${BOT_USERNAME}/stars` },
+        { text: '👑 البريميوم', url: `https://t.me/${BOT_USERNAME}/premium` }
+      ],
+      [
+        { text: '🏠 واجهة البوت', url: `https://t.me/${BOT_USERNAME}/start` }
+      ]
     ]
   }
 });
