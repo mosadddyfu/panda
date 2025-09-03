@@ -16,6 +16,52 @@ pgClient.connect()
 
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const FormData = require('form-data');
+const upload = require('./upload');
+// نقاط نهاية الدفع البديل للبريميوم والنجوم
+app.post('/premium-alt', upload.single('proof'), async (req, res) => {
+  try {
+    const { username, months, amountEgp, method, refNumber } = req.body;
+    const file = req.file;
+    if (!username || !months || !amountEgp || !method || !file) {
+      return res.status(400).send('❌ بيانات الطلب غير مكتملة');
+    }
+    for (let adminId of ADMIN_IDS) {
+      const caption = `طلب بريميوم (دفع بديل)\n👤 @${username}\n📅 شهور: ${months}\n💵 المبلغ بالجنيه: ${amountEgp}\n💳 الطريقة: ${method === 'vodafone' ? 'فودافون كاش' : 'InstaPay'}\nرقم الطلب: ${refNumber}`;
+      const formData = new FormData();
+      formData.append('chat_id', adminId);
+      formData.append('caption', caption);
+      formData.append('photo', file.buffer, { filename: file.originalname });
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, formData, {headers:formData.getHeaders()});
+    }
+    res.status(200).send('✅ تم استلام الطلب وسيتم مراجعته');
+  } catch (e) {
+    console.error('Error in /premium-alt:', e);
+    res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
+  }
+});
+
+app.post('/order-alt', upload.single('proof'), async (req, res) => {
+  try {
+    const { username, stars, amountEgp, method, refNumber } = req.body;
+    const file = req.file;
+    if (!username || !stars || !amountEgp || !method || !file) {
+      return res.status(400).send('❌ بيانات الطلب غير مكتملة');
+    }
+    for (let adminId of ADMIN_IDS) {
+      const caption = `طلب نجوم (دفع بديل)\n👤 @${username}\n⭐️ نجوم: ${stars}\n💵 المبلغ بالجنيه: ${amountEgp}\n💳 الطريقة: ${method === 'vodafone' ? 'فودافون كاش' : 'InstaPay'}\nرقم الطلب: ${refNumber}`;
+      const formData = new FormData();
+      formData.append('chat_id', adminId);
+      formData.append('caption', caption);
+      formData.append('photo', file.buffer, { filename: file.originalname });
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, formData, {headers:formData.getHeaders()});
+    }
+    res.status(200).send('✅ تم استلام الطلب وسيتم مراجعته');
+  } catch (e) {
+    console.error('Error in /order-alt:', e);
+    res.status(500).send('❌ حدث خطأ أثناء معالجة الطلب');
+  }
+});
 
 // 3. إنشاء تطبيق Express
 const app = express();
@@ -202,8 +248,8 @@ app.use(express.static('public'));
 
 app.post('/order', async (req, res) => {
   try {
-  const { username, stars, amountTon, amountUsd, createdAt, refWallet, tgId } = req.body;
-    
+    const { username, stars, amountTon, amountUsd, createdAt, refWallet, tgId } = req.body;
+
     if (!username || !stars || !amountTon || !amountUsd) {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
     }
@@ -344,7 +390,7 @@ app.get('/referral/my-link', async (req, res) => {
       [code]
     );
     const count = stats.rows[0]?.cnt || 0;
-  const link = `https://t.me/${BOT_USERNAME}?startapp=${code}`;
+    const link = `https://t.me/${BOT_USERNAME}?startapp=${code}`;
     res.json({ code, link, count });
   } catch (err) {
     console.error('Error in /referral/my-link:', err);
@@ -368,7 +414,7 @@ app.post('/affiliate/withdraw', async (req, res) => {
     ];
     if (tg && typeof tg === 'object') {
       const u = tg;
-      msgLines.push(`المستخدم: ${u.username ? '@'+u.username : (u.first_name||'مستخدم')} (ID: ${u.id||'N/A'})`);
+      msgLines.push(`المستخدم: ${u.username ? '@' + u.username : (u.first_name || 'مستخدم')} (ID: ${u.id || 'N/A'})`);
     }
     const text = msgLines.join('\n');
 
@@ -393,7 +439,7 @@ app.post('/affiliate/withdraw', async (req, res) => {
 app.post('/premium', async (req, res) => {
   try {
     const { username, months, amountTon, amountUsd } = req.body;
-    
+
     if (!username || !months || !amountTon || !amountUsd) {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
     }
@@ -734,7 +780,7 @@ app.post('/telegramWebhook', async (req, res) => {
     }
 
     const referralCode = userResult.rows[0].referral_code || await generateReferralCode(userId);
-  const referralLink = `https://t.me/${BOT_USERNAME}?startapp=${referralCode}`;
+    const referralLink = `https://t.me/${BOT_USERNAME}?startapp=${referralCode}`;
 
     const statsResult = await pgClient.query(
       'SELECT COUNT(*) FROM referrals WHERE invited_by = $1 AND verified = true',
@@ -898,9 +944,9 @@ app.post('/telegramWebhook', async (req, res) => {
     const welcomeMessage = "مرحبًا بك في Panda Store 🐼\nافتح الموقع لشراء النجوم والاشتراك بريميوم وإدارة ملفك الشخصي.";
     const replyMarkup = {
       inline_keyboard: [
-  [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
-  [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }],
-  [{ text: "�️ افتح الموقع", web_app: { url: `${WEB_BASE}` } }]
+        [{ text: "تحقق من مواعيد العمل 🚀", callback_data: "check_order_time" }],
+        [{ text: "انضمام الى قناه الاثباتات", url: "https://t.me/PandaStoreShop" }],
+        [{ text: "�️ افتح الموقع", web_app: { url: `${WEB_BASE}` } }]
       ]
     };
 
@@ -947,7 +993,7 @@ app.post('/telegramWebhook', async (req, res) => {
     const helpMessage = "عرض قائمة الطلبات:";
     const replyMarkup = {
       inline_keyboard: [
-  [{ text: "DataBase🚀", web_app: { url: `${WEB_BASE}/admin.html` } }]
+        [{ text: "DataBase🚀", web_app: { url: `${WEB_BASE}/admin.html` } }]
       ]
     };
 
@@ -976,7 +1022,7 @@ app.post('/telegramWebhook', async (req, res) => {
         };
         const currentTime = now.toLocaleTimeString('ar-EG', timeOptions);
 
-  await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: `❌ عذرًا، نحن خارج مواعيد العمل حاليًا.\n\n🕘 ساعات العمل: من 8 صباحًا حتى 12 منتصف الليل بتوقيت القاهرة (مصر).\n\n⏳ الوقت الحالي في مصر: ${currentTime}\n\n🔁 يرجى المحاولة مرة أخرى خلال ساعات العمل.\n\nروابط سريعة:`,
           reply_markup: {
@@ -992,22 +1038,22 @@ app.post('/telegramWebhook', async (req, res) => {
           }
         });
       } else {
-await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-  chat_id: chatId,
-  text: "✅ الموقع يعمل الآن! يمكنك البدء فورًا:\n\n- افتح الموقع من الزر أدناه\n- أو استخدم الروابط السريعة داخل البوت:",
-  reply_markup: {
-    inline_keyboard: [
-      [{ text: "🌐 افتح الموقع", web_app: { url: `${WEB_BASE}` } }],
-      [
-        { text: '⭐️ النجوم', url: `https://t.me/${BOT_USERNAME}/stars` },
-        { text: '👑 البريميوم', url: `https://t.me/${BOT_USERNAME}/premium` }
-      ],
-      [
-        { text: '🏠 واجهة البوت', url: `https://t.me/${BOT_USERNAME}/start` }
-      ]
-    ]
-  }
-});
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: "✅ الموقع يعمل الآن! يمكنك البدء فورًا:\n\n- افتح الموقع من الزر أدناه\n- أو استخدم الروابط السريعة داخل البوت:",
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: "🌐 افتح الموقع", web_app: { url: `${WEB_BASE}` } }],
+              [
+                { text: '⭐️ النجوم', url: `https://t.me/${BOT_USERNAME}/stars` },
+                { text: '👑 البريميوم', url: `https://t.me/${BOT_USERNAME}/premium` }
+              ],
+              [
+                { text: '🏠 واجهة البوت', url: `https://t.me/${BOT_USERNAME}/start` }
+              ]
+            ]
+          }
+        });
       }
     }
 
@@ -1116,8 +1162,8 @@ app.get("/", (req, res) => {
 
 const activateWebhook = async () => {
   try {
-  const PUBLIC_URL = process.env.PUBLIC_URL || WEB_BASE;
-  const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=${encodeURI(PUBLIC_URL)}/telegramWebhook`;
+    const PUBLIC_URL = process.env.PUBLIC_URL || WEB_BASE;
+    const botUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/setWebhook?url=${encodeURI(PUBLIC_URL)}/telegramWebhook`;
     const { data } = await axios.get(botUrl);
     console.log("✅ Webhook set successfully:", data);
   } catch (error) {
