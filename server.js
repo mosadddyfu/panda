@@ -19,8 +19,9 @@ const bodyParser = require('body-parser');
 const FormData = require('form-data');
 const upload = require('./upload');
 
+
 // 3. إنشاء تطبيق Express
-// (تم نقل تعريف app للأعلى لتفادي تكرار التعريف)
+// (تم نقل تعريف app للأعلى)
 
 // نقاط نهاية الدفع البديل للبريميوم والنجوم
 app.post('/premium-alt', upload.single('proof'), async (req, res) => {
