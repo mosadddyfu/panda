@@ -35,125 +35,16 @@
   <link href="https://staropay.com/css/buy_section.css?v=4" rel="stylesheet" />
 
   <style>
-    .btn {
-      border: none;
-      padding: 10px 18px;
-      border-radius: 12px;
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    .btn-buy {
-      background: linear-gradient(90deg, #ff4d77, #ff7a59);
-    }
-    .btn-buy:active {
-      transform: translateY(1px);
-    }
-    /* رفع ملف عصري */
-    .custom-file-input {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-      max-width: 260px;
-    }
-    .custom-file-input input[type="file"] {
-      opacity: 0;
-      width: 100%;
-      height: 38px;
-      position: absolute;
-      left: 0;
-      top: 0;
-      cursor: pointer;
-      z-index: 2;
-    }
-    .custom-file-label {
-      display: block;
-      background: #232f4b;
-      color: #ffe082;
-      border: 1.5px solid #2e3c5c;
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 15px;
-      font-weight: 600;
-      text-align: right;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      width: 100%;
-      min-width: 120px;
-      z-index: 1;
-    }
-    .custom-file-input input[type="file"]:focus + .custom-file-label,
-    .custom-file-input input[type="file"]:hover + .custom-file-label {
-      background: #2e3c5c;
-      color: #fff;
-    }
-    .custom-file-input .file-chosen {
-      color: #ffe082;
-      font-size: 14px;
-      margin-right: 10px;
-      vertical-align: middle;
-    }
-    /* تفاصيل الدفع */
-    .pay-details-box {
-      background: #19233a;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px #0002;
-      padding: 18px 12px 10px 12px;
-      margin: 18px auto 10px auto;
-      max-width: 420px;
-      color: #ffe082;
-      font-size: 17px;
-      text-align: right;
-      border: 1.5px solid #2e3c5c;
-    }
-    .pay-details-box label {
-      color: #fff;
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: block;
-    }
-    .pay-details-box input[type="file"] {
-      background: #232f4b;
-      border-radius: 8px;
-      color: #ffe082;
-      border: 1px solid #2e3c5c;
-      padding: 6px 8px;
-      margin-top: 6px;
-      width: 100%;
-    }
-    /* زر النسخ */
-    .copy-btn {
-      background: linear-gradient(90deg, #ffd76a 60%, #ffe082 100%);
-      color: #222;
-      border: none;
-      border-radius: 7px;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 3px 16px 3px 16px;
-      margin-right: 7px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      box-shadow: 0 1px 4px #0001;
-    }
-    .copy-btn:hover {
-      background: #ffe082;
-      color: #000;
-    }
     /* Decorative GIF banner styles - big centered star with many small stars around it, transparent background */
     .gif-banner {
       position: relative;
       display: block;
-      margin: -28px auto 0;
-      /* moved up so banner sits just under header */
+      margin: -28px auto 0; /* moved up so banner sits just under header */
       width: 100%;
       max-width: 980px;
-      height: 160px;
-      /* slightly reduced so banner is closer to header */
-      pointer-events: none;
-      /* decorative only */
-      background: transparent;
-      /* keep page background unchanged */
+      height: 160px; /* slightly reduced so banner is closer to header */
+      pointer-events: none; /* decorative only */
+      background: transparent; /* keep page background unchanged */
       overflow: visible;
     }
 
@@ -173,11 +64,10 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      height: 150px;
-      /* main star size reduced to sit nearer header */
+      height: 150px; /* main star size reduced to sit nearer header */
       width: auto;
       z-index: 3;
-      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));
       /* gentle breathing while small stars burst */
       animation: pulseStar 3.6s ease-in-out infinite;
     }
@@ -197,13 +87,13 @@
     /* specific target positions after burst (non-random, deliberate layout) */
     .gif-banner img:nth-child(1) {
       /* slowed down and slightly delayed to feel more like fireworks bursts */
-      animation: starBurst1 2.8s cubic-bezier(.2, .8, .2, 1) infinite;
+      animation: starBurst1 2.8s cubic-bezier(.2,.8,.2,1) infinite;
       animation-delay: 0.25s;
       transform-origin: 50% 50%;
     }
 
     .gif-banner img:nth-child(3) {
-      animation: starBurst3 2.8s cubic-bezier(.2, .8, .2, 1) infinite;
+      animation: starBurst3 2.8s cubic-bezier(.2,.8,.2,1) infinite;
       animation-delay: 0.45s;
       transform-origin: 50% 50%;
     }
@@ -218,15 +108,68 @@
       z-index: 2;
       pointer-events: none;
       background-image:
-        url('/assets/star1.gif'),
-        url('/assets/star2.gif'),
-        url('/assets/star1.gif'),
-        url('/assets/star2.gif'),
-        url('/assets/star1.gif'),
-        url('/assets/star2.gif'),
-        url('/assets/star1.gif');
+      url('/assets/star1.gif'),
+      url('/assets/star2.gif'),
+      url('/assets/star1.gif'),
+      url('/assets/star2.gif'),
+      url('/assets/star1.gif'),
+      url('/assets/star2.gif'),
+      url('/assets/star1.gif');
       background-repeat: no-repeat;
       /* final target positions moved upward (closer to header / big star) */
+      background-position:
+      10% 58%,
+      22% 72%,
+      70% 6%,
+      86% 56%,
+      52% 72%,
+      38% 6%,
+      60% 22%;
+      background-size: 32px, 26px, 24px, 28px, 22px, 30px, 18px;
+      opacity: 0;
+      mix-blend-mode: normal;
+      will-change: background-position, opacity, background-size, filter;
+      /* animate from center to the final positions - slowed duration for gentler bursts */
+      animation: burstLayers 2.8s cubic-bezier(.2,.6,0,1) infinite;
+      animation-delay: 0s;
+    }
+
+    /* Make bursts loop but with slight pause so they appear as periodic fireworks */
+    @keyframes burstLayers {
+      0% {
+      opacity: 0;
+      /* all layers start at big star center */
+      background-position:
+        50% 50%,
+        50% 50%,
+        50% 50%,
+        50% 50%,
+        50% 50%,
+        50% 50%,
+        50% 50%;
+      background-size: 8px,8px,6px,6px,6px,7px,5px;
+      filter: blur(1px);
+      }
+      25% {
+      opacity: 1;
+      filter: blur(0);
+      }
+      70% {
+      /* most of the motion completed (targets moved upward) */
+      opacity: 1;
+      background-position:
+        10% 56%,
+        22% 70%,
+        68% 4%,
+        84% 54%,
+        50% 70%,
+        36% 4%,
+        58% 20%;
+      background-size: 30px, 24px, 22px, 26px, 20px, 28px, 16px;
+      }
+      100% {
+      /* settle at final positions then fade */
+      opacity: 0;
       background-position:
         10% 58%,
         22% 72%,
@@ -236,63 +179,7 @@
         38% 6%,
         60% 22%;
       background-size: 32px, 26px, 24px, 28px, 22px, 30px, 18px;
-      opacity: 0;
-      mix-blend-mode: normal;
-      will-change: background-position, opacity, background-size, filter;
-      /* animate from center to the final positions - slowed duration for gentler bursts */
-      animation: burstLayers 2.8s cubic-bezier(.2, .6, 0, 1) infinite;
-      animation-delay: 0s;
-    }
-
-    /* Make bursts loop but with slight pause so they appear as periodic fireworks */
-    @keyframes burstLayers {
-      0% {
-        opacity: 0;
-        /* all layers start at big star center */
-        background-position:
-          50% 50%,
-          50% 50%,
-          50% 50%,
-          50% 50%,
-          50% 50%,
-          50% 50%,
-          50% 50%;
-        background-size: 8px, 8px, 6px, 6px, 6px, 7px, 5px;
-        filter: blur(1px);
-      }
-
-      25% {
-        opacity: 1;
-        filter: blur(0);
-      }
-
-      70% {
-        /* most of the motion completed (targets moved upward) */
-        opacity: 1;
-        background-position:
-          10% 56%,
-          22% 70%,
-          68% 4%,
-          84% 54%,
-          50% 70%,
-          36% 4%,
-          58% 20%;
-        background-size: 30px, 24px, 22px, 26px, 20px, 28px, 16px;
-      }
-
-      100% {
-        /* settle at final positions then fade */
-        opacity: 0;
-        background-position:
-          10% 58%,
-          22% 72%,
-          70% 6%,
-          86% 56%,
-          52% 72%,
-          38% 6%,
-          60% 22%;
-        background-size: 32px, 26px, 24px, 28px, 22px, 30px, 18px;
-        filter: blur(0.6px);
+      filter: blur(0.6px);
       }
     }
 
@@ -301,160 +188,96 @@
        Adjusted so left and right bursts are symmetrical and overall motion is slower. */
     @keyframes starBurst1 {
       0% {
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%) scale(0.6) rotate(-8deg);
-        opacity: 0;
-        filter: blur(1px);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.6) rotate(-8deg);
+      opacity: 0;
+      filter: blur(1px);
       }
-
       18% {
-        opacity: 1;
-        filter: blur(0);
+      opacity: 1;
+      filter: blur(0);
       }
-
       55% {
-        left: 16%;
-        top: 18%;
-        /* moved up */
-        transform: translate(-50%, -50%) scale(1.05) rotate(-12deg);
-        opacity: 1;
+      left: 16%;
+      top: 18%; /* moved up */
+      transform: translate(-50%, -50%) scale(1.05) rotate(-12deg);
+      opacity: 1;
       }
-
       90% {
-        opacity: 0.6;
-        transform: translate(-50%, -50%) scale(0.9) rotate(-24deg);
+      opacity: 0.6;
+      transform: translate(-50%, -50%) scale(0.9) rotate(-24deg);
       }
-
       100% {
-        left: 16%;
-        top: 18%;
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.8) rotate(-36deg);
+      left: 16%;
+      top: 18%;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8) rotate(-36deg);
       }
     }
 
     @keyframes starBurst3 {
       0% {
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%) scale(0.6) rotate(8deg);
-        opacity: 0;
-        filter: blur(1px);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.6) rotate(8deg);
+      opacity: 0;
+      filter: blur(1px);
       }
-
       18% {
-        opacity: 1;
-        filter: blur(0);
+      opacity: 1;
+      filter: blur(0);
       }
-
       60% {
-        left: 84%;
-        top: 18%;
-        /* moved up */
-        transform: translate(-50%, -50%) scale(1.08) rotate(8deg);
-        opacity: 1;
+      left: 84%;
+      top: 18%; /* moved up */
+      transform: translate(-50%, -50%) scale(1.08) rotate(8deg);
+      opacity: 1;
       }
-
       95% {
-        opacity: 0.5;
-        transform: translate(-50%, -50%) scale(0.85) rotate(24deg);
+      opacity: 0.5;
+      transform: translate(-50%, -50%) scale(0.85) rotate(24deg);
       }
-
       100% {
-        left: 84%;
-        top: 18%;
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.7) rotate(36deg);
+      left: 84%;
+      top: 18%;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.7) rotate(36deg);
       }
     }
 
     /* Big star pulse to emphasize bursts */
     @keyframes pulseStar {
-      0% {
-        transform: translate(-50%, -50%) scale(1);
-        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
-      }
-
-      40% {
-        transform: translate(-50%, -50%) scale(1.06);
-        filter: drop-shadow(0 18px 28px rgba(0, 163, 255, 0.12));
-      }
-
-      100% {
-        transform: translate(-50%, -50%) scale(1);
-        filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
-      }
+      0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));}
+      40% { transform: translate(-50%, -50%) scale(1.06); filter: drop-shadow(0 18px 28px rgba(0,163,255,0.12));}
+      100% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 8px 18px rgba(0,0,0,0.35));}
     }
 
     /* Responsive adjustments */
     @media (max-width: 900px) {
-      .gif-banner {
-        height: 140px;
-        margin-top: -22px;
-      }
-
-      .gif-banner img:nth-child(2) {
-        height: 120px;
-      }
-
+      .gif-banner { height: 140px; margin-top: -22px; }
+      .gif-banner img:nth-child(2) { height: 120px; }
       .gif-banner img:nth-child(1),
-      .gif-banner img:nth-child(3) {
-        height: 44px;
-      }
-
-      .gif-banner::before {
-        background-size: 24px, 20px, 18px, 20px, 16px, 22px, 14px;
-      }
+      .gif-banner img:nth-child(3) { height: 44px; }
+      .gif-banner::before { background-size: 24px,20px,18px,20px,16px,22px,14px; }
 
       /* slightly slower on smaller screens too */
-      .gif-banner::before {
-        animation-duration: 2.2s;
-      }
-
-      .gif-banner img:nth-child(1) {
-        animation-duration: 2.2s;
-      }
-
-      .gif-banner img:nth-child(3) {
-        animation-duration: 2.2s;
-      }
+      .gif-banner::before { animation-duration: 2.2s; }
+      .gif-banner img:nth-child(1) { animation-duration: 2.2s; }
+      .gif-banner img:nth-child(3) { animation-duration: 2.2s; }
     }
 
     @media (max-width: 600px) {
-      .gif-banner {
-        height: 120px;
-        max-width: 420px;
-        margin-top: -18px;
-      }
-
-      .gif-banner img:nth-child(2) {
-        height: 100px;
-      }
-
+      .gif-banner { height: 120px; max-width: 420px; margin-top: -18px; }
+      .gif-banner img:nth-child(2) { height: 100px; }
       .gif-banner img:nth-child(1),
-      .gif-banner img:nth-child(3) {
-        height: 36px;
-      }
-
-      .gif-banner::before {
-        background-size: 18px, 14px, 12px, 14px, 12px, 16px, 10px;
-      }
-
+      .gif-banner img:nth-child(3) { height: 36px; }
+      .gif-banner::before { background-size: 18px,14px,12px,14px,12px,16px,10px; }
       /* slightly speed up animations on very small screens but still slower than original */
-      .gif-banner::before {
-        animation-duration: 1.9s;
-      }
-
-      .gif-banner img:nth-child(1) {
-        animation-duration: 1.7s;
-      }
-
-      .gif-banner img:nth-child(3) {
-        animation-duration: 1.9s;
-      }
+      .gif-banner::before { animation-duration: 1.9s; }
+      .gif-banner img:nth-child(1) { animation-duration: 1.7s; }
+      .gif-banner img:nth-child(3) { animation-duration: 1.9s; }
     }
-
     /* Wallet button styles */
     .wallet-btn {
       font-size: 16px;
@@ -528,15 +351,8 @@
       z-index: 999;
       display: none;
     }
-
-    .mobile-menu-overlay.show {
-      display: block;
-    }
-
-    .mobile-menu-container.show {
-      transform: translateX(0);
-      pointer-events: auto;
-    }
+    .mobile-menu-overlay.show { display: block; }
+    .mobile-menu-container.show { transform: translateX(0); pointer-events: auto; }
 
     .mobile-wallet-btn {
       background: #031724;
@@ -591,7 +407,202 @@
       margin: 0px 0px 0 0;
       text-align: left;
     }
-  </style>
+
+    /* --- Payment Modal Styles (Alternative Methods) --- */
+    #payment-modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      inset: 0;
+      background: rgba(10,20,40,0.85);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+    }
+    #payment-modal > div {
+      background: #181f2e;
+      border-radius: 18px;
+      max-width: 370px;
+      width: 95vw;
+      padding: 28px 18px 22px 18px;
+      box-shadow: 0 8px 40px #000a,0 0 0 2px #ffd76a22;
+      position: relative;
+      border: 2px solid #ffd76a33;
+    }
+    #payment-modal h2 {
+      color: #ffd76a;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+    #payment-modal button[onclick^="closePaymentModal"] {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #ffd76a;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #payment-modal button[onclick^="closePaymentModal"]:hover {
+      color: #fffbe6;
+    }
+    #payment-modal > div > div[style*="flex-direction:column"] > button {
+      font-size: 20px;
+      font-weight: 800;
+      padding: 16px 0;
+      border-radius: 14px;
+      border: none;
+      margin-bottom: 0;
+      box-shadow: 0 2px 12px #0002;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: filter 0.18s, box-shadow 0.18s;
+    }
+    #payment-modal button[onclick^="payWithTON"] {
+      background: linear-gradient(90deg,#34b3ff,#0e1830);
+      color: #fff;
+      box-shadow: 0 2px 12px #34b3ff44;
+    }
+    #payment-modal button[onclick^="showVodafoneCash"] {
+      background: linear-gradient(90deg,#e60000,#ff7a59);
+      color: #fff;
+      box-shadow: 0 2px 12px #e6000044;
+    }
+    #payment-modal button[onclick^="showInstaPay"] {
+      background: linear-gradient(90deg,#4a90e2,#0e1830);
+      color: #fff;
+      box-shadow: 0 2px 12px #4a90e244;
+    }
+    #payment-modal button[onclick^="payWithTON"]:hover,
+    #payment-modal button[onclick^="showVodafoneCash"]:hover,
+    #payment-modal button[onclick^="showInstaPay"]:hover {
+      filter: brightness(1.08) drop-shadow(0 0 8px #ffd76a44);
+    }
+    #payment-modal img {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 4px #0002;
+    }
+    .pay-details-box {
+      background: #19233a;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px #0002;
+      padding: 18px 12px 10px 12px;
+      margin: 18px auto 10px auto;
+      max-width: 420px;
+      color: #ffd76a;
+      font-size: 17px;
+      text-align: right;
+      border: 1.5px solid #2e3c5c;
+    }
+    .pay-details-box label {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .pay-details-box input[type="file"] {
+      display: none;
+    }
+    .custom-file-input {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 260px;
+      margin-top: 6px;
+    }
+    .custom-file-label {
+      display: block;
+      background: #232f4b;
+      color: #ffe082;
+      border: 1.5px solid #2e3c5c;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: right;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+      min-width: 120px;
+      z-index: 1;
+    }
+    .custom-file-input input[type="file"]:focus + .custom-file-label,
+    .custom-file-input input[type="file"]:hover + .custom-file-label {
+      background: #2e3c5c;
+      color: #fff;
+    }
+    .file-chosen {
+      color: #ffe082;
+      font-size: 14px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .copy-btn {
+      background: #ffd76a;
+      color: #181f2e;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 2px 10px;
+      margin-right: 6px;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .copy-btn:hover {
+      background: #fffbe6;
+      color: #e6b800;
+    }
+    .btn.btn-buy {
+      width: 100%;
+      margin-top: 10px;
+      background: none;
+      border: 2px solid #ffd76a;
+      color: #ffd76a;
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 10px 0;
+      transition: background 0.18s, color 0.18s;
+      box-shadow: 0 1px 8px #ffd76a22;
+      letter-spacing: 0.5px;
+    }
+    .btn.btn-buy:hover {
+      background: #ffd76a;
+      color: #181f2e;
+    }
+    @media (max-width: 600px) {
+      #payment-modal > div {
+        padding: 16px 4vw 14px 4vw;
+        max-width: 99vw;
+      }
+      .pay-details-box {
+        padding: 12px 4vw 8px 4vw;
+        font-size: 15px;
+      }
+      .custom-file-label {
+        font-size: 13px;
+        padding: 7px 10px;
+      }
+      .btn.btn-buy {
+        font-size: 16px;
+        padding: 8px 0;
+      }
+    }
+      </style>
 </head>
 
 <body class="en">
@@ -631,8 +642,7 @@
       <div class="navbar-sub-wrapper navbar-profiler">
         <span class="separator"></span>
         <div id="ton-connect-btn" class="wallet-btn"></div>
-        <button id="language-switcher" class="wallet-btn"
-          style="background:#0f1e36;border:1px solid rgba(0,163,255,.25);margin-inline-start:8px">AR / EN</button>
+        <button id="language-switcher" class="wallet-btn" style="background:#0f1e36;border:1px solid rgba(0,163,255,.25);margin-inline-start:8px">AR / EN</button>
       </div>
     </div>
     <div class="burger-btn" id="burger_btn">
@@ -679,14 +689,29 @@
           <a class="mobile-menu-a" href="/premium.html" id="premium-link-mobile">Premium</a>
         </li>
         <li class="mobile-menu-li">
-          <a class="mobile-menu-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank"
-            id="support-link-mobile">Support</a>
+          <a class="mobile-menu-a" href="https://t.me/OMAR_M_SHEHATA" target="_blank" id="support-link-mobile">Support</a>
         </li>
         <li class="mobile-menu-li">
-          <a class="mobile-menu-a" href="https://t.me/PandaStoreShop" target="_blank" id="channel-link-mobile">TG
-            Channel</a>
+          <a class="mobile-menu-a" href="https://t.me/PandaStoreShop" target="_blank" id="channel-link-mobile">TG Channel</a>
         </li>
       </ul>
+    </div>
+  </div>
+  <!-- Payment Modal for alternative methods (Vodafone/Instapay) -->
+  <div id="payment-modal" style="display:none;position:fixed;z-index:3000;inset:0;background:rgba(10,20,40,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#181f2e;border-radius:20px;max-width:370px;width:95vw;padding:28px 18px 22px 18px;box-shadow:0 8px 40px #000a,0 0 0 2px #ffd76a22;position:relative;">
+      <button onclick="closePaymentModal()" style="position:absolute;top:12px;left:12px;background:none;border:none;font-size:28px;color:#ffd76a;font-weight:bold;cursor:pointer;">×</button>
+      <h2 style="color:#ffd76a;text-align:center;font-size:22px;font-weight:900;margin-bottom:24px;">اختر طريقة الدفع</h2>
+      <div style="display:flex;flex-direction:column;gap:18px;align-items:stretch;">
+        <button onclick="payWithTON()" style="background:linear-gradient(90deg,#34b3ff,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #34b3ff44;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;"> <i class='fa-brands fa-telegram-plane' style='font-size:22px;'></i> الدفع عبر TON</button>
+        <button onclick="showVodafoneCash()" style="background:linear-gradient(90deg,#e60000,#ff7a59);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #e6000044;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+          <img src="assets/vodafone.png" alt="vodafone" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> فودافون كاش
+        </button>
+        <button onclick="showInstaPay()" style="background:linear-gradient(90deg,#4a90e2,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #4a90e244;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+          <img src="assets/instapay.png" alt="instapay" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> InstaPay
+        </button>
+      </div>
+      <div id="alt-pay-details" style="margin-top:28px;display:none;text-align:right;"></div>
     </div>
   </div>
 
@@ -696,7 +721,7 @@
         style="width: 200px; height: 200px;">
       </lottie-player>
     </div>
-
+      
     <!-- Decorative GIFs banner -->
     <div class="gif-banner" aria-hidden="true">
       <img src="/assets/star1.gif" alt="" loading="lazy" decoding="async" />
@@ -708,24 +733,6 @@
     <div class="buy-title">
       <h1 id="buy-title-text">Buy Telegram Stars</h1>
     </div>
-    <!-- نافذة اختيار طريقة الدفع -->
-    <div id="payment-modal" style="display:none;position:fixed;z-index:3000;inset:0;background:rgba(10,20,40,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
-      <div style="background:#181f2e;border-radius:20px;max-width:370px;width:95vw;padding:28px 18px 22px 18px;box-shadow:0 8px 40px #000a,0 0 0 2px #ffd76a22;position:relative;">
-        <button onclick="closePaymentModal()" style="position:absolute;top:12px;left:12px;background:none;border:none;font-size:28px;color:#ffd76a;font-weight:bold;cursor:pointer;">×</button>
-        <h2 style="color:#ffd76a;text-align:center;font-size:22px;font-weight:900;margin-bottom:24px;">اختر طريقة الدفع</h2>
-        <div style="display:flex;flex-direction:column;gap:18px;align-items:stretch;">
-            <button onclick="payWithTON()" style="background:linear-gradient(90deg,#34b3ff,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #34b3ff44;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;"> <i class='fa-brands fa-telegram-plane' style='font-size:22px;'></i> الدفع عبر TON</button>
-            <button onclick="showVodafoneCash()" style="background:linear-gradient(90deg,#e60000,#ff7a59);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #e6000044;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
-              <img src="assets/vodafone.png" alt="vodafone" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> فودافون كاش
-          </button>
-          <button onclick="showInstaPay()" style="background:linear-gradient(90deg,#4a90e2,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #4a90e244;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
-            <img src="assets/instapay.png" alt="instapay" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> InstaPay
-          </button>
-        </div>
-        <div id="alt-pay-details" style="margin-top:28px;display:none;text-align:right;"></div>
-      </div>
-    </div>
-    </div>
 
 
     <div id="form_wrapper">
@@ -735,7 +742,8 @@
         </div>
 
         <div class="tm-field icon-before icon-stars form-control-wrap tm-coin-field">
-          <input type="number" placeholder="Quantity (min 50)" id="stars" min="50" oninput="updatePreview()" required />
+          <input type="number" placeholder="Quantity (min 50)" id="stars" min="50" oninput="updatePreview()"
+            required />
           <div class="tm-stars-price tm-search-rlabel">
             <span id="preview"></span>
           </div>
@@ -744,227 +752,227 @@
         <p class="sub-text">Or select the quantity below:</p>
 
         <div class="wrapper">
-          <div class="tm-form-radio-items">
+            <div class="tm-form-radio-items">
             <div class="tm-form-radio-item-wrap">
               <label class="tm-form-radio-item" onclick="selectStars(50)" id="option-50">
-                <input class="radio" name="stars" type="radio" value="50" checked />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="23">
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>50 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$0.79</span></div>
+              <input class="radio" name="stars" type="radio" value="50" checked />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="23">
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>50 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$0.79</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap">
               <label class="tm-form-radio-item" onclick="selectStars(75)" id="option-75">
-                <input class="radio" name="stars" type="radio" value="75" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="23">
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>75 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$1.18</span></div>
+              <input class="radio" name="stars" type="radio" value="75" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="23">
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>75 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$1.18</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(100)" id="option-100">
-                <input class="radio" name="stars" type="radio" value="100" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>100 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$1.57</span></div>
+              <input class="radio" name="stars" type="radio" value="100" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>100 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$1.57</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(150)" id="option-150">
-                <input class="radio" name="stars" type="radio" value="150" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>150 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$2.36</span></div>
+              <input class="radio" name="stars" type="radio" value="150" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>150 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$2.36</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(250)" id="option-250">
-                <input class="radio" name="stars" type="radio" value="250" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>250 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$3.93</span></div>
+              <input class="radio" name="stars" type="radio" value="250" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>250 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$3.93</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(350)" id="option-350">
-                <input class="radio" name="stars" type="radio" value="350" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>350 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$5.50</span></div>
+              <input class="radio" name="stars" type="radio" value="350" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>350 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$5.50</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap">
               <label class="tm-form-radio-item" onclick="selectStars(500)" id="option-500">
-                <input class="radio" name="stars" type="radio" value="500" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>500 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$7.85</span></div>
+              <input class="radio" name="stars" type="radio" value="500" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>500 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$7.85</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(750)" id="option-750">
-                <input class="radio" name="stars" type="radio" value="750" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>750 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$11.78</span></div>
+              <input class="radio" name="stars" type="radio" value="750" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>750 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$11.78</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(1000)" id="option-1000">
-                <input class="radio" name="stars" type="radio" value="1000" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="26">
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>1,000 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$15.70</span></div>
+              <input class="radio" name="stars" type="radio" value="1000" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="26">
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>1,000 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$15.70</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(1500)" id="option-1500">
-                <input class="radio" name="stars" type="radio" value="1500" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="29">
-                      <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>1,500 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$23.55</span></div>
+              <input class="radio" name="stars" type="radio" value="1500" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="29">
+                  <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>1,500 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$23.55</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap">
               <label class="tm-form-radio-item" onclick="selectStars(2500)" id="option-2500">
-                <input class="radio" name="stars" type="radio" value="2500" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="29">
-                      <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>2,500 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$39.25</span></div>
+              <input class="radio" name="stars" type="radio" value="2500" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="29">
+                  <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>2,500 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$39.25</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(5000)" id="option-5000">
-                <input class="radio" name="stars" type="radio" value="5000" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="32">
-                      <use transform="translate(12,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>5,000 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$78.50</span></div>
+              <input class="radio" name="stars" type="radio" value="5000" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="32">
+                  <use transform="translate(12,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>5,000 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$78.50</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-second-option">
               <label class="tm-form-radio-item" onclick="selectStars(10000)" id="option-10000">
-                <input class="radio" name="stars" type="radio" value="10000" />
-                <div class="tm-form-radio-label">
-                  <div class="tm-radio-label">
-                    <svg class="icon" height="20" width="32">
-                      <use transform="translate(12,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
-                      <use transform="translate(0,0)" xlink:href="#icon-multi-star"></use>
-                    </svg>
-                    <span>10,000 Stars</span>
-                  </div>
-                  <div class="tm-radio-desc wide-only"><span class="pack-price">$157.00</span></div>
+              <input class="radio" name="stars" type="radio" value="10000" />
+              <div class="tm-form-radio-label">
+                <div class="tm-radio-label">
+                <svg class="icon" height="20" width="32">
+                  <use transform="translate(12,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(9,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(6,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(3,0)" xlink:href="#icon-multi-star"></use>
+                  <use transform="translate(0,0)" xlink:href="#icon-multi-star"></use>
+                </svg>
+                <span>10,000 Stars</span>
                 </div>
+                <div class="tm-radio-desc wide-only"><span class="pack-price">$157.00</span></div>
+              </div>
               </label>
             </div>
             <div class="tm-form-radio-item-wrap tm-more-options">
               <label class="tm-form-radio-item-more js-more-options" onclick="toggleMoreOptions()">
-                <div class="tm-form-radio-label icon-after icon-options-more" id="show-more-btn">
-                  View all options
-                </div>
+              <div class="tm-form-radio-label icon-after icon-options-more" id="show-more-btn">
+                View all options
+              </div>
               </label>
             </div>
-          </div>
-          <button class="btn-buy" onclick="openPaymentModal()">Buy <span class="quantity">50</span> Telegram Stars</button>
+            </div>
+          <button class="btn-buy" onclick="submitOrder()">Buy <span class="quantity">50</span> Telegram Stars</button>
           <p class="terms-section">
             By proceeding, you agree to our Terms of Service and Privacy Policy
           </p>
@@ -1011,434 +1019,454 @@
   </svg>
 
   <script>
-    // إرسال الطلب البديل (فودافون/انستا) مع رسائل توضيحية
-    async function submitAltPayment(method) {
-      var usernameInput = document.getElementById("username");
-      var username = usernameInput ? usernameInput.value.trim().replace(/^@/, '') : '';
-      if (!username) {
-        Swal.fire({
-          iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
-          title: '<span style="font-size:19px;font-weight:900;">أدخل اسم المستخدم</span>',
-          html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إدخال اسم المستخدم أولاً</div>',
-          showConfirmButton: true,
-          confirmButtonColor: '#34b3ff',
-          customClass: { popup: 'swal2-border-radius', title: 'swal2-title-custom', icon: 'swal2-icon-custom', confirmButton: 'swal2-btn-custom', }
-        });
-        return;
+  // Payment Modal logic for alternative methods
+  function openPaymentModal() {
+    document.getElementById('payment-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('alt-pay-details').style.display = 'none';
+    document.getElementById('alt-pay-details').innerHTML = '';
+  }
+  function closePaymentModal() {
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function payWithTON() {
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    submitOrder();
+  }
+  function showVodafoneCash() {
+    var stars = parseInt(document.getElementById("stars").value) || 50;
+    var usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+    var egp = Math.round(usd * 50);
+    var html = `<div class='pay-details-box'>
+      <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
+      <div style='margin-bottom:10px;'>رقم فودافون كاش: <span id='vf-number' style='font-weight:700;font-size:17px;'>01099174529</span> <button onclick='copyText("01099174529")' class='copy-btn'>نسخ</button></div>
+      <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
+        <span class="custom-file-input">
+          <input type="file" id="vf-proof" accept="image/*" onchange="updateFileLabel(this, 'vf-file-label')" style="display:none;">
+          <label class="custom-file-label" id="vf-file-label" for="vf-proof" style="display:block;cursor:pointer;">اختر ملف</label>
+        </span>
+        <span class="file-chosen" id="vf-file-chosen"></span>
+      </div>
+  <button class='btn btn-buy' style='width:100%;margin:14px auto 0 auto;font-size:14px;padding:6px 0;display:block;height:36px;line-height:18px;border-radius:10px;' onclick='submitAltPayment("instapay")'>إرسال الطلب</button>
+    </div>`;
+    showAltPayDetails(html);
+  }
+  function showInstaPay() {
+    var stars = parseInt(document.getElementById("stars").value) || 50;
+    var usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+    var egp = Math.round(usd * 50);
+    var html = `<div class='pay-details-box'>
+      <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
+      <div style='margin-bottom:10px;'>يوزر InstaPay: <br><span id='insta-user' style='font-weight:700;font-size:17px;'>omarshehata_1@instapay</span>  <button onclick='copyText("omarshehata_1@instapay")' class='copy-btn'>نسخ</button></div>
+      <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
+        <span class="custom-file-input">
+          <input type="file" id="insta-proof" accept="image/*" onchange="updateFileLabel(this, 'insta-file-label')" style="display:none;">
+          <label class="custom-file-label" id="insta-file-label" for="insta-proof" style="display:block;cursor:pointer;">اختر ملف</label>
+        </span>
+        <span class="file-chosen" id="insta-file-chosen"></span>
+      </div>
+  <button class='btn btn-buy' style='width:100%;margin:14px auto 0 auto;font-size:14px;padding:6px 0;display:block;height:36px;line-height:18px;border-radius:10px;' onclick='submitAltPayment("instapay")'>إرسال الطلب</button>
+    </div>`;
+    showAltPayDetails(html);
+  }
+  function showAltPayDetails(html) {
+    var details = document.getElementById('alt-pay-details');
+    details.innerHTML = html;
+    details.style.display = 'block';
+  }
+  function copyText(txt) {
+    navigator.clipboard.writeText(txt);
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      iconHtml: '<span style="font-size:22px;color:#4bb543;">&#10003;</span>',
+      title: '<span style="font-size:15px;font-weight:700;">تم النسخ</span>',
+      showConfirmButton: false,
+      timer: 1200,
+      customClass: {
+        popup: 'swal2-border-radius',
+        title: 'swal2-title-custom',
+        icon: 'swal2-icon-custom',
       }
-      var fileInput = method === 'vodafone' ? document.getElementById('vf-proof') : document.getElementById('insta-proof');
-      if (!fileInput || !fileInput.files[0]) {
-        Swal.fire({
-          iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
-          title: '<span style="font-size:19px;font-weight:900;">ارفق صورة</span>',
-          html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إرفاق صورة إثبات الدفع</div>',
-          showConfirmButton: true,
-          confirmButtonColor: '#34b3ff',
-          customClass: { popup: 'swal2-border-radius', title: 'swal2-title-custom', icon: 'swal2-icon-custom', confirmButton: 'swal2-btn-custom', }
-        });
-        return;
-      }
-      var egp = document.querySelector('.pay-details-box b') ? parseInt(document.querySelector('.pay-details-box b').textContent) : 0;
-      var formData = new FormData();
-      formData.append('username', username);
-      formData.append('amountEgp', egp);
-      formData.append('method', method);
-      formData.append('proof', fileInput.files[0]);
-      formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
-      try {
-        Swal.fire({
-          title: '<span style="font-size:19px;font-weight:900;">جاري إرسال الطلب...</span>',
-          html: '<div style="font-size:15px;color:#ffe6a0;">يرجى الانتظار وعدم إغلاق الصفحة</div>',
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-            // رفع z-index للرسالة المنبثقة
-            const swalPopup = document.querySelector('.swal2-container');
-            if (swalPopup) swalPopup.style.zIndex = '99999';
-          },
-          customClass: { popup: 'swal2-border-radius', title: 'swal2-title-custom', icon: 'swal2-icon-custom', },
-          position: 'top',
-        });
-        await axios.post('https://pandastore-f2yn.onrender.com/premium-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        Swal.fire({
-          iconHtml: '<span style="font-size:22px;color:#4bb543;">&#10003;</span>',
-          title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
-          html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
-          showConfirmButton: true,
-          confirmButtonColor: '#34b3ff',
-          customClass: { popup: 'swal2-border-radius', title: 'swal2-title-custom', icon: 'swal2-icon-custom', confirmButton: 'swal2-btn-custom', }
-        });
-        document.getElementById('payment-modal').style.display = 'none';
-        document.body.style.overflow = '';
-      } catch (e) {
-        Swal.fire({
-          iconHtml: '<span style="font-size:32px;color:#ff4d4d;">&#10007;</span>',
-          title: '<span style="font-size:19px;font-weight:900;">حدث خطأ</span>',
-          html: '<div style="font-size:15px;color:#ffd6d6;">يرجى المحاولة مرة أخرى</div>',
-          showConfirmButton: true,
-          confirmButtonColor: '#34b3ff',
-          customClass: { popup: 'swal2-border-radius', title: 'swal2-title-custom', icon: 'swal2-icon-custom', confirmButton: 'swal2-btn-custom', }
-        });
-      }
-    }
-    // نافذة اختيار طريقة الدفع (نفس مبدأ البريميوم)
-    function openPaymentModal() {
-      document.getElementById('payment-modal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      document.getElementById('alt-pay-details').style.display = 'none';
-      document.getElementById('alt-pay-details').innerHTML = '';
-    }
-    function closePaymentModal() {
-      document.getElementById('payment-modal').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-    // TON
-    function payWithTON() {
-      document.getElementById('payment-modal').style.display = 'none';
-      document.body.style.overflow = '';
-      submitOrder();
-    }
-    // فودافون كاش
-    function showVodafoneCash() {
-      var usd = getCurrentStarsPrice();
-      var egp = Math.round(usd * 50);
-      var html = `<div class='pay-details-box'>
-        <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
-        <div style='margin-bottom:10px;'>رقم فودافون كاش: <span id='vf-number' style='font-weight:700;font-size:17px;'>01099174529</span> <button onclick='copyText("01099174529")' class='copy-btn'>نسخ</button></div>
-        <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
-          <span class="custom-file-input">
-            <input type="file" id="vf-proof" accept="image/*" onchange="updateFileLabel(this, 'vf-file-label')">
-            <span class="custom-file-label" id="vf-file-label">اختر ملف</span>
-          </span>
-          <span class="file-chosen" id="vf-file-chosen"></span>
-        </div>
-        <button class='btn btn-buy' style='width:100%;margin-top:10px;' onclick='submitAltPayment("vodafone")'>إرسال الطلب</button>
-      </div>`;
-      showAltPayDetails(html);
-    }
-    // انستا باي
-    function showInstaPay() {
-      var usd = getCurrentStarsPrice();
-      var egp = Math.round(usd * 50);
-      var html = `<div class='pay-details-box'>
-        <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
-        <div style='margin-bottom:10px;'>يوزر InstaPay: <br><span id='insta-user' style='font-weight:700;font-size:17px;'>omarshehata_1@instapay</span>  <button onclick='copyText("omarshehata_1@instapay")' class='copy-btn'>نسخ</button></div>
-        <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
-          <span class="custom-file-input">
-            <input type="file" id="insta-proof" accept="image/*" onchange="updateFileLabel(this, 'insta-file-label')">
-            <span class="custom-file-label" id="insta-file-label">اختر ملف</span>
-          </span>
-          <span class="file-chosen" id="insta-file-chosen"></span>
-        </div>
-        <button class='btn btn-buy' style='width:100%;margin-top:10px;' onclick='submitAltPayment("instapay")'>إرسال الطلب</button>
-      </div>`;
-      showAltPayDetails(html);
-    // تحديث اسم الملف المختار
-    function updateFileLabel(input, labelId) {
-      var label = document.getElementById(labelId);
-      var chosen = input.files && input.files.length > 0 ? input.files[0].name : 'لا يوجد ملف';
-      label.textContent = input.files && input.files.length > 0 ? input.files[0].name : 'اختر ملف';
-    }
-    }
-    function showAltPayDetails(html) {
-      var details = document.getElementById('alt-pay-details');
-      details.innerHTML = html;
-      details.style.display = 'block';
-    }
-    function copyText(txt) {
-      navigator.clipboard.writeText(txt);
-      Swal.fire({ toast: true, position: 'top-end', iconHtml: '<span style="font-size:22px;color:#4bb543;' + '">&#10003;</span>', title: '<span style="font-size:15px;font-weight:700;">تم النسخ</span>', showConfirmButton: false, timer: 1200, customClass: { popup: 'swal2-border-radius', title: 'swal2-title-custom', icon: 'swal2-icon-custom', } });
-    }
-    function getCurrentStarsPrice() {
-      // احصل على السعر الحالي للنجوم المختارة
-      var selected = document.querySelector('.tm-form-radio-item input[type="radio"]:checked');
-      if (selected) {
-        var label = selected.closest('.tm-form-radio-item');
-        var priceSpan = label.querySelector('.pack-price');
-        if (priceSpan) {
-          var price = priceSpan.textContent.replace('$', '').replace(' ', '');
-          return parseFloat(price);
-        }
-      }
-      // fallback
-      return 0.79;
-    }
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-      manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect-btn-mobile'
     });
-
-    const PRICE_PER_STAR_USD = 0.0157;
-    let currentTonUsd = null;
-    let showAllOptions = false;
-    let isEnglish = true; // notifications language only
-
-    // Notifications translations (buy page only)
-    const i18n = {
-      minStars: { en: 'Minimum 50 Stars ✏️', ar: 'الحد الأدنى 50 نجمة ✏️' },
-      enterUsername: { en: 'Please enter Telegram username. ✏️', ar: 'من فضلك أدخل اسم مستخدم تيليجرام. ✏️' },
-      connectFirst: { en: 'Please connect your wallet first 🛡️', ar: 'يرجى ربط المحفظة أولاً 🛡️' },
-      priceFail: { en: 'Failed to get TON price, try later. 🌐', ar: 'تعذر جلب سعر TON، حاول لاحقًا. 🌐' },
-      insufficientBalance: (avail, need) => ({ en: `Your balance (${avail} TON) is insufficient. You need ${need} TON.`, ar: `رصيدك (${avail} TON) غير كافٍ. تحتاج ${need} TON.` }),
-      processingTitle: { en: 'Processing your order ⏳', ar: 'جاري معالجة الطلب ⏳' },
-      processingText: { en: 'Please do not leave the page until your order is completed.', ar: 'من فضلك لا تغادر الصفحة قبل إتمام طلبك.' },
-      orderReceivedTitle: { en: 'Order received ✅', ar: 'تم استلام الطلب ✅' },
-      orderWillSend: (stars, user) => ({ en: `${stars} stars will be sent to @${user} within 5-10 minutes.`, ar: `سيتم إرسال ${stars} نجمة إلى @${user} خلال 5-10 دقائق.` }),
-      tryAgain: { en: 'Please try again.', ar: 'يرجى المحاولة مرة أخرى.' },
-      txInsufficient: { en: 'Your wallet does not have enough TON to complete this transaction.', ar: 'محفظتك لا تحتوي على رصيد كافٍ من TON لإتمام العملية.' },
-      txFailed: { en: 'Transaction failed ❌', ar: 'فشلت المعاملة ❌' },
+  }
+function updateFileLabel(input, labelId) {
+  var label = document.getElementById(labelId);
+  var chosen = input.files && input.files.length > 0 ? input.files[0].name : 'لا يوجد ملف';
+  label.textContent = input.files && input.files.length > 0 ? input.files[0].name : 'اختر ملف';
+  // Show image preview if file is image (make it square like premium)
+  var previewId = (labelId === 'vf-file-label') ? 'vf-file-chosen' : 'insta-file-chosen';
+  var previewBox = document.getElementById(previewId);
+  if (input.files && input.files[0] && input.files[0].type.startsWith('image/')) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      // square container with object-fit: cover to mimic premium preview
+      previewBox.innerHTML = '<div style="width:100px;height:100px;overflow:hidden;border-radius:12px;border:2.5px solid #ffd76a;margin-top:10px;box-shadow:0 2px 12px #ffd76a33;display:inline-block;">' +
+           '<img src="' + e.target.result + '" alt="preview" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+           '</div>';
     };
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function () {
-      // Initialize burger menu
-      const burgerBtn = document.getElementById('burger_btn');
-      const mobileMenu = document.getElementById('mobile_menu_container');
-      const closeBtn = document.getElementById('mobile_menu_cross');
-
-      const openMenu = () => {
-        mobileMenu.classList.add('show');
-        const overlay = document.getElementById('mobile_menu_overlay');
-        if (overlay) overlay.classList.add('show');
-        document.body.style.overflow = 'hidden';
-      };
-      const closeMenu = () => {
-        mobileMenu.classList.remove('show');
-        const overlay = document.getElementById('mobile_menu_overlay');
-        if (overlay) overlay.classList.remove('show');
-        document.body.style.overflow = '';
-      };
-      if (burgerBtn) burgerBtn.addEventListener('click', openMenu);
-      if (closeBtn) closeBtn.addEventListener('click', closeMenu);
-      const overlayEl = document.getElementById('mobile_menu_overlay');
-      if (overlayEl) overlayEl.addEventListener('click', closeMenu);
-
-      // Hide all second options by default
-      document.querySelectorAll('.tm-second-option').forEach(option => {
-        option.style.display = 'none';
-      });
-
-      // Select 50 stars by default
-      selectStars(50);
-
-      // Fetch TON price
-      fetchTonPrice();
-
-      // Notifications language switcher (navbar & mobile)
-      const langBtn = document.getElementById('language-switcher');
-      const langBtnMobile = document.getElementById('language-switcher-mobile');
-      const toggleLang = () => {
-        isEnglish = !isEnglish;
-        const label = isEnglish ? 'AR / EN' : 'EN / AR';
-        if (langBtn) langBtn.textContent = label;
-        if (langBtnMobile) langBtnMobile.textContent = label;
-      };
-      if (langBtn) langBtn.addEventListener('click', toggleLang);
-      if (langBtnMobile) langBtnMobile.addEventListener('click', toggleLang);
-    });
-
-    async function fetchTonPrice() {
-      try {
-        const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
-        currentTonUsd = res.data["the-open-network"].usd;
-        updatePreview();
-      } catch (e) {
-        console.warn("Failed to fetch TON price for preview");
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewBox.innerHTML = '';
+  }
       }
-    }
-
-    async function checkWalletBalance(requiredTon) {
-      try {
-        const walletConnection = tonConnectUI.wallet;
-        if (!walletConnection || !walletConnection.account) {
-          tonConnectUI.connectWallet();
-          return { success: false, message: (isEnglish ? i18n.connectFirst.en : i18n.connectFirst.ar) };
-        }
-
-        const response = await axios.get(`https://toncenter.com/api/v2/getAddressBalance?address=${walletConnection.account.address}`);
-        const availableBalance = parseFloat(response.data.result) / 1e9;
-
-        if (availableBalance < requiredTon) {
-          return {
-            success: false,
-            message: (isEnglish
-              ? i18n.insufficientBalance(availableBalance.toFixed(2), requiredTon.toFixed(2)).en
-              : i18n.insufficientBalance(availableBalance.toFixed(2), requiredTon.toFixed(2)).ar)
-          };
-        }
-
-        return { success: true };
-      } catch (error) {
-        console.error('Balance check error:', error);
-        return {
-          success: false,
-          message: (isEnglish ? i18n.tryAgain.en : i18n.tryAgain.ar)
-        };
-      }
-    }
-
-    function toggleMoreOptions() {
-      showAllOptions = !showAllOptions;
-      const hiddenOptions = document.querySelectorAll('.tm-second-option');
-      const showMoreBtn = document.getElementById('show-more-btn');
-
-      hiddenOptions.forEach(option => {
-        option.style.display = showAllOptions ? 'block' : 'none';
+  // إرسال الطلب البديل (فودافون/انستا)
+  async function submitAltPayment(method) {
+    var username = document.getElementById("username").value.trim().replace(/^@/, '');
+    if (!username) {
+      Swal.fire({
+  iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+  title: '<span style="font-size:19px;font-weight:900;">أدخل اسم المستخدم</span>',
+  html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إدخال اسم المستخدم أولاً</div>',
+  showConfirmButton: true,
+  confirmButtonColor: '#34b3ff',
+  customClass: {
+    popup: 'swal2-border-radius',
+    title: 'swal2-title-custom',
+    icon: 'swal2-icon-custom',
+    confirmButton: 'swal2-btn-custom',
+  }
       });
-
-      showMoreBtn.textContent = showAllOptions ? 'Show less' : 'View all options';
+      return;
     }
-
-    function selectStars(value) {
-      document.getElementById("stars").value = value;
-      document.querySelector(".quantity").textContent = value;
-      updatePreview();
-
-      // Update radio button selection
-      document.querySelectorAll('input[name="stars"]').forEach(radio => {
-        radio.checked = radio.value == value;
+    var stars = parseInt(document.getElementById("stars").value) || 50;
+    var usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+    var egp = Math.round(usd * 50);
+    var fileInput = method === 'vodafone' ? document.getElementById('vf-proof') : document.getElementById('insta-proof');
+    if (!fileInput.files[0]) {
+      Swal.fire({
+  iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+  title: '<span style="font-size:19px;font-weight:900;">ارفق صورة</span>',
+  html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إرفاق صورة إثبات الدفع</div>',
+  showConfirmButton: true,
+  confirmButtonColor: '#34b3ff',
+  customClass: {
+    popup: 'swal2-border-radius',
+    title: 'swal2-title-custom',
+    icon: 'swal2-icon-custom',
+    confirmButton: 'swal2-btn-custom',
+  }
+      });
+      return;
+    }
+    var formData = new FormData();
+    formData.append('username', username);
+    formData.append('stars', stars);
+    formData.append('amountEgp', egp);
+    formData.append('method', method);
+    formData.append('proof', fileInput.files[0]);
+    formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
+    try {
+      await axios.post('https://pandastore-f2yn.onrender.com/order-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      Swal.fire({
+  iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
+  title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
+  html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
+  showConfirmButton: true,
+  confirmButtonColor: '#34b3ff',
+  customClass: {
+    popup: 'swal2-border-radius',
+    title: 'swal2-title-custom',
+    icon: 'swal2-icon-custom',
+    confirmButton: 'swal2-btn-custom',
+  }
+      });
+      document.getElementById('payment-modal').style.display = 'none';
+      document.body.style.overflow = '';
+    } catch (e) {
+      Swal.fire({
+  iconHtml: '<span style="font-size:32px;color:#ff4d4d;">&#10007;</span>',
+  title: '<span style="font-size:19px;font-weight:900;">حدث خطأ</span>',
+  html: '<div style="font-size:15px;color:#ffd6d6;">يرجى المحاولة مرة أخرى</div>',
+  showConfirmButton: true,
+  confirmButtonColor: '#34b3ff',
+  customClass: {
+    popup: 'swal2-border-radius',
+    title: 'swal2-title-custom',
+    icon: 'swal2-icon-custom',
+    confirmButton: 'swal2-btn-custom',
+  }
       });
     }
+  }
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
+  buttonRootId: 'ton-connect-btn-mobile'
+});
 
-    function updatePreview() {
-      const stars = parseInt(document.getElementById("stars").value) || 50;
-      const box = document.getElementById("preview");
+const PRICE_PER_STAR_USD = 0.0157;
+let currentTonUsd = null;
+let showAllOptions = false;
+let isEnglish = true; // notifications language only
 
-      const usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
-      if (currentTonUsd) {
-        const ton = (usd / currentTonUsd).toFixed(5);
-        box.textContent = `${usd}$ ≈ ${ton} TON`;
-      } else {
-        box.textContent = `Price: $${usd}`;
-      }
+// Notifications translations (buy page only)
+const i18n = {
+  minStars: { en: 'Minimum 50 Stars ✏️', ar: 'الحد الأدنى 50 نجمة ✏️' },
+  enterUsername: { en: 'Please enter Telegram username. ✏️', ar: 'من فضلك أدخل اسم مستخدم تيليجرام. ✏️' },
+  connectFirst: { en: 'Please connect your wallet first 🛡️', ar: 'يرجى ربط المحفظة أولاً 🛡️' },
+  priceFail: { en: 'Failed to get TON price, try later. 🌐', ar: 'تعذر جلب سعر TON، حاول لاحقًا. 🌐' },
+  insufficientBalance: (avail, need) => ({ en: `Your balance (${avail} TON) is insufficient. You need ${need} TON.`, ar: `رصيدك (${avail} TON) غير كافٍ. تحتاج ${need} TON.` }),
+  processingTitle: { en: 'Processing your order ⏳', ar: 'جاري معالجة الطلب ⏳' },
+  processingText: { en: 'Please do not leave the page until your order is completed.', ar: 'من فضلك لا تغادر الصفحة قبل إتمام طلبك.' },
+  orderReceivedTitle: { en: 'Order received ✅', ar: 'تم استلام الطلب ✅' },
+  orderWillSend: (stars, user) => ({ en: `${stars} stars will be sent to @${user} within 5-10 minutes.`, ar: `سيتم إرسال ${stars} نجمة إلى @${user} خلال 5-10 دقائق.` }),
+  tryAgain: { en: 'Please try again.', ar: 'يرجى المحاولة مرة أخرى.' },
+  txInsufficient: { en: 'Your wallet does not have enough TON to complete this transaction.', ar: 'محفظتك لا تحتوي على رصيد كافٍ من TON لإتمام العملية.' },
+  txFailed: { en: 'Transaction failed ❌', ar: 'فشلت المعاملة ❌' },
+};
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function () {
+  // Initialize burger menu
+  const burgerBtn = document.getElementById('burger_btn');
+  const mobileMenu = document.getElementById('mobile_menu_container');
+  const closeBtn = document.getElementById('mobile_menu_cross');
+
+  const openMenu = () => {
+    mobileMenu.classList.add('show');
+    const overlay = document.getElementById('mobile_menu_overlay');
+    if (overlay) overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  };
+  const closeMenu = () => {
+    mobileMenu.classList.remove('show');
+    const overlay = document.getElementById('mobile_menu_overlay');
+    if (overlay) overlay.classList.remove('show');
+    document.body.style.overflow = '';
+  };
+  if (burgerBtn) burgerBtn.addEventListener('click', openMenu);
+  if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+  const overlayEl = document.getElementById('mobile_menu_overlay');
+  if (overlayEl) overlayEl.addEventListener('click', closeMenu);
+
+  // Hide all second options by default
+  document.querySelectorAll('.tm-second-option').forEach(option => {
+    option.style.display = 'none';
+  });
+
+  // Select 50 stars by default
+  selectStars(50);
+
+  // Fetch TON price
+  fetchTonPrice();
+
+  // Notifications language switcher (navbar & mobile)
+  const langBtn = document.getElementById('language-switcher');
+  const langBtnMobile = document.getElementById('language-switcher-mobile');
+  const toggleLang = () => {
+    isEnglish = !isEnglish;
+    const label = isEnglish ? 'AR / EN' : 'EN / AR';
+    if (langBtn) langBtn.textContent = label;
+    if (langBtnMobile) langBtnMobile.textContent = label;
+  };
+  if (langBtn) langBtn.addEventListener('click', toggleLang);
+  if (langBtnMobile) langBtnMobile.addEventListener('click', toggleLang);
+});
+
+async function fetchTonPrice() {
+  try {
+    const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd");
+    currentTonUsd = res.data["the-open-network"].usd;
+    updatePreview();
+  } catch (e) {
+    console.warn("Failed to fetch TON price for preview");
+  }
+}
+
+async function checkWalletBalance(requiredTon) {
+  try {
+    const walletConnection = tonConnectUI.wallet;
+    if (!walletConnection || !walletConnection.account) {
+      tonConnectUI.connectWallet();
+  return { success: false, message: (isEnglish ? i18n.connectFirst.en : i18n.connectFirst.ar) };
     }
 
-    async function encodeComment(comment) {
-      try {
-        // Create new cell
-        const cell = new TonWeb.boc.Cell();
+    const response = await axios.get(`https://toncenter.com/api/v2/getAddressBalance?address=${walletConnection.account.address}`);
+    const availableBalance = parseFloat(response.data.result) / 1e9;
 
-        // Write 32-bit zero (op=0 for simple comments)
-        cell.bits.writeUint(0, 32);
-
-        // Write comment as UTF-8
-        cell.bits.writeString(comment);
-
-        // Convert cell to BOC (Bag of Cells)
-        const boc = await TonWeb.boc.Cell.toBoc(cell);
-
-        // Convert BOC to base64
-        return btoa(String.fromCharCode.apply(null, new Uint8Array(boc)));
-      } catch (e) {
-        console.error('Failed to encode comment:', e);
-        return ''; // Return empty payload if encoding fails
-      }
-    }
-
-    async function submitOrder() {
-      const username = document.getElementById("username").value.trim().replace(/^@/, '');
-      const stars = parseInt(document.getElementById("stars").value) || 50;
-
-      // Validate minimum stars
-      if (stars < 50) { notify.toast(isEnglish ? i18n.minStars.en : i18n.minStars.ar, 'error'); return; }
-
-      if (!username) { notify.toast(isEnglish ? i18n.enterUsername.en : i18n.enterUsername.ar, 'error'); return; }
-
-      // Check wallet connection first
-      const walletConnection = tonConnectUI.wallet;
-      if (!walletConnection || !walletConnection.account) {
-        // Open wallet connection modal directly
-        tonConnectUI.connectWallet();
-        return;
-      }
-
-      const amountUSD = stars * PRICE_PER_STAR_USD;
-      let tonUsd = currentTonUsd;
-
-      if (!tonUsd) {
-        try {
-          // Try with timeout; on failure, fallback to 5.0 USD/TON silently
-          const r = await axios.get(
-            "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
-            { timeout: 6000 }
-          );
-          tonUsd = r.data["the-open-network"].usd;
-        } catch (e) {
-          tonUsd = 5.0; // local-dev fallback
-        }
-      }
-
-      const requiredTon = amountUSD / tonUsd;
-
-      // Check wallet balance
-      const balanceCheck = await checkWalletBalance(requiredTon);
-      if (!balanceCheck.success) { notify.toast(balanceCheck.message || 'Insufficient Balance 💰', 'error'); return; }
-
-      // If balance is sufficient, proceed with transaction
-      const tonAmountN = BigInt(Math.ceil(requiredTon * 1e9));
-      const refNumber = 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase();
-
-      // No payload/comment to maximize wallet compatibility
-      // Some wallets reject transactions with any payload/comment attached.
-      const tx = {
-        validUntil: Math.floor(Date.now() / 1000) + 300,
-        messages: [{
-          address: "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN",
-          amount: tonAmountN.toString()
-        }]
+    if (availableBalance < requiredTon) {
+      return {
+        success: false,
+        message: (isEnglish
+          ? i18n.insufficientBalance(availableBalance.toFixed(2), requiredTon.toFixed(2)).en
+          : i18n.insufficientBalance(availableBalance.toFixed(2), requiredTon.toFixed(2)).ar)
       };
-
-      try {
-        try {
-          const result = await tonConnectUI.sendTransaction(tx);
-        } catch (transactionError) {
-          console.error('Transaction error:', transactionError);
-          notify.toast((isEnglish ? i18n.txFailed.en : i18n.txFailed.ar), 'error');
-          return;
-        }
-
-        // Show persistent loading modal with localized text
-        notify.loading(
-          (isEnglish ? i18n.processingTitle.en : i18n.processingTitle.ar),
-          (isEnglish ? i18n.processingText.en : i18n.processingText.ar)
-        );
-
-        try {
-          // اجلب معرف تيليجرام إن وجد ليسجل عمولة الإحالة بنظام البوت
-          let tgId = null; try { tgId = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe?.user?.id) || JSON.parse(localStorage.getItem('tg_user') || 'null')?.id || null; } catch { }
-          await axios.post("/order", {
-            username,
-            stars,
-            amountTon: (requiredTon).toFixed(5),
-            amountUsd: amountUSD.toFixed(2),
-            refNumber: refNumber,
-            tgId
-          });
-        } catch (err) {
-          // Even if logging fails, proceed with success for user UX
-          console.warn('Order logging failed, proceeding to success UX:', err);
-        } finally {
-          // Close the loading modal in all cases after attempt
-          if (window.notify && typeof notify.close === 'function') notify.close();
-        }
-
-        // Localized success message
-        const successMsg = (isEnglish
-          ? i18n.orderWillSend(stars, username).en
-          : i18n.orderWillSend(stars, username).ar);
-        notify.toast(successMsg, 'success');
-
-      } catch (error) {
-        console.error('Transaction error:', error);
-
-        let errorMessage = (isEnglish ? i18n.tryAgain.en : i18n.tryAgain.ar);
-        if (error && typeof error.message === 'string' && error.message.includes('Insufficient balance')) {
-          errorMessage = (isEnglish ? i18n.txInsufficient.en : i18n.txInsufficient.ar);
-        }
-
-        notify.toast(errorMessage || (isEnglish ? i18n.txFailed.en : i18n.txFailed.ar), 'error');
-      }
     }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Balance check error:', error);
+    return {
+      success: false,
+      message: (isEnglish ? i18n.tryAgain.en : i18n.tryAgain.ar)
+    };
+  }
+}
+
+function toggleMoreOptions() {
+  showAllOptions = !showAllOptions;
+  const hiddenOptions = document.querySelectorAll('.tm-second-option');
+  const showMoreBtn = document.getElementById('show-more-btn');
+
+  hiddenOptions.forEach(option => {
+    option.style.display = showAllOptions ? 'block' : 'none';
+  });
+
+  showMoreBtn.textContent = showAllOptions ? 'Show less' : 'View all options';
+}
+
+function selectStars(value) {
+  document.getElementById("stars").value = value;
+  document.querySelector(".quantity").textContent = value;
+  updatePreview();
+
+  // Update radio button selection
+  document.querySelectorAll('input[name="stars"]').forEach(radio => {
+    radio.checked = radio.value == value;
+  });
+}
+
+function updatePreview() {
+  const stars = parseInt(document.getElementById("stars").value) || 50;
+  const box = document.getElementById("preview");
+
+  const usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+  if (currentTonUsd) {
+    const ton = (usd / currentTonUsd).toFixed(5);
+    box.textContent = `${usd}$ ≈ ${ton} TON`;
+  } else {
+    box.textContent = `Price: $${usd}`;
+  }
+}
+
+async function encodeComment(comment) {
+  try {
+    // Create new cell
+    const cell = new TonWeb.boc.Cell();
+
+    // Write 32-bit zero (op=0 for simple comments)
+    cell.bits.writeUint(0, 32);
+
+    // Write comment as UTF-8
+    cell.bits.writeString(comment);
+
+    // Convert cell to BOC (Bag of Cells)
+    const boc = await TonWeb.boc.Cell.toBoc(cell);
+
+    // Convert BOC to base64
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(boc)));
+  } catch (e) {
+    console.error('Failed to encode comment:', e);
+    return ''; // Return empty payload if encoding fails
+  }
+}
+
+// Overwrite the Buy button to open the modal for payment method selection
+document.querySelector('.btn-buy').setAttribute('onclick', 'openPaymentModal()');
+
+async function submitOrder() {
+  const username = document.getElementById("username").value.trim().replace(/^@/, '');
+  const stars = parseInt(document.getElementById("stars").value) || 50;
+
+  // Validate minimum stars
+  if (stars < 50) { notify.toast(isEnglish ? i18n.minStars.en : i18n.minStars.ar,'error'); return; }
+
+  if (!username) { notify.toast(isEnglish ? i18n.enterUsername.en : i18n.enterUsername.ar,'error'); return; }
+
+  // Check wallet connection first
+  const walletConnection = tonConnectUI.wallet;
+  if (!walletConnection || !walletConnection.account) {
+    // Open wallet connection modal directly
+    tonConnectUI.connectWallet();
+    return;
+  }
+
+  const amountUSD = stars * PRICE_PER_STAR_USD;
+  let tonUsd = currentTonUsd;
+
+  if (!tonUsd) {
+    try {
+      // Try with timeout; on failure, fallback to 5.0 USD/TON silently
+      const r = await axios.get(
+        "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
+        { timeout: 6000 }
+      );
+      tonUsd = r.data["the-open-network"].usd;
+    } catch (e) {
+      tonUsd = 5.0; // local-dev fallback
+    }
+  }
+
+  const requiredTon = amountUSD / tonUsd;
+
+  // Check wallet balance
+  const balanceCheck = await checkWalletBalance(requiredTon);
+  if (!balanceCheck.success) { notify.toast(balanceCheck.message || 'Insufficient Balance 💰','error'); return; }
+
+  // If balance is sufficient, proceed with transaction
+  const tonAmountN = BigInt(Math.ceil(requiredTon * 1e9));
+  const refNumber = 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase();
+
+  // No payload/comment to maximize wallet compatibility
+  // Some wallets reject transactions with any payload/comment attached.
+  const tx = {
+    validUntil: Math.floor(Date.now() / 1000) + 300,
+    messages: [{
+      address: "UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN",
+      amount: tonAmountN.toString()
+    }]
+  };
+
+  try {
+    try {
+      const result = await tonConnectUI.sendTransaction(tx);
+    } catch (transactionError) {
+      console.error('Transaction error:', transactionError);
+      notify.toast((isEnglish ? i18n.txFailed.en : i18n.txFailed.ar), 'error');
+      return;
+    }
+
+    // Show persistent loading modal with localized text
+    notify.loading(
+      (isEnglish ? i18n.processingTitle.en : i18n.processingTitle.ar),
+      (isEnglish ? i18n.processingText.en : i18n.processingText.ar)
+    );
+
+    try {
+      await axios.post("https://pandastore-f2yn.onrender.com/order", {
+        username,
+        stars,
+        amountTon: (requiredTon).toFixed(5),
+        amountUsd: amountUSD.toFixed(2),
+        refNumber: refNumber
+      });
+    } catch (err) {
+      // Even if logging fails, proceed with success for user UX
+      console.warn('Order logging failed, proceeding to success UX:', err);
+    } finally {
+      // Close the loading modal in all cases after attempt
+      if (window.notify && typeof notify.close === 'function') notify.close();
+    }
+
+    // Localized success message
+    const successMsg = (isEnglish
+      ? i18n.orderWillSend(stars, username).en
+      : i18n.orderWillSend(stars, username).ar);
+    notify.toast(successMsg, 'success');
+
+  } catch (error) {
+    console.error('Transaction error:', error);
+
+    let errorMessage = (isEnglish ? i18n.tryAgain.en : i18n.tryAgain.ar);
+    if (error && typeof error.message === 'string' && error.message.includes('Insufficient balance')) {
+      errorMessage = (isEnglish ? i18n.txInsufficient.en : i18n.txInsufficient.ar);
+    }
+
+    notify.toast(errorMessage || (isEnglish ? i18n.txFailed.en : i18n.txFailed.ar), 'error');
+  }
+}
   </script>
 </body>
 
