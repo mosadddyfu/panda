@@ -5,6 +5,7 @@ require('dotenv').config(); // يمكن حذفه إذا كنت تستخدم Rend
 const { Client } = require('pg');
 const express = require('express');
 const upload = require('./upload');
+const app = express();
 const pgClient = new Client({
   connectionString: 'postgresql://data_k7hh_user:a4rANFLml8luQBejgZ7nq4mDj2wvWWeT@dpg-d259o063jp1c73d43is0-a.oregon-postgres.render.com/data_k7hh',
   ssl: { rejectUnauthorized: false }
@@ -71,7 +72,7 @@ app.post('/order-alt', upload.single('proof'), async (req, res) => {
 });
 
 // 3. إنشاء تطبيق Express
-const app = express();
+
 // Base URL for web pages opened from Telegram buttons (configurable)
 const WEB_BASE = process.env.WEB_BASE || 'https://pandastore-f2yn.onrender.com';
 
