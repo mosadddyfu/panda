@@ -19,14 +19,104 @@
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <!-- SweetAlert2 Library -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="assets/alerts-theme.css" />
-    <script defer src="assets/alerts-theme.js"></script>
+  <link rel="stylesheet" href="assets/alerts-theme.css" />
+  <script defer src="assets/alerts-theme.js"></script>
   <!-- Font Awesome for gear icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- TonWeb Library for BOC encoding -->
   <script src="https://unpkg.com/@ton/ton@latest/dist/ton.min.js"></script>
 
   <style>
+    /* رفع ملف عصري */
+    .custom-file-input {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 260px;
+    }
+    .custom-file-input input[type="file"] {
+      opacity: 0;
+      width: 100%;
+      height: 38px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .custom-file-label {
+      display: block;
+      background: #232f4b;
+      color: #ffe082;
+      border: 1.5px solid #2e3c5c;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: right;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+      min-width: 120px;
+      z-index: 1;
+    }
+    .custom-file-input input[type="file"]:focus + .custom-file-label,
+    .custom-file-input input[type="file"]:hover + .custom-file-label {
+      background: #2e3c5c;
+      color: #fff;
+    }
+    .custom-file-input .file-chosen {
+      color: #ffe082;
+      font-size: 14px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    /* تفاصيل الدفع */
+    .pay-details-box {
+      background: #19233a;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px #0002;
+      padding: 18px 12px 10px 12px;
+      margin: 18px auto 10px auto;
+      max-width: 420px;
+      color: #ffe082;
+      font-size: 17px;
+      text-align: right;
+      border: 1.5px solid #2e3c5c;
+    }
+    .pay-details-box label {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .pay-details-box input[type="file"] {
+      background: #232f4b;
+      border-radius: 8px;
+      color: #ffe082;
+      border: 1px solid #2e3c5c;
+      padding: 6px 8px;
+      margin-top: 6px;
+      width: 100%;
+    }
+    /* زر النسخ */
+    .copy-btn {
+      background: linear-gradient(90deg, #ffd76a 60%, #ffe082 100%);
+      color: #222;
+      border: none;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 3px 16px 3px 16px;
+      margin-right: 7px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 1px 4px #0001;
+    }
+    .copy-btn:hover {
+      background: #ffe082;
+      color: #000;
+    }
     body {
       font-family: 'Cairo', sans-serif;
       background: linear-gradient(135deg, #1e2a47 0%, #0e1830 100%);
@@ -662,14 +752,97 @@
     </div>
   </div>
 
+  <!-- Premium GIF Large Banner -->
+  <div class="premium-gif-top">
+    <img src="/assets/prem.gif" alt="Premium" />
+  </div>
   <h1 class="section-title" id="main-title">اشترِ تليجرام بريميوم</h1><br>
   <p class="section-sub" id="sub-title">اشترك لنفسك أو لأصدقائك</p>
+  <style>
+    .premium-gif-top {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 12px auto;
+      width: 100%;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .premium-gif-top img {
+      height: 140px;
+      width: auto;
+      max-width: 90vw;
+      border-radius: 0;
+      background: transparent !important;
+      box-shadow: none;
+      display: block;
+      margin: 0 auto;
+      pointer-events: none;
+    }
+
+    @media (max-width: 600px) {
+      .premium-gif-top img {
+        height: 80px;
+      }
+    }
+  </style>
+
+  <!-- Premium GIF Banner -->
 
   <div class="container">
+    <style>
+      .premium-gif-banner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 32px auto 0 auto;
+        width: 100%;
+        max-width: 400px;
+        height: 120px;
+        background: transparent;
+        pointer-events: none;
+      }
+
+      .premium-gif-banner img {
+        height: 110px;
+        width: auto;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        background: transparent;
+        pointer-events: none;
+        display: block;
+        margin: 0 auto;
+      }
+
+      @media (max-width: 600px) {
+        .premium-gif-banner {
+          max-width: 220px;
+          height: 70px;
+          margin-top: 18px;
+        }
+
+        .premium-gif-banner img {
+          height: 60px;
+        }
+      }
+    </style>
     <label id="username-label">Telegram username</label>
     <input type="text" placeholder="@username" id="username" required /><br>
     <label id="plan-label">اختر خطة الاشتراك:</label>
     <div class="premium-options">
+      <div class="premium-option">
+        <div class="plan-hero"><img src="/assets/1month.png" alt="شهر واحد" /></div>
+        <h3 id="plan-1-title">شهر واحد</h3>
+        <div class="premium-details">
+          <span id="plan-1-price" class="premium-price">$5.00</span>
+          <span id="plan-1-ton" class="ton-val"></span>
+        </div>
+        <ul id="plan-1-features" class="benefits"></ul>
+        <div class="actions">
+          <button class="btn btn-buy" onclick="openPaymentModalWithPlan(1,5)">شراء الآن</button>
+        </div>
+      </div>
       <div class="premium-option">
         <div class="plan-hero"><img src="/assets/3month.png" alt="3 أشهر" /></div>
         <h3 id="plan-3-title">3 أشهر</h3>
@@ -679,7 +852,7 @@
         </div>
         <ul id="plan-3-features" class="benefits"></ul>
         <div class="actions">
-          <button class="btn btn-buy" onclick="buyNow(3,13)">شراء الآن</button>
+          <button class="btn btn-buy" onclick="openPaymentModalWithPlan(3,13)">شراء الآن</button>
         </div>
       </div>
       <div class="premium-option">
@@ -691,7 +864,7 @@
         </div>
         <ul id="plan-6-features" class="benefits"></ul>
         <div class="actions">
-          <button class="btn btn-buy" onclick="buyNow(6,17)">شراء الآن</button>
+          <button class="btn btn-buy" onclick="openPaymentModalWithPlan(6,17)">شراء الآن</button>
         </div>
       </div>
       <div class="premium-option">
@@ -703,30 +876,221 @@
         </div>
         <ul id="plan-12-features" class="benefits"></ul>
         <div class="actions">
-          <button class="btn btn-buy" onclick="buyNow(12,30)">شراء الآن</button>
+          <button class="btn btn-buy" onclick="openPaymentModalWithPlan(12,30)">شراء الآن</button>
         </div>
       </div>
     </div>
 
-    <button class="buy-btn" id="buy-btn" onclick="submitOrder()">اشترك الآن</button>
-  </div>
-
-  <!-- Preview Modal -->
-  <div id="preview_backdrop" class="preview-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="preview-modal" role="document">
-      <div class="preview-header">
-        <div class="preview-title" id="preview_title">Premium</div>
-        <button class="preview-close" id="preview_close" aria-label="Close">×</button>
+    <button class="buy-btn" id="buy-btn" onclick="openPaymentModal()">اشترك الآن</button>
+    <!-- نافذة اختيار طريقة الدفع -->
+    <!-- نافذة دفع جديدة واضحة جداً -->
+    <div id="payment-modal" style="display:none;position:fixed;z-index:3000;inset:0;background:rgba(10,20,40,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+      <div style="background:#181f2e;border-radius:20px;max-width:370px;width:95vw;padding:28px 18px 22px 18px;box-shadow:0 8px 40px #000a,0 0 0 2px #ffd76a22;position:relative;">
+        <button onclick="closePaymentModal()" style="position:absolute;top:12px;left:12px;background:none;border:none;font-size:28px;color:#ffd76a;font-weight:bold;cursor:pointer;">×</button>
+        <h2 style="color:#ffd76a;text-align:center;font-size:22px;font-weight:900;margin-bottom:24px;">اختر طريقة الدفع</h2>
+        <div style="display:flex;flex-direction:column;gap:18px;align-items:stretch;">
+          <button onclick="payWithTON()" style="background:linear-gradient(90deg,#34b3ff,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #34b3ff44;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;"> <i class='fa-brands fa-telegram-plane' style='font-size:22px;'></i> الدفع عبر TON</button>
+          <button onclick="showVodafoneCash()" style="background:linear-gradient(90deg,#e60000,#ff7a59);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #e6000044;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+            <img src="assets/vodafone.png" alt="vodafone" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> فودافون كاش
+          </button>
+          <button onclick="showInstaPay()" style="background:linear-gradient(90deg,#4a90e2,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #4a90e244;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+            <img src="assets/instapay.png" alt="instapay" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> InstaPay
+          </button>
+        </div>
+        <div id="alt-pay-details" style="margin-top:28px;display:none;text-align:right;"></div>
       </div>
-      <div class="preview-body">
-        <div class="preview-hero"><img id="preview_img" src="" alt="" /></div>
+    </div>
+    <script>
+      // نافذة اختيار طريقة الدفع
+      function openPaymentModal() {
+        document.getElementById('payment-modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.getElementById('alt-pay-details').style.display = 'none';
+        document.getElementById('alt-pay-details').innerHTML = '';
+      }
+      function closePaymentModal() {
+        document.getElementById('payment-modal').style.display = 'none';
+        document.body.style.overflow = '';
+      }
+      // TON
+      function payWithTON() {
+        document.getElementById('payment-modal').style.display = 'none';
+        document.body.style.overflow = '';
+        submitOrder();
+      }
+      // فودافون كاش
+      function showVodafoneCash() {
+        var usd = selectedPrice || 5;
+        var egp = Math.round(usd * 50);
+        var html = `<div class='pay-details-box'>
+          <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
+          <div style='margin-bottom:10px;'>رقم فودافون كاش: <span id='vf-number' style='font-weight:700;font-size:17px;'>01099174529</span> <button onclick='copyText("01099174529")' class='copy-btn'>نسخ</button></div>
+          <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
+            <span class="custom-file-input">
+              <input type="file" id="vf-proof" accept="image/*" onchange="updateFileLabel(this, 'vf-file-label')">
+              <span class="custom-file-label" id="vf-file-label">اختر ملف</span>
+            </span>
+            <span class="file-chosen" id="vf-file-chosen"></span>
+          </div>
+          <button class='btn btn-buy' style='width:100%;margin-top:10px;' onclick='submitAltPayment("vodafone")'>إرسال الطلب</button>
+        </div>`;
+        showAltPayDetails(html);
+      }
+      // انستا باي
+      function showInstaPay() {
+        var usd = selectedPrice || 5;
+        var egp = Math.round(usd * 50);
+        var html = `<div class='pay-details-box'>
+          <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
+          <div style='margin-bottom:10px;'>يوزر InstaPay: <br><span id='insta-user' style='font-weight:700;font-size:17px;'>omarshehata_1@instapay</span>  <button onclick='copyText("omarshehata_1@instapay")' class='copy-btn'>نسخ</button></div>
+          <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
+            <span class="custom-file-input">
+              <input type="file" id="insta-proof" accept="image/*" onchange="updateFileLabel(this, 'insta-file-label')">
+              <span class="custom-file-label" id="insta-file-label">اختر ملف</span>
+            </span>
+            <span class="file-chosen" id="insta-file-chosen"></span>
+          </div>
+          <button class='btn btn-buy' style='width:100%;margin-top:10px;' onclick='submitAltPayment("instapay")'>إرسال الطلب</button>
+        </div>`;
+        showAltPayDetails(html);
+      }
+      function showAltPayDetails(html) {
+        var details = document.getElementById('alt-pay-details');
+        details.innerHTML = html;
+        details.style.display = 'block';
+      }
+      function copyText(txt) {
+      // تحديث اسم الملف المختار
+      function updateFileLabel(input, labelId) {
+        var label = document.getElementById(labelId);
+        var chosen = input.files && input.files.length > 0 ? input.files[0].name : 'لا يوجد ملف';
+        label.textContent = input.files && input.files.length > 0 ? input.files[0].name : 'اختر ملف';
+      }
+        navigator.clipboard.writeText(txt);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          iconHtml: '<span style="font-size:22px;color:#4bb543;">&#10003;</span>',
+          title: '<span style="font-size:15px;font-weight:700;">تم النسخ</span>',
+          showConfirmButton: false,
+          timer: 1200,
+          customClass: {
+            popup: 'swal2-border-radius',
+            title: 'swal2-title-custom',
+            icon: 'swal2-icon-custom',
+          }
+        });
+      }
+      // إرسال الطلب البديل (فودافون/انستا)
+  async function submitAltPayment(method) {
+        var username = document.getElementById("username").value.trim().replace(/^@/, '');
+        if (!username) {
+          Swal.fire({
+            iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+            title: '<span style="font-size:19px;font-weight:900;">أدخل اسم المستخدم</span>',
+            html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إدخال اسم المستخدم أولاً</div>',
+            showConfirmButton: true,
+            confirmButtonColor: '#34b3ff',
+            customClass: {
+              popup: 'swal2-border-radius',
+              title: 'swal2-title-custom',
+              icon: 'swal2-icon-custom',
+              confirmButton: 'swal2-btn-custom',
+            }
+          });
+          return;
+        }
+        var plan = selectedPlan;
+        var price = selectedPrice;
+        var egp = Math.round(price * 50);
+        var fileInput = method === 'vodafone' ? document.getElementById('vf-proof') : document.getElementById('insta-proof');
+        if (!fileInput.files[0]) {
+          Swal.fire({
+            iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+            title: '<span style="font-size:19px;font-weight:900;">ارفق صورة</span>',
+            html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إرفاق صورة إثبات الدفع</div>',
+            showConfirmButton: true,
+            confirmButtonColor: '#34b3ff',
+            customClass: {
+              popup: 'swal2-border-radius',
+              title: 'swal2-title-custom',
+              icon: 'swal2-icon-custom',
+              confirmButton: 'swal2-btn-custom',
+            }
+          });
+          return;
+        }
+        var formData = new FormData();
+        formData.append('username', username);
+        formData.append('months', plan);
+        formData.append('amountEgp', egp);
+        formData.append('method', method);
+        formData.append('proof', fileInput.files[0]);
+        formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
+        try {
+          await axios.post('https://pandastore-f2yn.onrender.com/premium-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+          Swal.fire({
+            iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
+            title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
+            html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
+            showConfirmButton: true,
+            confirmButtonColor: '#34b3ff',
+            customClass: {
+              popup: 'swal2-border-radius',
+              title: 'swal2-title-custom',
+              icon: 'swal2-icon-custom',
+              confirmButton: 'swal2-btn-custom',
+            }
+          });
+          document.getElementById('payment-modal').style.display = 'none';
+          document.body.style.overflow = '';
+      } catch (e) {
+        Swal.fire({
+          iconHtml: '<span style="font-size:32px;color:#ff4d4d;">&#10007;</span>',
+          title: '<span style="font-size:19px;font-weight:900;">حدث خطأ</span>',
+          html: '<div style="font-size:15px;color:#ffd6d6;">يرجى المحاولة مرة أخرى</div>',
+          showConfirmButton: true,
+          confirmButtonColor: '#34b3ff',
+          customClass: {
+            popup: 'swal2-border-radius',
+            title: 'swal2-title-custom',
+            icon: 'swal2-icon-custom',
+            confirmButton: 'swal2-btn-custom',
+          }
+        });
+      }
+    }
+    </script>
+  <style>
+    /* SweetAlert2 تخصيص شكل التنبيه */
+    .swal2-border-radius {
+      border-radius: 18px !important;
+      box-shadow: 0 4px 32px #0003;
+    }
+    .swal2-title-custom {
+      font-size: 20px !important;
+      font-weight: 800 !important;
+      margin-bottom: 0 !important;
+    }
+    .swal2-btn-custom {
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      border-radius: 10px !important;
+      padding: 8px 24px !important;
+      background: linear-gradient(90deg,#34b3ff,#0e1830) !important;
+      color: #fff !important;
+      box-shadow: 0 2px 12px #34b3ff44 !important;
+      border: none !important;
+    }
+    .swal2-icon-custom {
+      margin-bottom: 0 !important;
+    }
+  </style>
+        
         <div class="preview-ton" id="preview_ton"></div>
         <div class="preview-price" id="preview_price"></div>
         <ul class="preview-benefits" id="preview_benefits"></ul>
-        <div class="preview-actions">
-          <button class="btn btn-cancel" id="preview_cancel">Cancel</button>
-          <button class="btn btn-buy" id="preview_confirm">Buy Now</button>
-        </div>
+
       </div>
     </div>
   </div>
@@ -742,12 +1106,12 @@
     let currentTonUsd = null;
     let selectedPlan = null;
     let selectedPrice = null;
-    let isEnglish = true; // Default to Arabic
+    let isEnglish = false; // Default to Arabic
 
     // Complete translations
     const translations = {
       title: {
-        ar: "اشترِ تيليجرام بريميوم",
+        ar: "اشترِ تليجرام بريميوم",
         en: "Buy Telegram Premium"
       },
       subtitle: {
@@ -768,11 +1132,13 @@
       },
       plans: {
         ar: {
+          "1": "شهر واحد",
           "3": "3 شهور",
           "6": "6 شهور",
           "12": "12 شهر"
         },
         en: {
+          "1": "1 Month",
           "3": "3 Months",
           "6": "6 Months",
           "12": "12 Months"
@@ -780,11 +1146,13 @@
       },
       prices: {
         ar: {
+          "1": "5 دولار",
           "3": "13 دولار",
           "6": "17 دولار",
           "12": "30 دولار"
         },
         en: {
+          "1": "$5.00",
           "3": "$13.00",
           "6": "$17.00",
           "12": "$30.00"
@@ -820,11 +1188,13 @@
       },
       features: {
         ar: {
+          "1": ["كل مميزات بريميوم لمدة شهر", "ملحوظة: الشحن يتم عن طريق الدخول لحسابك", "ثقة وأمان بدون فتح أى شات", "بمجرد الطلب سيتم التواصل معك"],
           "3": ["شارة Premium", "تحميل أسرع", "تحويل الصوت إلى نص", "حدود أعلى للقنوات"],
           "6": ["شارة Premium", "تحميل أسرع", "تحويل الصوت إلى نص", "صور بروفايل متحركة"],
           "12": ["جميع مميزات Premium", "مساحة تخزين أكبر", "ملصقات حصرية", "أولوية في الدعم"]
         },
         en: {
+          "1": ["All Premium features for 1 month", "Note: Recharge is done by logging into your account", "Trust & security without opening any chats", "Once requested, we will contact you"],
           "3": ["Premium badge", "Faster downloads", "Voice to text", "Higher channel limits"],
           "6": ["Premium badge", "Faster downloads", "Voice to text", "Animated profile photos"],
           "12": ["All Premium features", "More storage", "Exclusive stickers", "Priority support"]
@@ -932,7 +1302,7 @@
     function updatePlanPrices() {
       if (!currentTonUsd) return;
 
-      const plans = [3, 6, 12];
+      const plans = [1, 3, 6, 12];
       plans.forEach(plan => {
         const price = getPlanPrice(plan);
         const tonAmount = (price / currentTonUsd).toFixed(5);
@@ -945,6 +1315,7 @@
 
     function getPlanPrice(months) {
       switch (months) {
+        case 1: return 5;
         case 3: return 13;
         case 6: return 17;
         case 12: return 30;
@@ -999,11 +1370,10 @@
       const premiumM = document.getElementById('premium-link-mobile'); if (premiumM) premiumM.textContent = translations.premium[isEnglish ? 'en' : 'ar'];
 
       // Update plan titles and prices
-      const plans = [3, 6, 12];
+      const plans = [1, 3, 6, 12];
       plans.forEach(plan => {
         const titleElement = document.getElementById(`plan-${plan}-title`);
         const priceElement = document.getElementById(`plan-${plan}-price`);
-
         if (titleElement) {
           titleElement.textContent = translations.plans[isEnglish ? 'en' : 'ar'][plan];
         }
@@ -1011,10 +1381,9 @@
           priceElement.textContent = translations.prices[isEnglish ? 'en' : 'ar'][plan];
         }
       });
-
       // Update features lists
       const feats = translations.features[isEnglish ? 'en' : 'ar'];
-      [3, 6, 12].forEach(m => {
+      [1, 3, 6, 12].forEach(m => {
         const ul = document.getElementById(`plan-${m}-features`);
         if (ul) {
           ul.innerHTML = '';
@@ -1039,7 +1408,7 @@
       // Highlight selected plan visually
       const cards = document.querySelectorAll('.premium-option');
       cards.forEach(c => c.style.outline = 'none');
-      const idx = { 3: 0, 6: 1, 12: 2 }[months];
+      const idx = { 1: 0, 3: 1, 6: 2, 12: 3 }[months];
       if (typeof idx !== 'undefined' && cards[idx]) {
         cards[idx].style.outline = '2.5px solid #34b3ff';
       }
@@ -1061,7 +1430,7 @@
       // Title
       title.textContent = isEnglish ? translations.plans.en[String(months)] : translations.plans.ar[String(months)];
       // Image
-      const imgMap = { 3: '/assets/3month.png', 6: '/assets/6month.png', 12: '/assets/12month.png' };
+      const imgMap = { 1: '/assets/1month.png', 3: '/assets/3month.png', 6: '/assets/6month.png', 12: '/assets/12month.png' };
       img.src = imgMap[months] || '';
       img.alt = title.textContent;
       // Prices
@@ -1082,7 +1451,7 @@
       document.body.style.overflow = 'hidden';
 
       // Highlight active card
-      const idx = { 3: 0, 6: 1, 12: 2 }[months];
+      const idx = { 1: 0, 3: 1, 6: 2, 12: 3 }[months];
       const cards = document.querySelectorAll('.premium-option');
       cards.forEach(c => c.classList.remove('active'));
       if (typeof idx !== 'undefined' && cards[idx]) cards[idx].classList.add('active');
@@ -1102,9 +1471,9 @@
     async function submitOrder() {
       const username = document.getElementById("username").value.trim().replace(/^@/, '');
 
-  if (!username) { notify.toast(isEnglish ? 'Enter Telegram username. ✏️' : 'أدخل اسم مستخدم تليجرام. ✏️','error'); return; }
+      if (!username) { notify.toast(isEnglish ? 'Enter Telegram username. ✏️' : 'أدخل اسم مستخدم تليجرام. ✏️', 'error'); return; }
 
-  if (!selectedPlan) { notify.toast(isEnglish ? 'Please select a subscription plan. ✏️' : 'الرجاء اختيار خطة اشتراك. ✏️','error'); return; }
+      if (!selectedPlan) { notify.toast(isEnglish ? 'Please select a subscription plan. ✏️' : 'الرجاء اختيار خطة اشتراك. ✏️', 'error'); return; }
 
       const amountUSD = selectedPrice;
 
@@ -1119,7 +1488,7 @@
             tonUsd = 5.0; // local fallback
             notify.toast(isEnglish ? 'Using fallback TON price (local).' : 'استخدام سعر TON افتراضي (محلي).', 'info');
           } else {
-            notify.toast(isEnglish ? 'Failed to get TON price, try later. 🌐' : 'لم يتم جلب سعر TON، حاول لاحقًا. 🌐','error');
+            notify.toast(isEnglish ? 'Failed to get TON price, try later. 🌐' : 'لم يتم جلب سعر TON، حاول لاحقًا. 🌐', 'error');
             return;
           }
         }
@@ -1129,7 +1498,7 @@
 
       // Check wallet balance first
       const balanceCheck = await checkWalletBalance(requiredTon);
-  if (!balanceCheck.success) { notify.toast(balanceCheck.message || (isEnglish ? 'Insufficient Balance 💰' : 'رصيد غير كافٍ 💰'),'error'); return; }
+      if (!balanceCheck.success) { notify.toast(balanceCheck.message || (isEnglish ? 'Insufficient Balance 💰' : 'رصيد غير كافٍ 💰'), 'error'); return; }
 
       const tonAmountN = BigInt(Math.ceil(requiredTon * 1e9));
       const refNumber = 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -1145,7 +1514,7 @@
 
       try {
         const connectedWallet = tonConnectUI.wallet;
-        if (!connectedWallet) { notify.toast(isEnglish ? 'Connect your wallet first 🛡️' : 'اربط محفظتك أولاً 🛡️','warning'); return; }
+        if (!connectedWallet) { notify.toast(isEnglish ? 'Connect your wallet first 🛡️' : 'اربط محفظتك أولاً 🛡️', 'warning'); return; }
 
         const result = await tonConnectUI.sendTransaction(tx);
 
@@ -1184,9 +1553,16 @@
             'محفظتك لا تحتوي على رصيد كافٍ من TON لإتمام هذه العملية.';
         }
 
-  notify.close();
-  notify.toast(errorMessage || (isEnglish ? 'Transaction failed ❌' : 'فشلت المعاملة ❌'),'error');
+        notify.close();
+        notify.toast(errorMessage || (isEnglish ? 'Transaction failed ❌' : 'فشلت المعاملة ❌'), 'error');
       }
+    }
+
+    // أضف دالة جديدة لفتح نافذة الدفع مع تحديد الخطة
+    function openPaymentModalWithPlan(plan, price) {
+      selectedPlan = plan;
+      selectedPrice = price;
+      openPaymentModal();
     }
   </script>
 </body>
