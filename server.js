@@ -4,6 +4,7 @@ require('dotenv').config(); // يمكن حذفه إذا كنت تستخدم Rend
 // 2. استيراد المكتبات
 const { Client } = require('pg');
 const express = require('express');
+const upload = require('./upload');
 const pgClient = new Client({
   connectionString: 'postgresql://data_k7hh_user:a4rANFLml8luQBejgZ7nq4mDj2wvWWeT@dpg-d259o063jp1c73d43is0-a.oregon-postgres.render.com/data_k7hh',
   ssl: { rejectUnauthorized: false }
@@ -17,7 +18,8 @@ pgClient.connect()
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const FormData = require('form-data');
-const upload = require('./upload');
+
+
 
 
 // 3. إنشاء تطبيق Express
