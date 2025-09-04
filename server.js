@@ -27,6 +27,12 @@ const FormData = require('form-data');
 // (تم نقل تعريف app للأعلى)
 
 // نقاط نهاية الدفع البديل للبريميوم والنجوم
+
+const fs = require('fs');
+const path = require('path');
+const PROOF_UPLOADS_DIR = path.join(__dirname, 'public', 'proof_uploads');
+if (!fs.existsSync(PROOF_UPLOADS_DIR)) fs.mkdirSync(PROOF_UPLOADS_DIR, { recursive: true });
+
 app.post('/premium-alt', upload.single('proof'), async (req, res) => {
   try {
     const { username, months, amountEgp, method, refNumber } = req.body;
@@ -34,6 +40,17 @@ app.post('/premium-alt', upload.single('proof'), async (req, res) => {
     if (!username || !months || !amountEgp || !method || !file) {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
     }
+    // حفظ الصورة
+    const proofFilename = `${Date.now()}_${Math.floor(Math.random()*1e6)}_${file.originalname}`;
+    const proofPath = path.join(PROOF_UPLOADS_DIR, proofFilename);
+    fs.writeFileSync(proofPath, file.buffer);
+    // تخزين الطلب في قاعدة البيانات
+    const result = await pgClient.query(
+      `INSERT INTO orders (username, amount_ton, amount_usd, type, premium_months, created_at, completed, proof_url, alt_method, amount_egp, ref_number)
+       VALUES ($1, $2, $3, 'premium', $4, NOW(), false, $5, $6, $7, $8) RETURNING id`,
+      [username, null, null, months, `/proof_uploads/${proofFilename}`, method, amountEgp, refNumber]
+    );
+    // إشعار التليجرام كما كان
     for (let adminId of ADMIN_IDS) {
       const caption = `طلب بريميوم (دفع بديل)\n👤 @${username}\n📅 شهور: ${months}\n💵 المبلغ بالجنيه: ${amountEgp}\n💳 الطريقة: ${method === 'vodafone' ? 'فودافون كاش' : 'InstaPay'}\nرقم الطلب: ${refNumber}`;
       const formData = new FormData();
@@ -49,6 +66,7 @@ app.post('/premium-alt', upload.single('proof'), async (req, res) => {
   }
 });
 
+
 app.post('/order-alt', upload.single('proof'), async (req, res) => {
   try {
     const { username, stars, amountEgp, method, refNumber } = req.body;
@@ -56,6 +74,17 @@ app.post('/order-alt', upload.single('proof'), async (req, res) => {
     if (!username || !stars || !amountEgp || !method || !file) {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
     }
+    // حفظ الصورة
+    const proofFilename = `${Date.now()}_${Math.floor(Math.random()*1e6)}_${file.originalname}`;
+    const proofPath = path.join(PROOF_UPLOADS_DIR, proofFilename);
+    fs.writeFileSync(proofPath, file.buffer);
+    // تخزين الطلب في قاعدة البيانات
+    const result = await pgClient.query(
+      `INSERT INTO orders (username, stars, type, created_at, completed, proof_url, alt_method, amount_egp, ref_number)
+       VALUES ($1, $2, 'stars', NOW(), false, $3, $4, $5, $6) RETURNING id`,
+      [username, stars, `/proof_uploads/${proofFilename}`, method, amountEgp, refNumber]
+    );
+    // إشعار التليجرام كما كان
     for (let adminId of ADMIN_IDS) {
       const caption = `طلب نجوم (دفع بديل)\n👤 @${username}\n⭐️ نجوم: ${stars}\n💵 المبلغ بالجنيه: ${amountEgp}\n💳 الطريقة: ${method === 'vodafone' ? 'فودافون كاش' : 'InstaPay'}\nرقم الطلب: ${refNumber}`;
       const formData = new FormData();
@@ -125,6 +154,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
       );
     `);
 
+
     // جدول عمولات الإحالة (محفظة مرجع + عدد النجوم + العمولة بالدولار + حالة الدفع)
     await pgClient.query(`
       CREATE TABLE IF NOT EXISTS affiliate_commissions (
@@ -137,6 +167,27 @@ const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
+
+    // إضافة أعمدة جديدة لجدول الطلبات إذا لم تكن موجودة
+    const alterOrderColumns = [
+      { name: 'proof_url', type: 'VARCHAR(255)' },
+      { name: 'alt_method', type: 'VARCHAR(32)' },
+      { name: 'amount_egp', type: 'VARCHAR(32)' },
+      { name: 'ref_number', type: 'VARCHAR(32)' }
+    ];
+    for (const col of alterOrderColumns) {
+      await pgClient.query(`
+        DO $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name='orders' AND column_name='${col.name}'
+          ) THEN
+            ALTER TABLE orders ADD COLUMN ${col.name} ${col.type};
+          END IF;
+        END$$;
+      `);
+    }
 
     // إضافة عمود ref_code إذا لم يكن موجودًا لدعم الإحالات عبر البوت
     await pgClient.query(`
