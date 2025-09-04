@@ -122,6 +122,21 @@ const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
 
 // التأكد من وجود جميع الجداول المطلوبة
 (async () => {
+    // تعديل أعمدة amount_ton و amount_usd لتسمح بالقيم الفارغة (NULL) إذا كانت NOT NULL
+    const nullableCols = ["amount_ton", "amount_usd"];
+    for (const col of nullableCols) {
+      await pgClient.query(`
+        DO $$
+        BEGIN
+          IF EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name='orders' AND column_name='${col}' AND is_nullable='NO'
+          ) THEN
+            EXECUTE 'ALTER TABLE orders ALTER COLUMN ${col} DROP NOT NULL';
+          END IF;
+        END$$;
+      `);
+    }
   try {
     // جدول الاحالات
     await pgClient.query(`
