@@ -522,6 +522,13 @@
       const amountTon = order.amount_ton ? `${order.amount_ton} TON` : "--";
       const createdAt = order.created_at ? new Date(order.created_at).toLocaleString("ar-EG") : "--";
 
+      // إذا كان الطلب دفع بديل (alt_method موجود) أضف عمود إثبات الدفع
+      let proofCell = '';
+      if (order.proof_url && order.alt_method) {
+        proofCell = `<td><a href="${order.proof_url}" target="_blank" style="color:#ffd76a;font-weight:700;">صورة الإثبات</a></td>`;
+      } else {
+        proofCell = '<td></td>';
+      }
       if (type === 'stars') {
         row.innerHTML = `
         <td>@${username}</td>
@@ -529,6 +536,7 @@
         <td>${amountUsd}</td>
         <td>${amountTon}</td>
         <td>${createdAt}</td>
+        ${proofCell}
         ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order.id}', '${type}')">تم التنفيذ</button></td>` : ''}
       `;
       } else {
@@ -538,6 +546,7 @@
         <td>${amountUsd}</td>
         <td>${amountTon}</td>
         <td>${createdAt}</td>
+        ${proofCell}
         ${!order.completed ? `<td><button class="action-btn" onclick="completeOrder('${order.id}', '${type}')">تم التنفيذ</button></td>` : ''}
       `;
       }
