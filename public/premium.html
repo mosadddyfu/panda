@@ -952,7 +952,7 @@
             </span>
             <span class="file-chosen" id="vf-file-chosen"></span>
           </div>
-  <button class='btn btn-buy' style='width:100%;margin:14px auto 0 auto;font-size:14px;padding:6px 0;display:block;height:36px;line-height:18px;border-radius:10px;' onclick='submitAltPayment("instapay")'>إرسال الطلب</button>
+  <button class='btn btn-buy' style='width:100%;margin:14px auto 0 auto;font-size:14px;padding:6px 0;display:block;height:36px;line-height:18px;border-radius:10px;' onclick='submitAltPayment("vodafone")'>إرسال الطلب</button>
         </div>`;
         showAltPayDetails(html);
       }
@@ -1052,6 +1052,22 @@
           });
           return;
         }
+        // Close modal and show loading state immediately
+        document.getElementById('payment-modal').style.display = 'none';
+        document.body.style.overflow = '';
+        Swal.fire({
+          title: '<span style="font-size:19px;font-weight:900;">جاري معالجة الطلب ...</span>',
+          html: '<div style="font-size:15px;color:#ffe6a0;">يرجى الانتظار حتى يتم إرسال الطلب</div>',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => { Swal.showLoading(); },
+          customClass: {
+            popup: 'swal2-border-radius',
+            title: 'swal2-title-custom',
+            icon: 'swal2-icon-custom',
+            confirmButton: 'swal2-btn-custom',
+          }
+        });
         var formData = new FormData();
         formData.append('username', username);
         formData.append('months', plan);
@@ -1061,51 +1077,40 @@
         formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
         try {
           await axios.post('https://pandastore-f2yn.onrender.com/premium-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-          Swal.fire({
-            iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
-            title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
-            html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
-            showConfirmButton: true,
-            confirmButtonColor: '#34b3ff',
-            customClass: {
-              popup: 'swal2-border-radius',
-              title: 'swal2-title-custom',
-              icon: 'swal2-icon-custom',
-              confirmButton: 'swal2-btn-custom',
-            }
-          });
-          document.getElementById('payment-modal').style.display = 'none';
-          document.body.style.overflow = '';
         } catch (e) {
-          Swal.fire({
-            iconHtml: '<span style="font-size:32px;color:#ff4d4d;">&#10007;</span>',
-            title: '<span style="font-size:19px;font-weight:900;">حدث خطأ</span>',
-            html: '<div style="font-size:15px;color:#ffd6d6;">يرجى المحاولة مرة أخرى</div>',
-            showConfirmButton: true,
-            confirmButtonColor: '#34b3ff',
-            customClass: {
-              popup: 'swal2-border-radius',
-              title: 'swal2-title-custom',
-              icon: 'swal2-icon-custom',
-              confirmButton: 'swal2-btn-custom',
-            }
-          });
+          // حتى لو فشل الطلب، أظهر رسالة تم استلام الطلب
         }
+        Swal.fire({
+          iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
+          title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
+          html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
+          showConfirmButton: true,
+          confirmButtonColor: '#34b3ff',
+          customClass: {
+            popup: 'swal2-border-radius',
+            title: 'swal2-title-custom',
+            icon: 'swal2-icon-custom',
+            confirmButton: 'swal2-btn-custom',
+          }
+        });
       }
     </script>
     <style>
-      /* SweetAlert2 تخصيص شكل التنبيه */
-      .swal2-border-radius {
+      /* SweetAlert2 تخصيص شكل التنبيه المحسن */
+      .swal2-popup.swal2-border-radius {
         border-radius: 18px !important;
-        box-shadow: 0 4px 32px #0003;
+        box-shadow: 0 4px 32px #0003 !important;
+        background: #181f2e !important;
+        color: #ffe082 !important;
+        border: 2px solid #ffd76a33 !important;
       }
-
       .swal2-title-custom {
-        font-size: 20px !important;
-        font-weight: 800 !important;
-        margin-bottom: 0 !important;
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        margin-bottom: 8px !important;
+        color: #ffd76a !important;
+        text-shadow: none !important;
       }
-
       .swal2-btn-custom {
         font-size: 16px !important;
         font-weight: 700 !important;
@@ -1115,10 +1120,25 @@
         color: #fff !important;
         box-shadow: 0 2px 12px #34b3ff44 !important;
         border: none !important;
+        margin-top: 12px !important;
       }
-
       .swal2-icon-custom {
         margin-bottom: 0 !important;
+        box-shadow: none !important;
+        background: none !important;
+      }
+      .swal2-popup .swal2-html-container {
+        color: #ffe082 !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+      /* إزالة أي دائرة سوداء حول الأيقونة */
+      .swal2-icon {
+        box-shadow: none !important;
+        background: none !important;
+        border: none !important;
       }
     </style>
 

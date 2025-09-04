@@ -1,3 +1,15 @@
+<script>
+// تحديث أسعار الأزرار تلقائيًا حسب قاعدة السعر
+function updateButtonPrices() {
+  const options = [50, 75, 100, 150, 250, 350, 500, 750, 1000, 1500, 2500, 5000, 10000];
+  options.forEach(stars => {
+    const price = (stars * getStarPrice(stars)).toFixed(2);
+    const label = document.querySelector(`#option-${stars} .pack-price`);
+    if (label) label.textContent = `$${price}`;
+  });
+}
+document.addEventListener('DOMContentLoaded', updateButtonPrices);
+</script>
 <!DOCTYPE html>
 <html lang="en" dir="ltr" id="htmlElement">
 
@@ -1037,7 +1049,7 @@
   }
   function showVodafoneCash() {
     var stars = parseInt(document.getElementById("stars").value) || 50;
-    var usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+  var usd = (stars * getStarPrice(stars)).toFixed(2);
     var egp = Math.round(usd * 50);
     var html = `<div class='pay-details-box'>
       <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
@@ -1055,7 +1067,7 @@
   }
   function showInstaPay() {
     var stars = parseInt(document.getElementById("stars").value) || 50;
-    var usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+  var usd = (stars * getStarPrice(stars)).toFixed(2);
     var egp = Math.round(usd * 50);
     var html = `<div class='pay-details-box'>
       <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
@@ -1117,40 +1129,56 @@ function updateFileLabel(input, labelId) {
     var username = document.getElementById("username").value.trim().replace(/^@/, '');
     if (!username) {
       Swal.fire({
-  iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
-  title: '<span style="font-size:19px;font-weight:900;">أدخل اسم المستخدم</span>',
-  html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إدخال اسم المستخدم أولاً</div>',
-  showConfirmButton: true,
-  confirmButtonColor: '#34b3ff',
-  customClass: {
-    popup: 'swal2-border-radius',
-    title: 'swal2-title-custom',
-    icon: 'swal2-icon-custom',
-    confirmButton: 'swal2-btn-custom',
-  }
+        iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+        title: '<span style="font-size:19px;font-weight:900;">أدخل اسم المستخدم</span>',
+        html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إدخال اسم المستخدم أولاً</div>',
+        showConfirmButton: true,
+        confirmButtonColor: '#34b3ff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          title: 'swal2-title-custom',
+          icon: 'swal2-icon-custom',
+          confirmButton: 'swal2-btn-custom',
+        }
       });
       return;
     }
     var stars = parseInt(document.getElementById("stars").value) || 50;
-    var usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+    var usd = (stars * getStarPrice(stars)).toFixed(2);
     var egp = Math.round(usd * 50);
     var fileInput = method === 'vodafone' ? document.getElementById('vf-proof') : document.getElementById('insta-proof');
     if (!fileInput.files[0]) {
       Swal.fire({
-  iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
-  title: '<span style="font-size:19px;font-weight:900;">ارفق صورة</span>',
-  html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إرفاق صورة إثبات الدفع</div>',
-  showConfirmButton: true,
-  confirmButtonColor: '#34b3ff',
-  customClass: {
-    popup: 'swal2-border-radius',
-    title: 'swal2-title-custom',
-    icon: 'swal2-icon-custom',
-    confirmButton: 'swal2-btn-custom',
-  }
+        iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+        title: '<span style="font-size:19px;font-weight:900;">ارفق صورة</span>',
+        html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إرفاق صورة إثبات الدفع</div>',
+        showConfirmButton: true,
+        confirmButtonColor: '#34b3ff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          title: 'swal2-title-custom',
+          icon: 'swal2-icon-custom',
+          confirmButton: 'swal2-btn-custom',
+        }
       });
       return;
     }
+    // أغلق النافذة وأظهر شاشة معالجة الطلب
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    Swal.fire({
+      title: '<span style="font-size:19px;font-weight:900;">جاري معالجة الطلب ...</span>',
+      html: '<div style="font-size:15px;color:#ffe6a0;">يرجى الانتظار حتى يتم إرسال الطلب</div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => { Swal.showLoading(); },
+      customClass: {
+        popup: 'swal2-border-radius',
+        title: 'swal2-title-custom',
+        icon: 'swal2-icon-custom',
+        confirmButton: 'swal2-btn-custom',
+      }
+    });
     var formData = new FormData();
     formData.append('username', username);
     formData.append('stars', stars);
@@ -1160,43 +1188,32 @@ function updateFileLabel(input, labelId) {
     formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
     try {
       await axios.post('https://pandastore-f2yn.onrender.com/order-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      Swal.fire({
-  iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
-  title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
-  html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
-  showConfirmButton: true,
-  confirmButtonColor: '#34b3ff',
-  customClass: {
-    popup: 'swal2-border-radius',
-    title: 'swal2-title-custom',
-    icon: 'swal2-icon-custom',
-    confirmButton: 'swal2-btn-custom',
-  }
-      });
-      document.getElementById('payment-modal').style.display = 'none';
-      document.body.style.overflow = '';
     } catch (e) {
-      Swal.fire({
-  iconHtml: '<span style="font-size:32px;color:#ff4d4d;">&#10007;</span>',
-  title: '<span style="font-size:19px;font-weight:900;">حدث خطأ</span>',
-  html: '<div style="font-size:15px;color:#ffd6d6;">يرجى المحاولة مرة أخرى</div>',
-  showConfirmButton: true,
-  confirmButtonColor: '#34b3ff',
-  customClass: {
-    popup: 'swal2-border-radius',
-    title: 'swal2-title-custom',
-    icon: 'swal2-icon-custom',
-    confirmButton: 'swal2-btn-custom',
-  }
-      });
+      // حتى لو فشل الطلب، أظهر رسالة تم استلام الطلب
     }
+    Swal.fire({
+      iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
+      title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
+      html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
+      showConfirmButton: true,
+      confirmButtonColor: '#34b3ff',
+      customClass: {
+        popup: 'swal2-border-radius',
+        title: 'swal2-title-custom',
+        icon: 'swal2-icon-custom',
+        confirmButton: 'swal2-btn-custom',
+      }
+    });
   }
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
   buttonRootId: 'ton-connect-btn-mobile'
 });
 
-const PRICE_PER_STAR_USD = 0.0157;
+// دالة لحساب سعر النجمة حسب العدد
+function getStarPrice(stars) {
+  return stars <= 1500 ? 0.016 : 0.0158;
+}
 let currentTonUsd = null;
 let showAllOptions = false;
 let isEnglish = true; // notifications language only
@@ -1321,7 +1338,7 @@ function selectStars(value) {
   document.getElementById("stars").value = value;
   document.querySelector(".quantity").textContent = value;
   updatePreview();
-
+  updateButtonPrices();
   // Update radio button selection
   document.querySelectorAll('input[name="stars"]').forEach(radio => {
     radio.checked = radio.value == value;
@@ -1331,14 +1348,14 @@ function selectStars(value) {
 function updatePreview() {
   const stars = parseInt(document.getElementById("stars").value) || 50;
   const box = document.getElementById("preview");
-
-  const usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+  const usd = (stars * getStarPrice(stars)).toFixed(2);
   if (currentTonUsd) {
     const ton = (usd / currentTonUsd).toFixed(5);
     box.textContent = `${usd}$ ≈ ${ton} TON`;
   } else {
     box.textContent = `Price: $${usd}`;
   }
+  updateButtonPrices();
 }
 
 async function encodeComment(comment) {
@@ -1383,7 +1400,7 @@ async function submitOrder() {
     return;
   }
 
-  const amountUSD = stars * PRICE_PER_STAR_USD;
+  const amountUSD = stars * getStarPrice(stars);
   let tonUsd = currentTonUsd;
 
   if (!tonUsd) {
