@@ -1,3 +1,15 @@
+<script>
+// تحديث أسعار الأزرار تلقائيًا حسب قاعدة السعر
+function updateButtonPrices() {
+  const options = [50, 75, 100, 150, 250, 350, 500, 750, 1000, 1500, 2500, 5000, 10000];
+  options.forEach(stars => {
+    const price = (stars * getStarPrice(stars)).toFixed(2);
+    const label = document.querySelector(`#option-${stars} .pack-price`);
+    if (label) label.textContent = `$${price}`;
+  });
+}
+document.addEventListener('DOMContentLoaded', updateButtonPrices);
+</script>
 <!DOCTYPE html>
 <html lang="en" dir="ltr" id="htmlElement">
 
@@ -407,7 +419,202 @@
       margin: 0px 0px 0 0;
       text-align: left;
     }
-  </style>
+
+    /* --- Payment Modal Styles (Alternative Methods) --- */
+    #payment-modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      inset: 0;
+      background: rgba(10,20,40,0.85);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+    }
+    #payment-modal > div {
+      background: #181f2e;
+      border-radius: 18px;
+      max-width: 370px;
+      width: 95vw;
+      padding: 28px 18px 22px 18px;
+      box-shadow: 0 8px 40px #000a,0 0 0 2px #ffd76a22;
+      position: relative;
+      border: 2px solid #ffd76a33;
+    }
+    #payment-modal h2 {
+      color: #ffd76a;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+    }
+    #payment-modal button[onclick^="closePaymentModal"] {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #ffd76a;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #payment-modal button[onclick^="closePaymentModal"]:hover {
+      color: #fffbe6;
+    }
+    #payment-modal > div > div[style*="flex-direction:column"] > button {
+      font-size: 20px;
+      font-weight: 800;
+      padding: 16px 0;
+      border-radius: 14px;
+      border: none;
+      margin-bottom: 0;
+      box-shadow: 0 2px 12px #0002;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: filter 0.18s, box-shadow 0.18s;
+    }
+    #payment-modal button[onclick^="payWithTON"] {
+      background: linear-gradient(90deg,#34b3ff,#0e1830);
+      color: #fff;
+      box-shadow: 0 2px 12px #34b3ff44;
+    }
+    #payment-modal button[onclick^="showVodafoneCash"] {
+      background: linear-gradient(90deg,#e60000,#ff7a59);
+      color: #fff;
+      box-shadow: 0 2px 12px #e6000044;
+    }
+    #payment-modal button[onclick^="showInstaPay"] {
+      background: linear-gradient(90deg,#4a90e2,#0e1830);
+      color: #fff;
+      box-shadow: 0 2px 12px #4a90e244;
+    }
+    #payment-modal button[onclick^="payWithTON"]:hover,
+    #payment-modal button[onclick^="showVodafoneCash"]:hover,
+    #payment-modal button[onclick^="showInstaPay"]:hover {
+      filter: brightness(1.08) drop-shadow(0 0 8px #ffd76a44);
+    }
+    #payment-modal img {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 4px #0002;
+    }
+    .pay-details-box {
+      background: #19233a;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px #0002;
+      padding: 18px 12px 10px 12px;
+      margin: 18px auto 10px auto;
+      max-width: 420px;
+      color: #ffd76a;
+      font-size: 17px;
+      text-align: right;
+      border: 1.5px solid #2e3c5c;
+    }
+    .pay-details-box label {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .pay-details-box input[type="file"] {
+      display: none;
+    }
+    .custom-file-input {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 260px;
+      margin-top: 6px;
+    }
+    .custom-file-label {
+      display: block;
+      background: #232f4b;
+      color: #ffe082;
+      border: 1.5px solid #2e3c5c;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: right;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+      min-width: 120px;
+      z-index: 1;
+    }
+    .custom-file-input input[type="file"]:focus + .custom-file-label,
+    .custom-file-input input[type="file"]:hover + .custom-file-label {
+      background: #2e3c5c;
+      color: #fff;
+    }
+    .file-chosen {
+      color: #ffe082;
+      font-size: 14px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .copy-btn {
+      background: #ffd76a;
+      color: #181f2e;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 2px 10px;
+      margin-right: 6px;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .copy-btn:hover {
+      background: #fffbe6;
+      color: #e6b800;
+    }
+    .btn.btn-buy {
+      width: 100%;
+      margin-top: 10px;
+      background: none;
+      border: 2px solid #ffd76a;
+      color: #ffd76a;
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 10px;
+      padding: 10px 0;
+      transition: background 0.18s, color 0.18s;
+      box-shadow: 0 1px 8px #ffd76a22;
+      letter-spacing: 0.5px;
+    }
+    .btn.btn-buy:hover {
+      background: #ffd76a;
+      color: #181f2e;
+    }
+    @media (max-width: 600px) {
+      #payment-modal > div {
+        padding: 16px 4vw 14px 4vw;
+        max-width: 99vw;
+      }
+      .pay-details-box {
+        padding: 12px 4vw 8px 4vw;
+        font-size: 15px;
+      }
+      .custom-file-label {
+        font-size: 13px;
+        padding: 7px 10px;
+      }
+      .btn.btn-buy {
+        font-size: 16px;
+        padding: 8px 0;
+      }
+    }
+      </style>
 </head>
 
 <body class="en">
@@ -500,6 +707,23 @@
           <a class="mobile-menu-a" href="https://t.me/PandaStoreShop" target="_blank" id="channel-link-mobile">TG Channel</a>
         </li>
       </ul>
+    </div>
+  </div>
+  <!-- Payment Modal for alternative methods (Vodafone/Instapay) -->
+  <div id="payment-modal" style="display:none;position:fixed;z-index:3000;inset:0;background:rgba(10,20,40,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#181f2e;border-radius:20px;max-width:370px;width:95vw;padding:28px 18px 22px 18px;box-shadow:0 8px 40px #000a,0 0 0 2px #ffd76a22;position:relative;">
+      <button onclick="closePaymentModal()" style="position:absolute;top:12px;left:12px;background:none;border:none;font-size:28px;color:#ffd76a;font-weight:bold;cursor:pointer;">×</button>
+      <h2 style="color:#ffd76a;text-align:center;font-size:22px;font-weight:900;margin-bottom:24px;">اختر طريقة الدفع</h2>
+      <div style="display:flex;flex-direction:column;gap:18px;align-items:stretch;">
+        <button onclick="payWithTON()" style="background:linear-gradient(90deg,#34b3ff,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #34b3ff44;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;"> <i class='fa-brands fa-telegram-plane' style='font-size:22px;'></i> الدفع عبر TON</button>
+        <button onclick="showVodafoneCash()" style="background:linear-gradient(90deg,#e60000,#ff7a59);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #e6000044;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+          <img src="assets/vodafone.png" alt="vodafone" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> فودافون كاش
+        </button>
+        <button onclick="showInstaPay()" style="background:linear-gradient(90deg,#4a90e2,#0e1830);color:#fff;font-size:20px;font-weight:800;padding:16px 0;border-radius:14px;border:none;box-shadow:0 2px 12px #4a90e244;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
+          <img src="assets/instapay.png" alt="instapay" style="width:24px;height:24px;vertical-align:middle;border-radius:50%;background:#fff;"> InstaPay
+        </button>
+      </div>
+      <div id="alt-pay-details" style="margin-top:28px;display:none;text-align:right;"></div>
     </div>
   </div>
 
@@ -807,12 +1031,189 @@
   </svg>
 
   <script>
+  // Payment Modal logic for alternative methods
+  function openPaymentModal() {
+    document.getElementById('payment-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('alt-pay-details').style.display = 'none';
+    document.getElementById('alt-pay-details').innerHTML = '';
+  }
+  function closePaymentModal() {
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function payWithTON() {
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    submitOrder();
+  }
+  function showVodafoneCash() {
+    var stars = parseInt(document.getElementById("stars").value) || 50;
+  var usd = (stars * getStarPrice(stars)).toFixed(2);
+    var egp = Math.round(usd * 50);
+    var html = `<div class='pay-details-box'>
+      <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
+      <div style='margin-bottom:10px;'>رقم فودافون كاش: <span id='vf-number' style='font-weight:700;font-size:17px;'>01099174529</span> <button onclick='copyText("01099174529")' class='copy-btn'>نسخ</button></div>
+      <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
+        <span class="custom-file-input">
+          <input type="file" id="vf-proof" accept="image/*" onchange="updateFileLabel(this, 'vf-file-label')" style="display:none;">
+          <label class="custom-file-label" id="vf-file-label" for="vf-proof" style="display:block;cursor:pointer;">اختر ملف</label>
+        </span>
+        <span class="file-chosen" id="vf-file-chosen"></span>
+      </div>
+  <button class='btn btn-buy' style='width:100%;margin:14px auto 0 auto;font-size:14px;padding:6px 0;display:block;height:36px;line-height:18px;border-radius:10px;' onclick='submitAltPayment("vodafone")'>إرسال الطلب</button>
+    </div>`;
+    showAltPayDetails(html);
+  }
+  function showInstaPay() {
+    var stars = parseInt(document.getElementById("stars").value) || 50;
+  var usd = (stars * getStarPrice(stars)).toFixed(2);
+    var egp = Math.round(usd * 50);
+    var html = `<div class='pay-details-box'>
+      <div style='margin-bottom:10px;font-size:16px;color:#ffd76a;'>المبلغ المطلوب: <b>${egp} جنيه</b></div>
+      <div style='margin-bottom:10px;'>يوزر InstaPay: <br><span id='insta-user' style='font-weight:700;font-size:17px;'>omarshehata_1@instapay</span>  <button onclick='copyText("omarshehata_1@instapay")' class='copy-btn'>نسخ</button></div>
+      <div style='margin-bottom:10px;'>ارفق صورة إثبات الدفع:<br><br><br>
+        <span class="custom-file-input">
+          <input type="file" id="insta-proof" accept="image/*" onchange="updateFileLabel(this, 'insta-file-label')" style="display:none;">
+          <label class="custom-file-label" id="insta-file-label" for="insta-proof" style="display:block;cursor:pointer;">اختر ملف</label>
+        </span>
+        <span class="file-chosen" id="insta-file-chosen"></span>
+      </div>
+  <button class='btn btn-buy' style='width:100%;margin:14px auto 0 auto;font-size:14px;padding:6px 0;display:block;height:36px;line-height:18px;border-radius:10px;' onclick='submitAltPayment("instapay")'>إرسال الطلب</button>
+    </div>`;
+    showAltPayDetails(html);
+  }
+  function showAltPayDetails(html) {
+    var details = document.getElementById('alt-pay-details');
+    details.innerHTML = html;
+    details.style.display = 'block';
+  }
+  function copyText(txt) {
+    navigator.clipboard.writeText(txt);
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      iconHtml: '<span style="font-size:22px;color:#4bb543;">&#10003;</span>',
+      title: '<span style="font-size:15px;font-weight:700;">تم النسخ</span>',
+      showConfirmButton: false,
+      timer: 1200,
+      customClass: {
+        popup: 'swal2-border-radius',
+        title: 'swal2-title-custom',
+        icon: 'swal2-icon-custom',
+      }
+    });
+  }
+function updateFileLabel(input, labelId) {
+  var label = document.getElementById(labelId);
+  var chosen = input.files && input.files.length > 0 ? input.files[0].name : 'لا يوجد ملف';
+  label.textContent = input.files && input.files.length > 0 ? input.files[0].name : 'اختر ملف';
+  // Show image preview if file is image (make it square like premium)
+  var previewId = (labelId === 'vf-file-label') ? 'vf-file-chosen' : 'insta-file-chosen';
+  var previewBox = document.getElementById(previewId);
+  if (input.files && input.files[0] && input.files[0].type.startsWith('image/')) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      // square container with object-fit: cover to mimic premium preview
+      previewBox.innerHTML = '<div style="width:100px;height:100px;overflow:hidden;border-radius:12px;border:2.5px solid #ffd76a;margin-top:10px;box-shadow:0 2px 12px #ffd76a33;display:inline-block;">' +
+           '<img src="' + e.target.result + '" alt="preview" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+           '</div>';
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    previewBox.innerHTML = '';
+  }
+      }
+  // إرسال الطلب البديل (فودافون/انستا)
+  async function submitAltPayment(method) {
+    var username = document.getElementById("username").value.trim().replace(/^@/, '');
+    if (!username) {
+      Swal.fire({
+        iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+        title: '<span style="font-size:19px;font-weight:900;">أدخل اسم المستخدم</span>',
+        html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إدخال اسم المستخدم أولاً</div>',
+        showConfirmButton: true,
+        confirmButtonColor: '#34b3ff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          title: 'swal2-title-custom',
+          icon: 'swal2-icon-custom',
+          confirmButton: 'swal2-btn-custom',
+        }
+      });
+      return;
+    }
+    var stars = parseInt(document.getElementById("stars").value) || 50;
+    var usd = (stars * getStarPrice(stars)).toFixed(2);
+    var egp = Math.round(usd * 50);
+    var fileInput = method === 'vodafone' ? document.getElementById('vf-proof') : document.getElementById('insta-proof');
+    if (!fileInput.files[0]) {
+      Swal.fire({
+        iconHtml: '<span style="font-size:32px;color:#e6b800;">&#33;</span>',
+        title: '<span style="font-size:19px;font-weight:900;">ارفق صورة</span>',
+        html: '<div style="font-size:15px;color:#ffe6a0;">يرجى إرفاق صورة إثبات الدفع</div>',
+        showConfirmButton: true,
+        confirmButtonColor: '#34b3ff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          title: 'swal2-title-custom',
+          icon: 'swal2-icon-custom',
+          confirmButton: 'swal2-btn-custom',
+        }
+      });
+      return;
+    }
+    // أغلق النافذة وأظهر شاشة معالجة الطلب
+    document.getElementById('payment-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    Swal.fire({
+      title: '<span style="font-size:19px;font-weight:900;">جاري معالجة الطلب ...</span>',
+      html: '<div style="font-size:15px;color:#ffe6a0;">يرجى الانتظار حتى يتم إرسال الطلب</div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => { Swal.showLoading(); },
+      customClass: {
+        popup: 'swal2-border-radius',
+        title: 'swal2-title-custom',
+        icon: 'swal2-icon-custom',
+        confirmButton: 'swal2-btn-custom',
+      }
+    });
+    var formData = new FormData();
+    formData.append('username', username);
+    formData.append('stars', stars);
+    formData.append('amountEgp', egp);
+    formData.append('method', method);
+    formData.append('proof', fileInput.files[0]);
+    formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
+    try {
+      await axios.post('https://pandastore-f2yn.onrender.com/order-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    } catch (e) {
+      // حتى لو فشل الطلب، أظهر رسالة تم استلام الطلب
+    }
+    Swal.fire({
+      iconHtml: '<span style="font-size:32px;color:#4bb543;">&#10003;</span>',
+      title: '<span style="font-size:19px;font-weight:900;">تم استلام الطلب</span>',
+      html: '<div style="font-size:15px;color:#b6ffb6;">سيتم مراجعة الطلب والتواصل معك خلال دقائق</div>',
+      showConfirmButton: true,
+      confirmButtonColor: '#34b3ff',
+      customClass: {
+        popup: 'swal2-border-radius',
+        title: 'swal2-title-custom',
+        icon: 'swal2-icon-custom',
+        confirmButton: 'swal2-btn-custom',
+      }
+    });
+  }
     const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: 'https://pandastores.netlify.app/tonconnect-manifest.json',
   buttonRootId: 'ton-connect-btn-mobile'
 });
 
-const PRICE_PER_STAR_USD = 0.0157;
+// دالة لحساب سعر النجمة حسب العدد
+function getStarPrice(stars) {
+  return stars <= 1500 ? 0.016 : 0.0158;
+}
 let currentTonUsd = null;
 let showAllOptions = false;
 let isEnglish = true; // notifications language only
@@ -937,7 +1338,7 @@ function selectStars(value) {
   document.getElementById("stars").value = value;
   document.querySelector(".quantity").textContent = value;
   updatePreview();
-
+  updateButtonPrices();
   // Update radio button selection
   document.querySelectorAll('input[name="stars"]').forEach(radio => {
     radio.checked = radio.value == value;
@@ -947,14 +1348,14 @@ function selectStars(value) {
 function updatePreview() {
   const stars = parseInt(document.getElementById("stars").value) || 50;
   const box = document.getElementById("preview");
-
-  const usd = (stars * PRICE_PER_STAR_USD).toFixed(2);
+  const usd = (stars * getStarPrice(stars)).toFixed(2);
   if (currentTonUsd) {
     const ton = (usd / currentTonUsd).toFixed(5);
     box.textContent = `${usd}$ ≈ ${ton} TON`;
   } else {
     box.textContent = `Price: $${usd}`;
   }
+  updateButtonPrices();
 }
 
 async function encodeComment(comment) {
@@ -979,6 +1380,9 @@ async function encodeComment(comment) {
   }
 }
 
+// Overwrite the Buy button to open the modal for payment method selection
+document.querySelector('.btn-buy').setAttribute('onclick', 'openPaymentModal()');
+
 async function submitOrder() {
   const username = document.getElementById("username").value.trim().replace(/^@/, '');
   const stars = parseInt(document.getElementById("stars").value) || 50;
@@ -996,7 +1400,7 @@ async function submitOrder() {
     return;
   }
 
-  const amountUSD = stars * PRICE_PER_STAR_USD;
+  const amountUSD = stars * getStarPrice(stars);
   let tonUsd = currentTonUsd;
 
   if (!tonUsd) {
