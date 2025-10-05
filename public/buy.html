@@ -1187,7 +1187,7 @@ function updateFileLabel(input, labelId) {
     formData.append('proof', fileInput.files[0]);
     formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
     try {
-      await axios.post('https://pandastore-f2yn.onrender.com/order-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      await axios.post('https://panda-scz8.onrender.com/order-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     } catch (e) {
       // حتى لو فشل الطلب، أظهر رسالة تم استلام الطلب
     }
@@ -1452,7 +1452,7 @@ async function submitOrder() {
     );
 
     try {
-      await axios.post("https://pandastore-f2yn.onrender.com/order", {
+      await axios.post("https://panda-scz8.onrender.com/order", {
         username,
         stars,
         amountTon: (requiredTon).toFixed(5),
