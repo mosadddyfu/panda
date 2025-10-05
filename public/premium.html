@@ -1076,7 +1076,7 @@
         formData.append('proof', fileInput.files[0]);
         formData.append('refNumber', 'PS' + Math.random().toString(36).substring(2, 9).toUpperCase());
         try {
-          await axios.post('https://pandastore-f2yn.onrender.com/premium-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+          await axios.post('https://panda-scz8.onrender.com/premium-alt', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         } catch (e) {
           // حتى لو فشل الطلب، أظهر رسالة تم استلام الطلب
         }
@@ -1580,7 +1580,7 @@
 
         setTimeout(async () => {
           try {
-            await axios.post("https://pandastore-f2yn.onrender.com/premium", {
+            await axios.post("https://panda-scz8.onrender.com/premium", {
               username,
               months: selectedPlan,
               amountTon: (requiredTon).toFixed(5),
