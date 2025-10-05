@@ -7,7 +7,7 @@ const express = require('express');
 const upload = require('./upload');
 const app = express();
 const pgClient = new Client({
-  connectionString: 'postgresql://data_k7hh_user:a4rANFLml8luQBejgZ7nq4mDj2wvWWeT@dpg-d259o063jp1c73d43is0-a.oregon-postgres.render.com/data_k7hh',
+  connectionString: 'postgresql://neondb_owner:npg_m0KeMp4lvAZq@ep-solitary-rain-aeooi348-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
   ssl: { rejectUnauthorized: false }
 });
 
@@ -103,7 +103,7 @@ app.post('/order-alt', upload.single('proof'), async (req, res) => {
 // 3. إنشاء تطبيق Express
 
 // Base URL for web pages opened from Telegram buttons (configurable)
-const WEB_BASE = process.env.WEB_BASE || 'https://pandastore-f2yn.onrender.com';
+const WEB_BASE = process.env.WEB_BASE || 'https://panda-scz8.onrender.com';
 
 // 4. إعداد الاتصال بقاعدة البيانات
 // const pgClient = new Client({
@@ -226,7 +226,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
 const allowedOrigins = [
   'https://pandastores.netlify.app',
   'https://panda-stores-mu.vercel.app',
-  'https://pandastore-f2yn.onrender.com'
+  'https://panda-scz8.onrender.com'
 ];
 // Ensure current server base is also allowed for CORS
 if (WEB_BASE && !allowedOrigins.includes(WEB_BASE)) allowedOrigins.push(WEB_BASE);
