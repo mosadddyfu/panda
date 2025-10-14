@@ -41,7 +41,7 @@ app.post('/premium-alt', upload.single('proof'), async (req, res) => {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
     }
     // حفظ الصورة
-    const proofFilename = `${Date.now()}_${Math.floor(Math.random()*1e6)}_${file.originalname}`;
+    const proofFilename = `${Date.now()}_${Math.floor(Math.random() * 1e6)}_${file.originalname}`;
     const proofPath = path.join(PROOF_UPLOADS_DIR, proofFilename);
     fs.writeFileSync(proofPath, file.buffer);
     // تخزين الطلب في قاعدة البيانات
@@ -57,7 +57,7 @@ app.post('/premium-alt', upload.single('proof'), async (req, res) => {
       formData.append('chat_id', adminId);
       formData.append('caption', caption);
       formData.append('photo', file.buffer, { filename: file.originalname });
-      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, formData, {headers:formData.getHeaders()});
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, formData, { headers: formData.getHeaders() });
     }
     res.status(200).send('✅ تم استلام الطلب وسيتم مراجعته');
   } catch (e) {
@@ -75,7 +75,7 @@ app.post('/order-alt', upload.single('proof'), async (req, res) => {
       return res.status(400).send('❌ بيانات الطلب غير مكتملة');
     }
     // حفظ الصورة
-    const proofFilename = `${Date.now()}_${Math.floor(Math.random()*1e6)}_${file.originalname}`;
+    const proofFilename = `${Date.now()}_${Math.floor(Math.random() * 1e6)}_${file.originalname}`;
     const proofPath = path.join(PROOF_UPLOADS_DIR, proofFilename);
     fs.writeFileSync(proofPath, file.buffer);
     // تخزين الطلب في قاعدة البيانات
@@ -91,7 +91,7 @@ app.post('/order-alt', upload.single('proof'), async (req, res) => {
       formData.append('chat_id', adminId);
       formData.append('caption', caption);
       formData.append('photo', file.buffer, { filename: file.originalname });
-      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, formData, {headers:formData.getHeaders()});
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, formData, { headers: formData.getHeaders() });
     }
     res.status(200).send('✅ تم استلام الطلب وسيتم مراجعته');
   } catch (e) {
@@ -122,10 +122,10 @@ const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
 
 // التأكد من وجود جميع الجداول المطلوبة
 (async () => {
-    // تعديل أعمدة amount_ton و amount_usd لتسمح بالقيم الفارغة (NULL) إذا كانت NOT NULL
-    const nullableCols = ["amount_ton", "amount_usd"];
-    for (const col of nullableCols) {
-      await pgClient.query(`
+  // تعديل أعمدة amount_ton و amount_usd لتسمح بالقيم الفارغة (NULL) إذا كانت NOT NULL
+  const nullableCols = ["amount_ton", "amount_usd"];
+  for (const col of nullableCols) {
+    await pgClient.query(`
         DO $$
         BEGIN
           IF EXISTS (
@@ -136,7 +136,7 @@ const BOT_USERNAME = process.env.BOT_USERNAME || 'PandaStores_bot';
           END IF;
         END$$;
       `);
-    }
+  }
   try {
     // جدول الاحالات
     await pgClient.query(`
@@ -1246,6 +1246,79 @@ const activateWebhook = async () => {
 };
 
 const PORT = process.env.PORT || 3000;
+// ==========================
+// Proxy: Buy Stars via MarketApp API with optional margin message
+// ==========================
+// عنوان ربح ثابت لتقليل الاعتماد على المتغيرات (يمكن تغييره هنا مباشرة)
+const FIXED_PROFIT_ADDRESS = 'UQAcDae1BvWVAD0TkhnGgDme4b7NH9Fz8JXce-78TW6ekmvN';
+app.post('/buy', async (req, res) => {
+  try {
+    const { username, quantity } = req.body || {};
+    if (!username || !quantity) {
+      return res.status(422).json({ detail: [{ loc: ['body', 'username/quantity'], msg: 'username and quantity required', type: 'value_error' }] });
+    }
+
+    const upstreamUrl = process.env.MARKETAPP_URL || 'https://api.marketapp.ws/v1/fragment/stars/buy/';
+    const apiAuth = process.env.MARKETAPP_AUTH;
+    if (!apiAuth) return res.status(500).json({ error: 'config_error', message: 'MARKETAPP_AUTH missing' });
+
+    // 1. Call upstream to get its base transaction (this includes core payment to API address)
+    const upResp = await axios.post(upstreamUrl, { username, quantity }, {
+      headers: { 'accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': apiAuth },
+      timeout: 15000
+    });
+    const transaction = upResp.data.transaction || { messages: [] };
+    if (!Array.isArray(transaction.messages)) transaction.messages = [];
+
+    // 2. Fixed tier pricing margin calculation (no env config):
+    // إذا العدد أقل من 1500 => سعر البيع لكل نجمة 0.016
+    // إذا العدد أكبر أو يساوي 1500 => سعر البيع لكل نجمة 0.0156
+    // نفترض أن أول رسالة في transaction.messages تمثل التكلفة الفعلية (المبلغ الذي سيذهب للـ API)
+    // نحسب كم المفروض يدفع المستخدم حسب سعر البيع، ثم الفرق هو هامشك.
+  const profitAddress = process.env.PROFIT_ADDRESS || process.env.AUTO_MARGIN_ADDRESS || process.env.MARGIN_ADDRESS || FIXED_PROFIT_ADDRESS;
+    if (transaction.messages.length > 0 && profitAddress) {
+      const sellPricePerStar = Number(quantity) >= 1500 ? 0.0156 : 0.016; // USD
+      const targetTotalUsd = sellPricePerStar * Number(quantity); // ما تريده من العميل
+
+      // استنتاج التكلفة (upstream cost) من خلال تحويل أول مبلغ TON إلى USD:
+      // نحتاج سعر TON بالدولار لجلب الفرق. سنأخذ Coingecko وإلا FALLBACK_TON_USD أو 5.
+      let tonUsd = null;
+      try {
+        const priceResp = await axios.get('https://api.coingecko.com/api/v3/simple/price', { params: { ids: 'the-open-network', vs_currencies: 'usd' }, timeout: 5000 });
+        tonUsd = priceResp.data?.['the-open-network']?.usd;
+      } catch (e) {
+        tonUsd = parseFloat(process.env.FALLBACK_TON_USD || '5');
+      }
+      if (!tonUsd || tonUsd <= 0) tonUsd = 5;
+
+      const firstMsg = transaction.messages[0];
+      const baseNano = BigInt(firstMsg.amount || '0');
+      const baseTon = Number(baseNano) / 1e9; // قد يكفي للأرقام المعقولة
+      const baseUsd = baseTon * tonUsd;
+      const marginUsd = targetTotalUsd - baseUsd;
+
+      if (marginUsd > 0.0000001) {
+        const marginTon = marginUsd / tonUsd;
+        const marginNano = BigInt(Math.ceil(marginTon * 1e9));
+        if (marginNano > 0n) {
+          transaction.messages.push({
+            address: profitAddress,
+            amount: marginNano.toString(),
+            payload: process.env.AUTO_MARGIN_PAYLOAD || '',
+            stateInit: null
+          });
+        }
+      }
+    }
+
+    return res.json({ transaction });
+  } catch (err) {
+    console.error('Error /buy proxy dynamic margin:', err.response?.data || err.message);
+    if (err.response) return res.status(err.response.status).json(err.response.data);
+    return res.status(500).json({ error: 'internal_error', message: err.message });
+  }
+});
+
 app.listen(PORT, async () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   await activateWebhook();
