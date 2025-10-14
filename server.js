@@ -8,13 +8,27 @@ const upload = require('./upload');
 const app = express();
 const pgClient = new Client({
   connectionString: 'postgresql://neondb_owner:npg_m0KeMp4lvAZq@ep-solitary-rain-aeooi348-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  keepAlive: true,
 });
 
 // الاتصال بقاعدة البيانات لمرة واحدة فقط
-pgClient.connect()
-  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح"))
-  .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL:', err));
+async function connectPgWithRetry(retryMs = 3000) {
+  try {
+    await pgClient.connect();
+    console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح");
+  } catch (err) {
+    console.error('❌ فشل الاتصال بقاعدة PostgreSQL، إعادة المحاولة بعد', retryMs, 'ms:', err.message);
+    setTimeout(() => connectPgWithRetry(Math.min(retryMs * 2, 30000)), retryMs);
+  }
+}
+connectPgWithRetry();
+
+pgClient.on('error', (err) => {
+  console.error('⚠️ حدث خطأ في اتصال PostgreSQL:', err.message);
+  // حاول إعادة الاتصال بهدوء
+  connectPgWithRetry();
+});
 
 const axios = require('axios');
 const bodyParser = require('body-parser');
