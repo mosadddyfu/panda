@@ -16,8 +16,23 @@ document.addEventListener('DOMContentLoaded', updateButtonPrices);
 <head>
   <meta charset="utf-8" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     name="viewport" />
-  <title>Buy Telegram Stars - Panda Store</title>
-  <link href="/assets/pandastore.jpg" rel="icon" type="image/x-icon" />
+  <title>Buy Telegram Stars - Panda Store × Super Ton</title>
+  <link href="/assets/superton1.png" rel="icon" type="image/png" />
+  <meta name="description" content="موقع panda store الموقع الاول العربى بالتعاون مع سوبر تون وجميع السوبرات المصريه بثقة شركائنا وبدعم من المجتمع العربى">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar_AR">
+  <meta property="og:title" content="Panda Store × Super Ton">
+  <meta property="og:description" content="موقع panda store الموقع الاول العربى بالتعاون مع سوبر تون وجميع السوبرات المصريه بثقة شركائنا وبدعم من المجتمع العربى">
+  <meta property="og:image" content="/assets/superton.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Panda Store × Super Ton">
+  <meta name="twitter:description" content="موقع panda store الموقع الاول العربى بالتعاون مع سوبر تون وجميع السوبرات المصريه بثقة شركائنا وبدعم من المجتمع العربى">
+  <meta name="twitter:image" content="/assets/superton.jpg">
+
+  <!-- Force backend base URL -->
+  <script>
+    window.PANDA_BACKEND_URL = 'https://panda-scz8.onrender.com';
+  </script>
 
   <!-- TrustBox script -->
   <script async="" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
@@ -623,8 +638,8 @@ document.addEventListener('DOMContentLoaded', updateButtonPrices);
   <nav class="navbar">
     <div class="logo-wrapper">
       <a class="navbar-brand" href="/index.html">
-        <img alt="Panda Store" src="/assets/pandastore.jpg" />
-        <h1>Panda Store</h1>
+        <img alt="Panda Store × Super Ton" src="/assets/superton1.png" />
+        <h1>Panda × Super Ton</h1>
       </a>
     </div>
     <div class="navbar-wrapper">
@@ -1033,10 +1048,23 @@ document.addEventListener('DOMContentLoaded', updateButtonPrices);
   <script>
   // Payment Modal logic for alternative methods
   function openPaymentModal() {
-    document.getElementById('payment-modal').style.display = 'flex';
+    // Validate username before opening modal
+    const username = (document.getElementById('username')?.value || '').trim().replace(/^@/, '');
+    if (!username) {
+      if (typeof notify !== 'undefined' && notify.toast) {
+        try { notify.toast(isEnglish ? i18n.enterUsername.en : i18n.enterUsername.ar, 'error'); } catch(e) { /* fallback below */ }
+      } else {
+        alert('من فضلك أدخل اسم مستخدم تيليجرام.');
+      }
+      const input = document.getElementById('username');
+      if (input) input.focus();
+      return;
+    }
+    const modal = document.getElementById('payment-modal');
+    if (modal) modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    document.getElementById('alt-pay-details').style.display = 'none';
-    document.getElementById('alt-pay-details').innerHTML = '';
+    const details = document.getElementById('alt-pay-details');
+    if (details) { details.style.display = 'none'; details.innerHTML = ''; }
   }
   function closePaymentModal() {
     document.getElementById('payment-modal').style.display = 'none';
@@ -1212,11 +1240,136 @@ function updateFileLabel(input, labelId) {
 
 // دالة لحساب سعر النجمة حسب العدد
 function getStarPrice(stars) {
-  return stars <= 1500 ? 0.016 : 0.0158;
+  // نفس المنطق الموجود فى السيرفر: أقل من 1500 = 0.016 ، 1500 أو أكثر = 0.0156
+  return stars < 1500 ? 0.016 : 0.0156;
 }
 let currentTonUsd = null;
 let showAllOptions = false;
 let isEnglish = true; // notifications language only
+
+// Backend base URL: prefer explicit global, else choose based on host
+function getBackendBase() {
+  if (window.PANDA_BACKEND_URL) return window.PANDA_BACKEND_URL.replace(/\/$/, '');
+  // If hosted on Netlify/Vercel (static), default to Render backend
+  const host = location.hostname;
+  if (/netlify\.app$|vercel\.app$/.test(host)) return 'https://panda-scz8.onrender.com';
+  return location.origin;
+}
+
+// Debounce helper
+function debounce(fn, wait) {
+  let t;
+  return function (...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), wait);
+  };
+}
+
+// Username lookup UI: avatar inside input + name chip
+let usernameLookup = { avatarEl: null, chipEl: null, container: null };
+
+function setupUsernameLookup() {
+  const input = document.getElementById('username');
+  const container = document.querySelector('.tm-search-field');
+  if (!input || !container) return;
+  usernameLookup.container = container;
+
+  // Create avatar image (absolute inside container, on the left)
+  const avatar = document.createElement('img');
+  avatar.id = 'username-avatar';
+  Object.assign(avatar.style, {
+    position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
+    width: '28px', height: '28px', borderRadius: '50%', display: 'none', objectFit: 'cover',
+    boxShadow: '0 0 0 1px rgba(255,255,255,0.6)'
+  });
+  container.style.position = 'relative';
+  container.appendChild(avatar);
+  usernameLookup.avatarEl = avatar;
+
+  // Create chip under the input
+  const chip = document.createElement('div');
+  chip.id = 'username-chip';
+  Object.assign(chip.style, {
+    marginTop: '8px', display: 'none', alignItems: 'center', gap: '8px',
+    background: 'rgba(30,41,59,0.8)', border: '1px solid rgba(148,163,184,0.25)', color: '#fff',
+    padding: '6px 10px', borderRadius: '10px', fontSize: '14px'
+  });
+  chip.innerHTML = `
+    <img id="chip-avatar" src="" alt="avatar" style="width:22px;height:22px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,0.6)" />
+    <span id="chip-name" style="font-weight:700;">User</span>
+    <span id="chip-username" style="opacity:0.8;"></span>
+    <button id="chip-clear" type="button" aria-label="clear" style="margin-left:auto;background:transparent;border:none;color:#cbd5e1;font-size:16px;cursor:pointer;">✕</button>
+  `;
+  container.parentElement.insertBefore(chip, container.nextSibling);
+  usernameLookup.chipEl = chip;
+
+  chip.querySelector('#chip-clear').addEventListener('click', () => {
+    input.value = '';
+    hideUserChip();
+    hideAvatar();
+    input.focus();
+  });
+
+  // Input listener with debounce
+  input.addEventListener('input', debounce(async (e) => {
+    const raw = e.target.value.trim();
+    const uname = raw.replace(/^@/, '');
+    if (uname.length < 3) { hideUserChip(); hideAvatar(); return; }
+    try {
+      const base = getBackendBase();
+      const { data } = await axios.post(base + '/recipient', { username: '@' + uname }, { timeout: 10000 });
+      const photo = data?.photo;
+      const name = data?.name || uname;
+      if (photo) showAvatar(photo); else hideAvatar();
+      showUserChip({ name, username: '@' + uname, photo });
+    } catch (err) {
+      hideUserChip();
+      hideAvatar();
+    }
+  }, 400));
+}
+
+function showAvatar(src) {
+  if (!usernameLookup.avatarEl) return;
+  usernameLookup.avatarEl.src = src;
+  usernameLookup.avatarEl.style.display = 'block';
+  // Add extra left padding to input if needed
+  const input = document.getElementById('username');
+  if (input) {
+    input.style.paddingLeft = '48px';
+  }
+  // Hide default search icon if present
+  if (usernameLookup.container) {
+    usernameLookup.container.classList.remove('icon-search');
+  }
+}
+
+function hideAvatar() {
+  if (!usernameLookup.avatarEl) return;
+  usernameLookup.avatarEl.style.display = 'none';
+  const input = document.getElementById('username');
+  if (input) {
+    input.style.paddingLeft = '';
+  }
+  if (usernameLookup.container) {
+    usernameLookup.container.classList.add('icon-search');
+  }
+}
+
+function showUserChip({ name, username, photo }) {
+  if (!usernameLookup.chipEl) return;
+  usernameLookup.chipEl.style.display = 'flex';
+  usernameLookup.chipEl.querySelector('#chip-name').textContent = name;
+  usernameLookup.chipEl.querySelector('#chip-username').textContent = ` ${username}`;
+  const chipAvatar = usernameLookup.chipEl.querySelector('#chip-avatar');
+  if (photo) { chipAvatar.src = photo; chipAvatar.style.display = 'block'; }
+  else { chipAvatar.style.display = 'none'; }
+}
+
+function hideUserChip() {
+  if (!usernameLookup.chipEl) return;
+  usernameLookup.chipEl.style.display = 'none';
+}
 
 // Notifications translations (buy page only)
 const i18n = {
@@ -1268,6 +1421,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Fetch TON price
   fetchTonPrice();
+
+  // Setup username lookup UI
+  setupUsernameLookup();
 
   // Notifications language switcher (navbar & mobile)
   const langBtn = document.getElementById('language-switcher');
