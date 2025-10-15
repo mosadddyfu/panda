@@ -2,19 +2,26 @@
 require('dotenv').config(); // يمكن حذفه إذا كنت تستخدم Render وتضبط المتغيرات هناك
 
 // 2. استيراد المكتبات
-const { Client } = require('pg');
+const { Pool } = require('pg');
 const express = require('express');
 const upload = require('./upload');
 const app = express();
-const pgClient = new Client({
+const pgClient = new Pool({
   connectionString: 'postgresql://neondb_owner:npg_m0KeMp4lvAZq@ep-solitary-rain-aeooi348-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000
 });
 
-// الاتصال بقاعدة البيانات لمرة واحدة فقط
-pgClient.connect()
-  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL بنجاح"))
-  .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL:', err));
+// اختبار الاتصال بالمجمع
+pgClient.query('SELECT 1')
+  .then(() => console.log("✅ تم الاتصال بقاعدة بيانات PostgreSQL (pool) بنجاح"))
+  .catch(err => console.error('❌ فشل الاتصال بقاعدة PostgreSQL (pool):', err));
+
+pgClient.on('error', (err) => {
+  console.error('⚠️ pg Pool error:', err);
+});
 
 const axios = require('axios');
 const bodyParser = require('body-parser');
@@ -241,10 +248,26 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', origin);
   }
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  const reqHeaders = req.headers['access-control-request-headers'];
+  res.header('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization, X-Requested-With');
   res.header('Access-Control-Allow-Credentials', true);
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  res.header('Access-Control-Max-Age', '86400');
+  if (req.method === 'OPTIONS') return res.status(200).send('OK');
   next();
+});
+
+// Fallback explicit preflight route (defensive)
+app.options('*', (req, res) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  const reqHeaders = req.headers['access-control-request-headers'];
+  res.header('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Max-Age', '86400');
+  res.status(200).send('OK');
 });
 
 // وظائف مساعدة
